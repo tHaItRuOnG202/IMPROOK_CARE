@@ -9,19 +9,27 @@ import { Spinner } from "react-bootstrap";
 import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import { MyUserContext } from "../App";
 import cookie from "react-cookies"
+import { toast } from "react-toastify";
+import MySpinner from "../layout/MySpinner";
 
 const Register = () => {
     const [current_user,] = useContext(MyUserContext)
-    const [user, setUser] = useState({
-        "firstname": "",
-        "lastname": "",
-        "username": cookie.load("token"),
-        "password": "",
-        "confirmPass": "",
-        "gender": ""
-    })
-    const [err, setErr] = useState(null);
+    // const [user, setUser] = useState({
+    //     "firstname": "",
+    //     "lastname": "",
+    //     "username": cookie.load("phonenumber"),
+    //     "password": "",
+    //     "confirmPass": "",
+    //     "gender": ""
+    // })
+
     const nav = useNavigate();
+    const [firstname, setFirstname] = useState('');
+    const [lastname, setLastname] = useState('');
+    const [username,] = useState(cookie.load("phonenumber"));
+    const [password, setPassword] = useState('');
+    const [confirmPass, setConfirmPass] = useState('');
+    const [gender, setGender] = useState(true)
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false)
@@ -30,25 +38,50 @@ const Register = () => {
         evt.preventDefault();
 
         const process = async () => {
-
-
             setLoading(true);
 
-            let res = await Apis.post(endpoints['register'], {
+            try {
+                // let form = new FormData();
+                // for (let field in user)
+                //     if (field !== "confirmPass" || field !== "gender")
+                //         form.append(field, user[field]);
 
-            });
-            if (res.status === 201) {
-                nav("/login");
-                cookie.remove("token");
+                // form.delete("gender");
+                // if (gender === false) {
+                //     form.append("gender", false)
+                // } else {
+                //     form.append("gender", true)
+                // }
+
+                let res = await Apis.post(endpoints['register'], {
+                    "username": username,
+                    "password": password,
+                    "firstname": firstname,
+                    "lastname": lastname,
+                    "gender": gender
+                });
+
+                cookie.save("register", res.data);
+                console.log(res)
+
+                // let res = await Apis.post(endpoints['register']);
+                if (res.status === 200) {
+                    cookie.remove("register");
+                    cookie.remove("phonenumber");
+                    toast.success("Đăng ký thành công!");
+                    nav("/login");
+                }
+                else
+                    toast.error("Đăng ký thất bại!");
+            } catch (error) {
+                console.log(error);
             }
-            else
-                setErr("Có lỗi xảy ra!")
         }
 
-        if (user.password === user.confirmPass)
+        if (password === confirmPass)
             process();
         else
-            setErr("Mật khẩu không khớp!")
+            toast.warning("Mật khẩu không khớp!")
     }
 
     const toggleShowPassword = () => {
@@ -88,25 +121,32 @@ const Register = () => {
                                     <div class="Register_Fill">
                                         <div class="Register_User">
                                             <div class="Register_User_Input">
-                                                <input type="text" placeholder="Tên" required></input>
+                                                <input type="text" defaultValue={firstname} onChange={(e) => setFirstname(e.target.value)} placeholder="Tên" required></input>
                                             </div>
                                             <div class="Separate"></div>
                                         </div>
                                         <div class="Register_User">
                                             <div class="Register_User_Input">
-                                                <input type="text" placeholder="Họ và tên đệm" required></input>
+                                                <input type="text" defaultValue={lastname} onChange={(e) => setLastname(e.target.value)} placeholder="Họ và tên đệm" required></input>
+                                            </div>
+                                            <div class="Separate"></div>
+                                        </div>
+                                        <div class="Register_User">
+                                            <div class="Register_User_Gender">
+                                                <Form.Check type="radio" label="Nam" name="radioOption" defaultChecked onChange={(e) => setGender(true)} />
+                                                <Form.Check type="radio" label="Nữ" name="radioOption" onChange={(e) => setGender(false)} />
                                             </div>
                                             <div class="Separate"></div>
                                         </div>
                                         <div class="Register_User">
                                             <div class="Register_User_Input">
-                                                <input type="text" disabled></input>
+                                                <input type="text" value={username} disabled></input>
                                             </div>
                                             <div class="Separate"></div>
                                         </div>
                                         <div class="Register_Password">
                                             <div class="Register_Password_Input">
-                                                <input type={showPassword ? 'text' : 'password'} placeholder="Nhập mật khẩu" required></input>
+                                                <input type={showPassword ? 'text' : 'password'} defaultValue={password} onChange={(e) => setPassword(e.target.value)} placeholder="Nhập mật khẩu" required></input>
                                                 <button type="button" onClick={toggleShowPassword}>
                                                     {showPassword ? <AiFillEyeInvisible /> : <AiFillEye />}
                                                 </button>
@@ -115,7 +155,7 @@ const Register = () => {
                                         </div>
                                         <div class="Password_Confirm">
                                             <div class="Password_Confirm_Input">
-                                                <input type={showConfirmPassword ? 'text' : 'password'} value={user.confirmPass} placeholder="Xác nhận mật khẩu" required></input>
+                                                <input type={showConfirmPassword ? 'text' : 'password'} defaultValue={confirmPass} onChange={(e) => setConfirmPass(e.target.value)} placeholder="Xác nhận mật khẩu" required></input>
                                                 <button type="button" onClick={toggleShowConfirmPassword}>
                                                     {showPassword ? <AiFillEyeInvisible /> : <AiFillEye />}
                                                 </button>
@@ -123,7 +163,7 @@ const Register = () => {
                                             <div class="Separate"></div>
                                         </div>
                                         {/* <button class="Register_Butt">Đăng ký</button> */}
-                                        {loading === true ? <Spinner animation="grow" variant="info" /> : <button class="Register_Butt">Đăng ký</button>}
+                                        {loading === true ? <MySpinner /> : <button class="Register_Butt" onClick={register}>Đăng ký</button>}
                                         {/* <div class="Register_Help">
                                             <a href="/">Quên mật khẩu</a>
                                             <a href="/">Đăng ký với SMS</a>

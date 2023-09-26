@@ -17,6 +17,7 @@ const PhoneVerification = () => {
     const [phonenumber, setPhonenumber] = useState('');
     const [loading, setLoading] = useState(false);
     const [check, setCheck] = useState(false)
+    const [isPhonenumbervalid, setIsPhoneNumberValid] = useState(false)
     const nav = useNavigate();
 
     const [verificationInfo, setVerificationInfo] = useState(null)
@@ -75,7 +76,7 @@ const PhoneVerification = () => {
                     "phonenumber": phonenumber
                 })
 
-                cookie.save('token', res.data);
+                cookie.save("phonenumber", phonenumber);
                 console.log(res.data);
 
                 setLoading(false);
@@ -88,8 +89,35 @@ const PhoneVerification = () => {
     }
 
     const toRegister = () => {
+        setPhonenumber(phonenumber);
         cookie.save("phonenumber", phonenumber)
         nav('/register')
+    }
+
+    const validatePhoneNumber = (evt) => {
+        evt.preventDefault();
+
+        const phoneNumberInput = document.getElementById('phoneNumberInput');
+        const errorMsg = document.getElementById('errorMsg');
+        const phoneNumber = phoneNumberInput.value;
+
+        // Kiểm tra định dạng số điện thoại
+        const phoneRegex = /^0\d{9}$/;
+        if (phoneNumber === '') {
+            errorMsg.style.display = 'none';
+            setIsPhoneNumberValid(false)
+            console.log('1');
+        } else if (!phoneRegex.test(phoneNumber)) {
+            errorMsg.style.display = 'block';
+            setIsPhoneNumberValid(false);
+            console.log("2");
+        } else {
+            errorMsg.style.display = 'none';
+            setIsPhoneNumberValid(true);
+            setPhonenumber(evt.target.value);
+            console.log("3");
+            console.log(phonenumber)
+        }
     }
 
     if (user !== null)
@@ -113,11 +141,14 @@ const PhoneVerification = () => {
                                     </div>
                                     <div class="PhoneVerification_Fill">
                                         <div class="PhoneVerification_User">
-                                            <div class="PhoneVerification_User_OTP">
-                                                <div class="PhoneVerification_User_Input">
-                                                    <input type="text" defaultValue={phonenumber} onChange={(e) => setPhonenumber(e.target.value)} placeholder="Số điện thoại" pattern="[0-9]+" required></input>
+                                            <div class="PhoneVerification_Warning">
+                                                <div class="PhoneVerification_User_OTP">
+                                                    <div class="PhoneVerification_User_Input">
+                                                        <input type="text" id="phoneNumberInput" defaultValue={phonenumber} onChange={(e) => validatePhoneNumber(e)} placeholder="Số điện thoại" pattern="[0-9]+" required></input>
+                                                    </div>
+                                                    {isPhonenumbervalid === true ? <button type="button" class="OTP" onClick={OTPSender}>Gửi OTP</button> : <button type="button" class="OTP" disabled style={{ color: "gray", cursor: "auto" }}>Gửi OTP</button>}
                                                 </div>
-                                                <button type="button" class="OTP" onClick={OTPSender}>Gửi OTP</button>
+                                                <p id="errorMsg" style={{ color: 'red', display: 'none' }}>Số điện thoại không hợp lệ</p>
                                             </div>
                                             <div class="Separate"></div>
                                         </div>

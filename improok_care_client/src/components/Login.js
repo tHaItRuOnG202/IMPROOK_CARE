@@ -46,7 +46,8 @@ const Login = () => {
                 if (res.status === 200)
                     toast.success("Đăng nhập thành công!");
             } catch (err) {
-                console.log(err);
+                toast.error(err.request.responseText)
+                console.log(err.request.responseText);
             }
         }
         process();

@@ -1,7 +1,7 @@
 div.Register_Wrapper {
     background-color: lightpink;
     margin-top: 1rem;
-    min-height: 640px;
+    min-height: 680px;
 }
 
 div.Register_Content {
@@ -10,7 +10,7 @@ div.Register_Content {
 }
 
 div.Register_Form {
-    padding-top: 70px;
+    padding-top: 90px;
     padding-left: 100px;
     display: flex;
     justify-content: space-between;
@@ -87,6 +87,11 @@ div.Register_User_Input>input {
     flex-shrink: 0;
     filter: none;
     width: 100%;
+}
+
+div.Register_User_Gender {
+    display: flex;
+    gap: 10rem;
 }
 
 div.Register_Password {

@@ -113,6 +113,18 @@ div.PhoneVerification_User_OTP>button.OTP {
     height: 42px;
 }
 
+div.PhoneVerification_Warning {
+    display: flex;
+    flex-direction: column;
+}
+
+div.PhoneVerification_Warning>p {
+    font-size: .7rem;
+    margin: 0;
+    position: absolute;
+    margin-top: 2.6rem;
+}
+
 div.Separate {
     margin: 0;
     padding: 0.25rem 0 0;
