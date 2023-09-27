@@ -10,9 +10,11 @@ export const endpoints = {
     "update-user": `${SERVER_CONTEXT}/api/auth/update-user/`,
     "verification": `${SERVER_CONTEXT}/api/public/verification/`,
     "verification-check": `${SERVER_CONTEXT}/api/public/verification-check/`,
-    // "verification": "http://192.168.1.35:2024/IMPROOK_CARE/api/public/verification/",
-    // "verification-check": "http://192.168.1.35:2024/IMPROOK_CARE/api/public/verification-check/",
-    "register": `${SERVER_CONTEXT}/api/public/register/`
+    "register": `${SERVER_CONTEXT}/api/public/register/`,
+    "add-profile-patient": `${SERVER_CONTEXT}/api/auth/add-profile-patient/`,
+    "provinces": `${SERVER_CONTEXT}/api/public/provinces/`,
+    "districts": (provinceCode) => `${SERVER_CONTEXT}/api/public/provinces/${provinceCode}/districts/`,
+    "wards": (districtCode) => `${SERVER_CONTEXT}/api/public/districts/${districtCode}/wards/`
 }
 
 export const authApi = () => {

@@ -47,7 +47,15 @@ const PhoneVerification = () => {
                 setLoading(false);
 
             } catch (error) {
-                console.log(error)
+                if (error.response.data === "Số điện thoại " + phonenumber + " đã được đăng ký") {
+                    toast.warning(error.response.data);
+                    console.log(error.code);
+                }
+                else {
+                    toast.success(error.response.data);
+                    console.log(error.response.data);
+                }
+                setLoading(false);
             }
         }
         process();
@@ -106,17 +114,13 @@ const PhoneVerification = () => {
         if (phoneNumber === '') {
             errorMsg.style.display = 'none';
             setIsPhoneNumberValid(false)
-            console.log('1');
         } else if (!phoneRegex.test(phoneNumber)) {
             errorMsg.style.display = 'block';
             setIsPhoneNumberValid(false);
-            console.log("2");
         } else {
             errorMsg.style.display = 'none';
             setIsPhoneNumberValid(true);
             setPhonenumber(evt.target.value);
-            console.log("3");
-            console.log(phonenumber)
         }
     }
 

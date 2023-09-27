@@ -12,6 +12,7 @@ import Admin from "./components/Admin/Admin";
 import Doctor from "./components/Doctor/Doctor";
 import Error from "./components/Error";
 import Profile from "./components/Profile"
+import Booking from "./components/Booking"
 import PhoneVerification from "./components/PhoneVerification"
 import PersonalPage from "./components/PersonalPage"
 import 'react-toastify/dist/ReactToastify.css';
@@ -44,6 +45,7 @@ const App = () => {
           <Route path='/collabdoctor' element={<CollabDoctor />} />
           <Route path='/medicalrecord' element={<MedicalRecord />} />
           <Route path='/test' element={<Test />} />
+          <Route path='/booking' element={<Booking />} />
         </Routes>
         <Footer />
         <ToastContainer />

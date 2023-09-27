@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { MyUserContext } from "../App";
 import "../styles/PersonalPage.css";
@@ -6,6 +6,7 @@ import { Form, Image } from "react-bootstrap";
 import { authApi, endpoints } from "../configs/Apis";
 import cookie from "react-cookies";
 import { toast } from "react-toastify";
+import avatar_user from "../assests/images/user.png"
 
 const PersonalPage = () => {
     const [current_user, dispatch] = useContext(MyUserContext);
@@ -20,10 +21,11 @@ const PersonalPage = () => {
         "firstname": current_user.firstname,
         "lastname": current_user.lastname,
         "userId": current_user.userId,
-        "birthday": current_user.birthday.substring(0, 10),
+        "birthday": "",
         "gender": current_user.gender,
         "avatar": current_user.avatar
     })
+    const [checkPersonalInfo, setCheckPersonalInfo] = useState(true)
 
     const formattedDate = new Date(current_user.birthday).toISOString().substring(0, 10);
     console.log(typeof (current_birthday))
@@ -31,7 +33,6 @@ const PersonalPage = () => {
     // const formattedDate = current_user.birthDate.toISOString();
     // const formattedDate = new Date(current_birthday).toISOString();
 
-    const [checkPersonalInfo, setCheckPersonalInfo] = useState(true)
     const logout = () => {
         dispatch({
             "type": "logout"
@@ -163,7 +164,11 @@ const PersonalPage = () => {
                                 <div class="PersonalPage_Right_Header"><h2 className="text-center text-success">Thông tin cá nhân của {current_user.firstname}</h2></div>
                                 <div class="PersonalPage_Right_Content">
                                     <div class="Personal_Avatar">
-                                        <div><Image class="user_Avatar" src={current_user.avatar} style={{ width: "35%" }} alt="Not Found" rounded /></div>
+                                        {current_avatar === null ? <>
+                                            <div><Image class="user_Avatar" src={avatar_user} style={{ width: "30%" }} alt="Not Found" rounded /></div>
+                                        </> : <>
+                                            <div><Image class="user_Avatar" src={current_user.avatar} style={{ width: "35%" }} alt="Not Found" rounded /></div>
+                                        </>}
                                         <Form.Control className="avatar_input" accept=".jpg, .jpeg, .png, .gif, .bmp" style={{ width: "10%", marginLeft: 'auto', marginRight: 'auto' }} onChange={(e) => updateAvatar(e.target.files)} type="file" ref={avatar} />
                                     </div>
                                     <div class="Personal_LastName">
@@ -184,7 +189,11 @@ const PersonalPage = () => {
                                     </div>
                                     <div class="Personal_Birthday">
                                         <Form.Label style={{ width: "30%" }}>Ngày sinh</Form.Label>
-                                        <Form.Control value={current_user.birthday.substring(0, 10)} type="Text" disabled />
+                                        {current_user.birthday === null ? <>
+                                            <Form.Control value="Thiết lập ngày sinh" type="Text" disabled />
+                                        </> : <>
+                                            <Form.Control value={current_user.birthday.substring(0, 10)} type="Text" disabled />
+                                        </>}
                                     </div>
                                     <div class="Change_Button">
                                         <button type="button" onClick={updateClick}>Thay đổi thông tin</button>
