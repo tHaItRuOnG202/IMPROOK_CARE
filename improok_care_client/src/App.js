@@ -20,6 +20,8 @@ import { ToastContainer } from "react-toastify";
 import CollabDoctor from "./components/CollabDoctor";
 import MedicalRecord from "./components/MedicalRecord";
 import Test from "./components/Test";
+import ProfileDoctor from "./components/Doctor/ProfileDoctor";
+import Schedule from "./components/Doctor/Schedule";
 
 export const MyUserContext = createContext();
 
@@ -46,6 +48,8 @@ const App = () => {
           <Route path='/medicalrecord' element={<MedicalRecord />} />
           <Route path='/test' element={<Test />} />
           <Route path='/booking' element={<Booking />} />
+          <Route path='/profiledoctor' element={<ProfileDoctor />} />
+          <Route path='/schedule' element={<Schedule />} />
         </Routes>
         <Footer />
         <ToastContainer />

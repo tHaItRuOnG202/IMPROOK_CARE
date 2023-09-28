@@ -1,29 +1,24 @@
 import { useContext, useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { MyUserContext } from "../App";
-import "../styles/Profile.css";
+import { Navigate, useNavigate } from "react-router-dom";
+import { MyUserContext } from "../../App";
+import "../../styles/ProfileDoctor.css";
 import { Form, Image } from "react-bootstrap";
-import Apis, { authApi, endpoints } from "../configs/Apis";
+import Apis, { authApi, endpoints } from "../../configs/Apis";
 import cookie from "react-cookies";
 import { toast } from "react-toastify";
-import printer from "../assests/images/printer.png"
-import profileicon from "../assests/images/profile-icon.png"
+import doctorprofile from "../../assests/images/doctor-profile-icon.png"
 
-const Profile = () => {
+const ProfileDoctor = () => {
     const [current_user, dispatch] = useContext(MyUserContext);
-    const [current_birthday, setCurrent_birthday] = useState(current_user.birthday)
-    const [birthday, setBirthday] = useState(null)
-    const [gender, setGender] = useState(null)
     const nav = useNavigate();
     const [loading, setLoading] = useState(true)
 
     const [name, setName] = useState();
     const [phonenumber, setPhonenumber] = useState();
-    const [personalAddress, setPersonalAddress] = useState();
+    const [bookingPrice, setBookingPrice] = useState();
+    const [workPlace, setWorkPlace] = useState();
     const [email, setEmail] = useState();
-    const [relationship, setRelationship] = useState();
-
-    const [profilePatient, setProfilePatient] = useState([]);
+    const [position, setPosition] = useState();
 
     const [province, setProvince] = useState();
     const [district, setDistrict] = useState();
@@ -33,9 +28,11 @@ const Profile = () => {
     const [wardname, setWardName] = useState();
     const [selectedProvinceCode, setSelectedProvinceCode] = useState('01');
     const [selectedDistrictCode, setSelectedDistrictCode] = useState('001');
-    const [selectedWardCode, setSelectedWardCode] = useState('00001')
+    const [selectedWardCode, setSelectedWardCode] = useState('00001');
+    const [selectedSpecialty, setSelectedSpecialty] = useState('1');
 
     const [addProfileInfo, setAddProfileInfo] = useState(false)
+    const [profile, setProfile] = useState([]);
     const [checkProfileInfo, setCheckProfileInfo] = useState(true)
 
 
@@ -88,17 +85,8 @@ const Profile = () => {
     }, [selectedProvinceCode, selectedDistrictCode])
 
     useEffect(() => {
-        const loadProfilePatient = async () => {
-            try {
-                let res = await authApi().get(endpoints['load-profile-patient'](current_user.userId))
-                setProfilePatient(res.data)
-                console.log(res.data);
-            } catch (error) {
-                console.log(error)
-            }
-        }
-        loadProfilePatient();
-    }, [current_user.userId])
+
+    })
 
     const updateClick = () => {
         setCheckProfileInfo(!checkProfileInfo);
@@ -110,18 +98,19 @@ const Profile = () => {
         const process = async () => {
             try {
                 setLoading(true);
-                console.log(name + '' + phonenumber + '' + provincename + '' + districtname + '' + wardname + '' + personalAddress + '' + relationship)
 
-                let res = await authApi().post(endpoints['add-profile-patient'], {
+                let res = await authApi().post(endpoints['add-profile-doctor'], {
                     "name": name,
                     "phonenumber": phonenumber,
+                    "bookingPrice": bookingPrice,
+                    "email": email,
                     "provinceName": provincename,
                     "districtName": districtname,
                     "wardName": wardname,
-                    "personalAddress": personalAddress,
-                    "email": email,
-                    "relationship": relationship,
-                    "userId": current_user.userId
+                    "workPlace": workPlace,
+                    "position": position,
+                    "userId": current_user.userId,
+                    "specialtyId": selectedSpecialty
                 });
                 console.log(res.data);
                 toast.success(res.data)
@@ -182,94 +171,76 @@ const Profile = () => {
         setWardName(selectedWard.fullName);
     }
 
+    if (current_user === null)
+        <Navigate to="/" />
+
     return <>
-        <div class="Profile_Wrapper">
+        <div class="Profile_Doctor_Wrapper">
             <div class="Profile">
-                <div class="Profile_Left">
-                    <div class="Profile_Left_Content">
+                <div class="Profile_Doctor_Left">
+                    <div class="Profile_Doctor_Left_Content">
                         <ul>
-                            <li><a href="/Profilepage">Thông tin cá nhân</a></li>
+                            <li><a href="/doctor">Thông tin cá nhân</a></li>
                             <li><a href="/test">Đổi mật khẩu</a></li>
-                            <li><a href="/booking">Lịch khám</a></li>
-                            <li><a href="/medicalrecord">Lịch sử khám</a></li>
-                            <li><a href="/profile">Hồ sơ</a></li>
+                            <li><a href="/schedule">Đăng ký lịch khám</a></li>
+                            <li><a href="/">Lịch hẹn</a></li>
+                            <li><a href="/profiledoctor">Hồ sơ</a></li>
+                            <li><a href="/">Tạo đơn thuốc</a></li>
                             <li onClick={logout}>Đăng xuất</li>
                         </ul>
                     </div>
                 </div>
-                <div class="Profile_Middle">
-                    <div class="Profile_Middle_Header">
+                <div class="Profile_Doctor_Middle">
+                    <div class="Profile_Doctor_Middle_Header">
                         <h3>Hồ sơ</h3>
                     </div>
-                    <div class="Profile_Middle_Content">
-                        <div class="Profile_Middle_Container">
-                            <div class="Profile_Middle_Info">
+                    <div class="Profile_Doctor_Middle_Content">
+                        <div class="Profile_Doctor_Middle_Container">
+                            <div class="Profile_Doctor_Middle_Info">
                                 <input type="text" placeholder="Nhập tên hồ sơ cần tìm..."></input>
                                 <div class="Profile_List">
-                                    {profilePatient.length === 0 ? <>
-                                        <div class="Profile_List_404">
-                                            <img src={printer} alt="404" width={'20%'} />
-                                            <span>Không tìm thấy kết quả</span>
-                                        </div>
-                                    </> : <>
-                                        <div class="Profile_List_Info">
-                                            <ul>
-                                                {Object.values(profilePatient).map(pp => {
-                                                    return <>
-                                                        <div class="Profile_List_Detail">
-                                                            <img src={profileicon} alt="profileicon" width={'20%'} />
-                                                            <li key={pp.profilePatientId}>{pp.name}</li>
-                                                        </div>
-                                                    </>
-                                                })}
-                                            </ul>
-                                        </div>
-                                    </>}
+
                                 </div>
                             </div>
-                            <button class="addProfileButt" onClick={addProfileClick}>Thêm hồ sơ</button>
+                            <button onClick={addProfileClick}>Thêm hồ sơ</button>
                         </div>
                     </div>
                 </div>
-                <div class="Profile_Right">
+                <div class="Profile_Doctor_Right">
                     {addProfileInfo === false ?
                         <>
                             {checkProfileInfo === true ?
                                 <>
                                     <section>
-                                        <div class="Profile_Right_Header"><h3 className="text-center text-success">Thông tin cá nhân của {current_user.firstname}</h3></div>
-                                        <div class="Profile_Right_Content">
-                                            <div class="Profile_Name">
-                                                <Form.Label style={{ width: "30%" }}>Họ và tên đệm</Form.Label>
+                                        <div class="Profile_Doctor_Right_Header"><h3 className="text-center text-success">Thông tin cá nhân của bác sĩ {current_user.firstname}</h3></div>
+                                        <div class="Profile_Doctor_Right_Content">
+                                            <div class="Profile_Doctor_Name">
+                                                <Form.Label style={{ width: "30%" }}>Tên</Form.Label>
                                                 <Form.Control value={current_user.lastname} type="text" disabled />
                                             </div>
-                                            <div class="Profile_Phonenumber">
+                                            <div class="Profile_Doctor_Phonenumber">
                                                 <Form.Label style={{ width: "30%" }}>Số điện thoại</Form.Label>
                                                 <Form.Control value={current_user.firstname} type="text" disabled />
                                             </div>
-                                            <div class="Profile_Email">
+                                            <div class="Profile_Doctor_Price">
+                                                <Form.Label style={{ width: "30%" }}>Giá khám</Form.Label>
+                                                <Form.Control value={current_user.email} type="text" disabled />
+                                            </div>
+                                            <div class="Profile_Doctor_Email">
                                                 <Form.Label style={{ width: "30%" }}>Email</Form.Label>
-                                                <Form.Control value={current_user.email} type="email" disabled />
+                                                <Form.Control value={current_user.gender === true ? "Nam" : "Nữ"} type="email" disabled />
                                             </div>
-                                            <div class="Profile_Address">
-                                                <Form.Label style={{ width: "30%" }}>Địa chỉ</Form.Label>
-                                                <Form.Control value={current_user.gender === true ? "Nam" : "Nữ"} type="Text" disabled />
+                                            <div class="Profile_Doctor_Address">
+                                                <Form.Label style={{ width: "30%" }}>Địa chỉ công tác</Form.Label>
+                                                <Form.Control value={current_user.gender === true ? "Nam" : "Nữ"} type="text" disabled />
                                             </div>
-                                            <div class="Profile_Gender">
-                                                <Form.Label style={{ width: "30%" }}>Giới tính</Form.Label>
-                                                <Form.Control value={current_user.gender === true ? "Nam" : "Nữ"} type="Text" disabled />
+                                            <div class="Profile_Doctor_Specialty">
+                                                <Form.Label style={{ width: "30%" }}>Chuyên khoa</Form.Label>
+                                                <Form.Control value={current_user.gender === true ? "Nam" : "Nữ"} type="text" disabled />
                                             </div>
-                                            <div class="Profile_Relationship">
-                                                <Form.Label style={{ width: "30%" }}>Quan hệ</Form.Label>
-                                                <Form.Control value={current_user.gender === true ? "Nam" : "Nữ"} type="Text" disabled />
-                                            </div>
-                                            <div class="Profile_Birthday">
-                                                <Form.Label style={{ width: "30%" }}>Ngày sinh</Form.Label>
-                                                {current_user.birthday === null ? <>
-                                                    <Form.Control value="Thiết lập ngày sinh" type="Text" disabled />
-                                                </> : <>
-                                                    <Form.Control value={current_user.birthday.substring(0, 10)} type="Text" disabled />
-                                                </>}
+                                            <div class="Profile_Doctor_Position">
+                                                <Form.Label style={{ width: "30%" }}>Vị trí</Form.Label>
+                                                <Form.Control value={current_user.gender === true ? "Nam" : "Nữ"} type="text" disabled />
                                             </div>
                                             <div class="Change_Button">
                                                 <button type="button">Xóa</button>
@@ -279,21 +250,25 @@ const Profile = () => {
                                     </section>
                                 </> : <>
                                     <section>
-                                        <div class="Profile_Right_Header"><h3 className="text-center text-success">Thay đổi thông tin</h3></div>
-                                        <div class="Profile_Right_Content">
-                                            <div class="Profile_Name">
+                                        <div class="Profile_Doctor_Right_Header"><h3 className="text-center text-success">Thay đổi thông tin</h3></div>
+                                        <div class="Profile_Doctor_Right_Content">
+                                            <div class="Profile_Doctor_Name">
                                                 <Form.Label style={{ width: "30%" }}>Tên</Form.Label>
                                                 <Form.Control defaultValue={name} onChange={(e) => setName(e.target.value)} type="text" placeholder="Họ và tên" required />
                                             </div>
-                                            <div class="Profile_Phonenumber">
+                                            <div class="Profile_Doctor_Phonenumber">
                                                 <Form.Label style={{ width: "30%" }}>Số điện thoại</Form.Label>
                                                 <Form.Control defaultValue={phonenumber} onChange={(e) => setPhonenumber(e.target.value)} type="text" placeholder="Số điện thoại" required />
                                             </div>
-                                            <div class="Profile_Email">
+                                            <div class="Profile_Doctor_Price">
+                                                <Form.Label style={{ width: "30%" }}>Giá khám</Form.Label>
+                                                <Form.Control defaultValue={bookingPrice} type="text" onChange={(e) => setBookingPrice(e.target.value)} placeholder="Giá khám" required />
+                                            </div>
+                                            <div class="Profile_Doctor_Email">
                                                 <Form.Label style={{ width: "30%" }}>Email</Form.Label>
                                                 <Form.Control defaultValue={email} type="email" onChange={(e) => setEmail(e.target.value)} placeholder="Email" required />
                                             </div>
-                                            <div class="Profile_Address">
+                                            <div class="Profile_Doctor_Address">
                                                 <div>
                                                     <Form.Label style={{ width: "30%" }}>Tỉnh/TP</Form.Label>
                                                     <Form.Select defaultValue={selectedProvinceCode} onChange={(e) => handleProvinceChange(e)} onFocus={(e) => focusProvince(e)}>
@@ -313,27 +288,21 @@ const Profile = () => {
                                                     </Form.Select>
                                                 </div>
                                             </div>
-                                            <div class="Profile_Personal_Address">
-                                                <Form.Label style={{ width: "30%" }}>Địa chỉ nhà</Form.Label>
-                                                <Form.Control type="text" defaultValue={personalAddress} placeholder="Địa chỉ nhà" required onChange={(e) => setPersonalAddress(e.target.value)} />
+                                            <div class="Profile_Doctor_Work_Place">
+                                                <Form.Label style={{ width: "30%" }}>Địa chỉ làm việc</Form.Label>
+                                                <Form.Control type="text" defaultValue={workPlace} placeholder="Địa chỉ làm việc" required onChange={(e) => setWorkPlace(e.target.value)} />
                                             </div>
-                                            <div class="Profile_Gender">
-                                                <Form.Label style={{ width: "22%" }}>Giới tính</Form.Label>
-                                                <div class="Profile_Gender_Tick">
-                                                    <Form.Check type="radio" label="Nam" name="genderOption" defaultChecked onChange={() => setGender(true)} />
-                                                    <Form.Check type="radio" label="Nữ" name="genderOption" onChange={() => setGender(false)} />
-                                                </div>
+                                            <div class="Profile_Doctor_Specialty">
+                                                <Form.Label style={{ width: "30%" }}>Chuyên khoa</Form.Label>
+                                                <Form.Select defaultValue={selectedSpecialty} onChange={(e) => handleWardChange(e)} onFocus={(e) => focusWard(e)}>
+                                                    <option>Khoa Công Nghệ Thông Tin</option>
+                                                    <option>Khoa Công Nghệ Sinh Học</option>
+                                                    <option>Khoa Công Quản Trị Kinh Doanh</option>
+                                                </Form.Select>
                                             </div>
-                                            <div className="Profile_Relationship">
-                                                <Form.Label style={{ width: "22%" }}>Mối quan hệ</Form.Label>
-                                                <div class="Profile_Relationship_Tick">
-                                                    <Form.Check type="radio" defaultValue="Cha" label="Cha" name="relationshipOption" onChange={(e) => setRelationship(e.target.value)} />
-                                                    <Form.Check type="radio" defaultValue="Mẹ" label="Mẹ" name="relationshipOption" onChange={(e) => setRelationship(e.target.value)} />
-                                                    <Form.Check type="radio" defaultValue="Con" label="Con" name="relationshipOption" onChange={(e) => setRelationship(e.target.value)} />
-                                                    <Form.Check type="radio" defaultValue="Vợ" label="Vợ" name="relationshipOption" onChange={(e) => setRelationship(e.target.value)} />
-                                                    <Form.Check type="radio" defaultValue="Chồng" label="Chồng" name="relationshipOption" onChange={(e) => setRelationship(e.target.value)} />
-                                                    <Form.Check type="radio" defaultValue="Khác" label="Khác" name="relationshipOption" defaultChecked onChange={(e) => setRelationship(e.target.value)} />
-                                                </div>
+                                            <div class="Profile_Doctor_Position">
+                                                <Form.Label style={{ width: "30%" }}>Vị trí</Form.Label>
+                                                <Form.Control defaultValue={position} type="text" onChange={(e) => setPosition(e.target.value)} placeholder="Vị trí công việc" required />
                                             </div>
                                             <div class="Update_Button">
                                                 <button type="button" onClick={updateClick}>Hủy</button>
@@ -344,21 +313,25 @@ const Profile = () => {
                                 </>}
                         </> : <>
                             <section>
-                                <div class="Profile_Right_Header"><h3 className="text-left text-success mb-4">Thêm hồ sơ mới</h3></div>
-                                <div class="Profile_Right_Content">
-                                    <div class="Profile_Name">
+                                <div class="Profile_Doctor_Right_Header"><h3 className="text-left text-success mb-4">Thêm hồ sơ mới</h3></div>
+                                <div class="Profile_Doctor_Right_Content">
+                                    <div class="Profile_Doctor_Name">
                                         <Form.Label style={{ width: "30%" }}>Tên</Form.Label>
                                         <Form.Control defaultValue={name} onChange={(e) => setName(e.target.value)} type="text" placeholder="Họ và tên" required />
                                     </div>
-                                    <div class="Profile_Phonenumber">
+                                    <div class="Profile_Doctor_Phonenumber">
                                         <Form.Label style={{ width: "30%" }}>Số điện thoại</Form.Label>
                                         <Form.Control defaultValue={phonenumber} onChange={(e) => setPhonenumber(e.target.value)} type="text" placeholder="Số điện thoại" required />
                                     </div>
-                                    <div class="Profile_Email">
+                                    <div class="Profile_Doctor_Price">
+                                        <Form.Label style={{ width: "30%" }}>Giá khám</Form.Label>
+                                        <Form.Control defaultValue={bookingPrice} type="text" onChange={(e) => setBookingPrice(e.target.value)} placeholder="Giá khám" required />
+                                    </div>
+                                    <div class="Profile_Doctor_Email">
                                         <Form.Label style={{ width: "30%" }}>Email</Form.Label>
                                         <Form.Control defaultValue={email} type="email" onChange={(e) => setEmail(e.target.value)} placeholder="Email" required />
                                     </div>
-                                    <div class="Profile_Address">
+                                    <div class="Profile_Doctor_Address">
                                         <div>
                                             <Form.Label style={{ width: "30%" }}>Tỉnh/TP</Form.Label>
                                             <Form.Select defaultValue={selectedProvinceCode} onChange={(e) => handleProvinceChange(e)} onFocus={(e) => focusProvince(e)}>
@@ -378,27 +351,21 @@ const Profile = () => {
                                             </Form.Select>
                                         </div>
                                     </div>
-                                    <div class="Profile_Personal_Address">
-                                        <Form.Label style={{ width: "30%" }}>Địa chỉ nhà</Form.Label>
-                                        <Form.Control type="text" defaultValue={personalAddress} placeholder="Địa chỉ nhà" required onChange={(e) => setPersonalAddress(e.target.value)} />
+                                    <div class="Profile_Doctor_Work_Place">
+                                        <Form.Label style={{ width: "30%" }}>Địa chỉ làm việc</Form.Label>
+                                        <Form.Control type="text" defaultValue={workPlace} placeholder="Địa chỉ làm việc" required onChange={(e) => setWorkPlace(e.target.value)} />
                                     </div>
-                                    <div class="Profile_Gender">
-                                        <Form.Label style={{ width: "22%" }}>Giới tính</Form.Label>
-                                        <div class="Profile_Gender_Tick">
-                                            <Form.Check type="radio" label="Nam" name="genderOption" defaultChecked onChange={() => setGender(true)} />
-                                            <Form.Check type="radio" label="Nữ" name="genderOption" onChange={() => setGender(false)} />
-                                        </div>
+                                    <div class="Profile_Doctor_Specialty">
+                                        <Form.Label style={{ width: "30%" }}>Chuyên khoa</Form.Label>
+                                        <Form.Select defaultValue={selectedSpecialty} onChange={(e) => handleWardChange(e)} onFocus={(e) => focusWard(e)}>
+                                            <option>Khoa Công Nghệ Thông Tin</option>
+                                            <option>Khoa Công Nghệ Sinh Học</option>
+                                            <option>Khoa Công Quản Trị Kinh Doanh</option>
+                                        </Form.Select>
                                     </div>
-                                    <div className="Profile_Relationship">
-                                        <Form.Label style={{ width: "22%" }}>Mối quan hệ</Form.Label>
-                                        <div class="Profile_Relationship_Tick">
-                                            <Form.Check type="radio" defaultValue="Cha" label="Cha" name="relationshipOption" onChange={(e) => setRelationship(e.target.value)} />
-                                            <Form.Check type="radio" defaultValue="Mẹ" label="Mẹ" name="relationshipOption" onChange={(e) => setRelationship(e.target.value)} />
-                                            <Form.Check type="radio" defaultValue="Con" label="Con" name="relationshipOption" onChange={(e) => setRelationship(e.target.value)} />
-                                            <Form.Check type="radio" defaultValue="Vợ" label="Vợ" name="relationshipOption" onChange={(e) => setRelationship(e.target.value)} />
-                                            <Form.Check type="radio" defaultValue="Chồng" label="Chồng" name="relationshipOption" onChange={(e) => setRelationship(e.target.value)} />
-                                            <Form.Check type="radio" defaultValue="Khác" label="Khác" name="relationshipOption" defaultChecked onChange={(e) => setRelationship(e.target.value)} />
-                                        </div>
+                                    <div class="Profile_Doctor_Position">
+                                        <Form.Label style={{ width: "30%" }}>Vị trí</Form.Label>
+                                        <Form.Control defaultValue={position} type="text" onChange={(e) => setPosition(e.target.value)} placeholder="Vị trí công việc" required />
                                     </div>
                                     <div class="Update_Button">
                                         <button type="button" onClick={exitAddProfileClick}>Thoát</button>
@@ -413,4 +380,4 @@ const Profile = () => {
     </>
 }
 
-export default Profile;
+export default ProfileDoctor;

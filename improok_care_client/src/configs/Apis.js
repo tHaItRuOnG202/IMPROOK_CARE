@@ -14,7 +14,13 @@ export const endpoints = {
     "add-profile-patient": `${SERVER_CONTEXT}/api/auth/add-profile-patient/`,
     "provinces": `${SERVER_CONTEXT}/api/public/provinces/`,
     "districts": (provinceCode) => `${SERVER_CONTEXT}/api/public/provinces/${provinceCode}/districts/`,
-    "wards": (districtCode) => `${SERVER_CONTEXT}/api/public/districts/${districtCode}/wards/`
+    "wards": (districtCode) => `${SERVER_CONTEXT}/api/public/districts/${districtCode}/wards/`,
+    "add-profile-doctor": `${SERVER_CONTEXT}/api/auth/doctor/add-profile-doctor/`,
+    "load-profile-patient": (userId) => `${SERVER_CONTEXT}/api/auth/user/${userId}/profile-patient/`,
+    "view-profile-patient": (profilePatientId) => `${SERVER_CONTEXT}/auth/profile-patient/${profilePatientId}/`,
+    "time-distance": `${SERVER_CONTEXT}/api/public/timeDistance/`,
+    "time-slot": (timeDistanceId) => `${SERVER_CONTEXT}/api/public/timeDistance/${timeDistanceId}/timeSlot/`,
+    "add-schedule": `${SERVER_CONTEXT}/api/auth/doctor/add-schedule/`
 }
 
 export const authApi = () => {

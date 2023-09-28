@@ -27,7 +27,7 @@ const Header = () => {
     return (<>
         <div class="Header">
             <div class="Header1">
-                <h2 class="Title"><FaSeedling /> IM'PROOK CARE</h2>
+                <a href="/"><h2 class="Title"><FaSeedling /> IM'PROOK CARE</h2></a>
             </div>
             <div class="Header2">
                 <ul class="Menu-bar">
@@ -74,6 +74,7 @@ const Header = () => {
                         {/* <span class="User-profile"><a href="/">Chào {user.lastname} {user.firstname}</a></span> */}
                         <Dropdown>
                             <NavDropdown title={`Chào ${user.lastname} ${user.firstname}`} id="basic-nav-dropdown">
+                                <NavDropdown.Item href="/" >Về trang chủ</NavDropdown.Item>
                                 <NavDropdown.Item href="/personalpage" >Thông tin cá nhân</NavDropdown.Item>
                                 <NavDropdown.Item href="/medicalrecord" >Lịch sử khám bệnh</NavDropdown.Item>
                                 <NavDropdown.Item onClick={logout} >Đăng xuất</NavDropdown.Item>

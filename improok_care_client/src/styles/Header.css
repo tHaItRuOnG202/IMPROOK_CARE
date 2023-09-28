@@ -15,6 +15,10 @@ div.Header1 {
     width: 23%;
 }
 
+div.Header1>a {
+    text-decoration: none;
+}
+
 div.Header2 {
     display: flex;
     align-items: center;
