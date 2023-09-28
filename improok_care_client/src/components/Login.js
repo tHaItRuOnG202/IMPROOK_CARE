@@ -33,8 +33,10 @@ const Login = () => {
 
                 cookie.save("token", res.data);
                 console.log(res)
+                console.log(cookie.load("token"))
 
                 let { data } = await authApi().get(endpoints['current-user']);
+
                 console.log(data)
                 cookie.save('user', data)
 

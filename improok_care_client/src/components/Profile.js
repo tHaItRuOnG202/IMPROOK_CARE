@@ -9,38 +9,36 @@ import { toast } from "react-toastify";
 
 const Profile = () => {
     const [current_user, dispatch] = useContext(MyUserContext);
-    const [current_avatar, setCurrent_avatar] = useState(current_user.avatar);
     const [current_birthday, setCurrent_birthday] = useState(current_user.birthday)
     const [birthday, setBirthday] = useState(null)
     const [gender, setGender] = useState(null)
-    const avatar = useRef();
     const nav = useNavigate();
     const [loading, setLoading] = useState(true)
-    const [addProfile, setAddProfile] = useState({
-        "name": "",
-        "phonenumber": "",
-        "provinceName": "",
-        "districtName": "",
-        "wardName": "",
-        "persionalAddress": "",
-        "email": "",
-        "relationship": "",
-        "userId": current_user.userId
-    })
-    const [province, setProvince] = useState([]);
-    const [district, setDistrict] = useState([]);
-    const [ward, setWard] = useState([]);
+
+    const [name, setName] = useState();
+    const [phonenumber, setPhonenumber] = useState();
+    const [personalAddress, setPersonalAddress] = useState();
+    const [email, setEmail] = useState();
+    const [relationship, setRelationship] = useState();
+
+    const [province, setProvince] = useState();
+    const [district, setDistrict] = useState();
+    const [ward, setWard] = useState();
+    const [provincename, setProvinceName] = useState();
+    const [districtname, setDistrictName] = useState();
+    const [wardname, setWardName] = useState();
     const [selectedProvinceCode, setSelectedProvinceCode] = useState('01');
     const [selectedDistrictCode, setSelectedDistrictCode] = useState('001');
+    const [selectedWardCode, setSelectedWardCode] = useState('00001')
 
     const [addProfileInfo, setAddProfileInfo] = useState(false)
     const [profile, setProfile] = useState([]);
     const [checkProfileInfo, setCheckProfileInfo] = useState(true)
 
 
-    const formattedDate = new Date(current_user.birthday).toISOString().substring(0, 10);
-    console.log(typeof (current_birthday))
-    console.log(typeof (current_user.birthday))
+    // const formattedDate = new Date(current_user.birthday).toISOString().substring(0, 10);
+    // console.log(typeof (current_birthday))
+    // console.log(typeof (current_user.birthday))
     // const formattedDate = current_user.birthDate.toISOString();
     // const formattedDate = new Date(current_birthday).toISOString();
 
@@ -86,6 +84,10 @@ const Profile = () => {
         loadWard()
     }, [selectedProvinceCode, selectedDistrictCode])
 
+    useEffect(() => {
+
+    })
+
     const updateClick = () => {
         setCheckProfileInfo(!checkProfileInfo);
     }
@@ -96,95 +98,29 @@ const Profile = () => {
         const process = async () => {
             try {
                 setLoading(true);
+
                 let res = await authApi().post(endpoints['add-profile-patient'], {
-                    "name": "",
-                    "phonenumber": "",
-                    "provinceName": "",
-                    "districtName": "",
-                    "wardName": "",
-                    "persionalAddress": "",
-                    "email": "",
-                    "relationship": "",
+                    "name": name,
+                    "phonenumber": phonenumber,
+                    "provinceName": provincename,
+                    "districtName": districtname,
+                    "wardName": wardname,
+                    "personalAddress": personalAddress,
+                    "email": email,
+                    "relationship": relationship,
                     "userId": current_user.userId
                 });
+                console.log(res.data);
+                toast.success(res.data)
+                setLoading(false);
+                setAddProfileInfo(false);
 
             } catch (error) {
                 console.log(error);
+                toast.error("Có lỗi xảy ra!")
             }
         }
-    }
 
-    const updateUser = (evt) => {
-        evt.preventDefault();
-
-        const process = async () => {
-            try {
-                let form = new FormData();
-
-                console.log(addProfile);
-
-                for (let field in addProfile) {
-                    if (field !== "avatar" || field !== "gender" || field !== "birthday")
-                        form.append(field, addProfile[field]);
-                }
-
-                if (avatar.current.files[0] !== undefined) {
-                    form.append("avatar", avatar.current.files[0]);
-                } else {
-                    form.append("avatar", new Blob());
-                }
-
-                form.delete("gender");
-                if (gender === false) {
-                    form.append("gender", false)
-                } else {
-                    form.append("gender", true)
-                }
-
-                form.delete("birthday");
-                form.append("birthday", formattedDate);
-
-                setLoading(true);
-
-                try {
-                    console.log(addProfile);
-                    let { data } = await authApi().post(endpoints['update-user'], form, {
-                        headers: {
-                            "Content-Type": "multipart/form-data",
-                        },
-                    });
-
-                    let update_User = await authApi().get(endpoints['current-user'])
-                    cookie.save('user', update_User.data);
-
-                    console.log(update_User.data);
-                    dispatch({
-                        "type": "login",
-                        "payload": update_User.data
-                    });
-
-                    toast.success("Cập nhật thành công!")
-
-                    setAddProfile(update_User.data);
-                    setLoading(false);
-                } catch (err) {
-                    // if (err.request.responeText === "Cập nhật thành công!")
-                    //     setErr("Cập nhật thành công");
-                    // else if (err.request.responeText === "Số điện thoại đã được đăng ký!")
-                    //     setErr("Số điện thoại đã được đăng ký!");
-                    // else if (err.request.responeText === "Email đã được đăng ký!")
-                    //     setErr("Email đã được đăng ký!");
-                    // else
-                    //     setErr("Có lỗi xảy ra!")
-                    toast.error(err.request.responseText);
-                    // console.log(err.request.status);
-                    setLoading(false);
-                }
-                setAddProfileInfo(!addProfileInfo);
-            } catch (ex) {
-                console.log(ex)
-            }
-        }
         process();
     }
 
@@ -196,24 +132,42 @@ const Profile = () => {
         setAddProfileInfo(false);
     }
 
-    // const updateBirthDate = (birthday) => {
-    //     setBirthday(formattedDate)
-    // }
-
-    const change = (evt, field) => {
-        // setUser({...user, [field]: evt.target.value})
-        setAddProfile(current => {
-            return { ...current, [field]: evt.target.value }
-        })
+    const focusProvince = (e) => {
+        setSelectedProvinceCode(e.target.value);
     }
 
-    // const birthDateChange = (evt, field) => {
-    //     setUser(current => {
-    //         return { ...current, [field]: evt.target.value }
-    //     }
-    // };
+    const handleProvinceChange = (e) => {
+        const selectedProvinceCode = e.target.value;
+        const selectedProvince = province.find(pr => pr.code === selectedProvinceCode);
 
-    // console.log(current_user)
+        setSelectedProvinceCode(selectedProvinceCode);
+        setProvinceName(selectedProvince.fullName);
+
+    };
+
+    const focusDistrict = (e) => {
+        setSelectedDistrictCode(e.target.value);
+    }
+
+    const handleDistrictChange = (e) => {
+        const selectedDistrictCode = e.target.value;
+        const selectedDistrict = district.find(dis => dis.code === selectedDistrictCode);
+
+        setSelectedDistrictCode(selectedDistrictCode);
+        setDistrictName(selectedDistrict.fullName);
+    }
+
+    const focusWard = (e) => {
+        setSelectedWardCode(e.target.value);
+    }
+
+    const handleWardChange = (e) => {
+        const selectedWardCode = e.target.value;
+        const selectedWard = ward.find(wa => wa.code === selectedWardCode);
+
+        setSelectedWardCode(selectedWardCode);
+        setWardName(selectedWard.fullName);
+    }
 
     return <>
         <div class="Profile_Wrapper">
@@ -238,8 +192,10 @@ const Profile = () => {
                         <div class="Profile_Middle_Container">
                             <div class="Profile_Middle_Info">
                                 <input type="text" placeholder="Nhập tên hồ sơ cần tìm..."></input>
-                                <div>
-
+                                <div class="Profile_List">
+                                    <ul>
+                                        <li></li>
+                                    </ul>
                                 </div>
                             </div>
                             <button onClick={addProfileClick}>Thêm hồ sơ</button>
@@ -290,11 +246,11 @@ const Profile = () => {
                                         <div class="Profile_Right_Content">
                                             <div class="Profile_Name">
                                                 <Form.Label style={{ width: "30%" }}>Họ và tên đệm</Form.Label>
-                                                <Form.Control defaultValue={current_user.lastname} onChange={(e) => change(e, "lastname")} type="text" placeholder="Họ và tên đệm" required />
+                                                <Form.Control defaultValue={current_user.lastname} type="text" placeholder="Họ và tên đệm" required />
                                             </div>
                                             <div class="Profile_FirstName">
                                                 <Form.Label style={{ width: "30%" }}>Tên</Form.Label>
-                                                <Form.Control defaultValue={current_user.firstname} onChange={(e) => change(e, "firstname")} type="text" placeholder="Tên" required />
+                                                <Form.Control defaultValue={current_user.firstname} type="text" placeholder="Tên" required />
                                             </div>
                                             <div class="Profile_Email">
                                                 <Form.Label style={{ width: "30%" }}>Email</Form.Label>
@@ -316,13 +272,13 @@ const Profile = () => {
                                                 <Form.Label style={{ width: "22%" }}>Ngày sinh</Form.Label>
                                                 <div className="Profile_Birthday_Tick">
                                                     <input
-                                                        type="date" defaultValue={formattedDate} onChange={(e) => change(e, "birthday")}
+                                                        type="date"
                                                     />
                                                 </div>
                                             </div>
                                             <div class="Update_Button">
                                                 <button type="button" onClick={updateClick}>Hủy</button>
-                                                <button type="button" onClick={updateUser}>Cập nhật thông tin</button>
+                                                <button type="button">Cập nhật thông tin</button>
                                             </div>
                                         </div>
                                     </section>
@@ -333,39 +289,39 @@ const Profile = () => {
                                 <div class="Profile_Right_Content">
                                     <div class="Profile_Name">
                                         <Form.Label style={{ width: "30%" }}>Tên</Form.Label>
-                                        <Form.Control onChange={(e) => change(e, "name")} type="text" placeholder="Họ và tên" required />
+                                        <Form.Control defaultValue={name} onChange={(e) => setName(e.target.value)} type="text" placeholder="Họ và tên" required />
                                     </div>
                                     <div class="Profile_Phonenumber">
                                         <Form.Label style={{ width: "30%" }}>Số điện thoại</Form.Label>
-                                        <Form.Control onChange={(e) => change(e, "phonenumber")} type="text" placeholder="Số điện thoại" required />
+                                        <Form.Control defaultValue={phonenumber} onChange={(e) => setPhonenumber(e.target.value)} type="text" placeholder="Số điện thoại" required />
                                     </div>
                                     <div class="Profile_Email">
                                         <Form.Label style={{ width: "30%" }}>Email</Form.Label>
-                                        <Form.Control type="email" placeholder="Email" required />
+                                        <Form.Control defaultValue={email} type="email" onChange={(e) => setEmail(e.target.value)} placeholder="Email" required />
                                     </div>
                                     <div class="Profile_Address">
                                         <div>
                                             <Form.Label style={{ width: "30%" }}>Tỉnh/TP</Form.Label>
-                                            <Form.Select value={selectedProvinceCode} onChange={(e) => setSelectedProvinceCode(e.target.value)}>
-                                                {province.map(pr => <option key={pr.code} value={pr.code}>{pr.name}</option>)}
+                                            <Form.Select defaultValue={selectedProvinceCode} onChange={(e) => handleProvinceChange(e)} onFocus={(e) => focusProvince(e)}>
+                                                {Object.values(province).map(pr => <option key={pr.code} value={pr.code}>{pr.name}</option>)}
                                             </Form.Select>
                                         </div>
                                         <div>
                                             <Form.Label style={{ width: "30%" }}>Quận/Huyện</Form.Label>
-                                            <Form.Select value={selectedDistrictCode} onChange={(e) => setSelectedDistrictCode(e.target.value)}>
+                                            <Form.Select defaultValue={selectedDistrictCode} onChange={(e) => handleDistrictChange(e)} onFocus={(e) => focusDistrict(e)}>
                                                 {Object.values(district).map(dis => <option key={dis.code} value={dis.code}>{dis.fullName}</option>)}
                                             </Form.Select>
                                         </div>
                                         <div>
                                             <Form.Label style={{ width: "30%" }}>Phường/Xã</Form.Label>
-                                            <Form.Select>
-                                                {ward.map(wa => <option key={wa.code} value={wa.code}>{wa.fullName}</option>)}
+                                            <Form.Select defaultValue={selectedWardCode} onChange={(e) => handleWardChange(e)} onFocus={(e) => focusWard(e)}>
+                                                {Object.values(ward).map(wa => <option key={wa.code} value={wa.code}>{wa.fullName}</option>)}
                                             </Form.Select>
                                         </div>
                                     </div>
                                     <div class="Profile_Personal_Address">
                                         <Form.Label style={{ width: "30%" }}>Địa chỉ nhà</Form.Label>
-                                        <Form.Control type="text" placeholder="Địa chỉ nhà" required />
+                                        <Form.Control type="text" defaultValue={personalAddress} placeholder="Địa chỉ nhà" required onChange={(e) => setPersonalAddress(e.target.value)} />
                                     </div>
                                     <div class="Profile_Gender">
                                         <Form.Label style={{ width: "22%" }}>Giới tính</Form.Label>
@@ -377,12 +333,12 @@ const Profile = () => {
                                     <div className="Profile_Relationship">
                                         <Form.Label style={{ width: "22%" }}>Mối quan hệ</Form.Label>
                                         <div class="Profile_Relationship_Tick">
-                                            <Form.Check type="radio" label="Cha" name="relationshipOption" />
-                                            <Form.Check type="radio" label="Mẹ" name="relationshipOption" />
-                                            <Form.Check type="radio" label="Con" name="relationshipOption" />
-                                            <Form.Check type="radio" label="Vợ" name="relationshipOption" />
-                                            <Form.Check type="radio" label="Chồng" name="relationshipOption" />
-                                            <Form.Check type="radio" label="Khác" name="relationshipOption" defaultChecked />
+                                            <Form.Check type="radio" defaultValue="Cha" label="Cha" name="relationshipOption" onChange={(e) => setRelationship(e.target.value)} />
+                                            <Form.Check type="radio" defaultValue="Mẹ" label="Mẹ" name="relationshipOption" onChange={(e) => setRelationship(e.target.value)} />
+                                            <Form.Check type="radio" defaultValue="Con" label="Con" name="relationshipOption" onChange={(e) => setRelationship(e.target.value)} />
+                                            <Form.Check type="radio" defaultValue="Vợ" label="Vợ" name="relationshipOption" onChange={(e) => setRelationship(e.target.value)} />
+                                            <Form.Check type="radio" defaultValue="Chồng" label="Chồng" name="relationshipOption" onChange={(e) => setRelationship(e.target.value)} />
+                                            <Form.Check type="radio" defaultValue="Khác" label="Khác" name="relationshipOption" defaultChecked onChange={(e) => setRelationship(e.target.value)} />
                                         </div>
                                     </div>
                                     <div class="Update_Button">
