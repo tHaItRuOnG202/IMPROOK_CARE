@@ -188,7 +188,7 @@ const Profile = () => {
                 <div class="Profile_Left">
                     <div class="Profile_Left_Content">
                         <ul>
-                            <li><a href="/Profilepage">Thông tin cá nhân</a></li>
+                            <li><a href="/personalpage">Thông tin cá nhân</a></li>
                             <li><a href="/test">Đổi mật khẩu</a></li>
                             <li><a href="/booking">Lịch khám</a></li>
                             <li><a href="/medicalrecord">Lịch sử khám</a></li>

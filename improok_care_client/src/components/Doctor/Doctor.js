@@ -23,12 +23,14 @@ const Doctor = () => {
         }
     }
 
+    //Đá trước khi vô!
+
     const doctorAuth = (current_user) => {
         if (isDoctor === 0) {
             if (current_user !== null && current_user.roleId.roleId !== 2) {
                 toast.error("Bạn không có quyền truy cập!")
                 isDoctor = 1;
-                nav('/')
+                nav('/');
             }
         }
     }

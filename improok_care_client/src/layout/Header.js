@@ -32,6 +32,10 @@ const Header = () => {
             <div class="Header2">
                 <ul class="Menu-bar">
                     <li>
+                        <a href="/booking">Đặt khám</a>
+                        <span>Đặt khám ngay</span>
+                    </li>
+                    <li>
                         <a href="/">Chuyên khoa</a>
                         <span>Tìm bác sĩ theo chuyên khoa</span>
                     </li>

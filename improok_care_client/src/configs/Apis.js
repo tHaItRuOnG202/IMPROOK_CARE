@@ -20,7 +20,8 @@ export const endpoints = {
     "view-profile-patient": (profilePatientId) => `${SERVER_CONTEXT}/auth/profile-patient/${profilePatientId}/`,
     "time-distance": `${SERVER_CONTEXT}/api/public/timeDistance/`,
     "time-slot": (timeDistanceId) => `${SERVER_CONTEXT}/api/public/timeDistance/${timeDistanceId}/timeSlot/`,
-    "add-schedule": `${SERVER_CONTEXT}/api/auth/doctor/add-schedule/`
+    "add-schedule": `${SERVER_CONTEXT}/api/auth/doctor/add-schedule/`,
+    "specialty": `${SERVER_CONTEXT}/api/public/specialty/`
 }
 
 export const authApi = () => {

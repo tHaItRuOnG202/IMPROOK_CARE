@@ -1,4 +1,4 @@
-import { useContext, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { MyUserContext } from "../App";
 import "../styles/PersonalPage.css";
@@ -11,7 +11,7 @@ import avatar_user from "../assests/images/user.png"
 const PersonalPage = () => {
     const [current_user, dispatch] = useContext(MyUserContext);
     const [current_avatar, setCurrent_avatar] = useState(current_user.avatar);
-    const [current_birthday, setCurrent_birthday] = useState(current_user.birthday)
+    const [current_birthday, setCurrent_birthday] = useState('');
     const [birthday, setBirthday] = useState(null)
     const [gender, setGender] = useState(null)
     const avatar = useRef();
@@ -21,15 +21,15 @@ const PersonalPage = () => {
         "firstname": current_user.firstname,
         "lastname": current_user.lastname,
         "userId": current_user.userId,
-        "birthday": "",
+        "birthday": current_user.birthday,
         "gender": current_user.gender,
         "avatar": current_user.avatar
     })
     const [checkPersonalInfo, setCheckPersonalInfo] = useState(true)
 
-    const formattedDate = new Date(current_user.birthday).toISOString().substring(0, 10);
-    console.log(typeof (current_birthday))
-    console.log(typeof (current_user.birthday))
+    // const formattedDate = new Date(current_user.birthday).toISOString().substring(0, 10);
+    // console.log(typeof (current_birthday))
+    // console.log(typeof (current_user.birthday))
     // const formattedDate = current_user.birthDate.toISOString();
     // const formattedDate = new Date(current_birthday).toISOString();
 
@@ -40,6 +40,12 @@ const PersonalPage = () => {
         nav("/")
     }
 
+    useEffect(() => {
+        const formattedDate = new Date(current_user.birthday).toISOString().substring(0, 10);
+        setCurrent_birthday(formattedDate);
+    }, [current_user.birthday]);
+
+
     const updateClick = () => {
         setCheckPersonalInfo(!checkPersonalInfo);
     }
@@ -49,8 +55,13 @@ const PersonalPage = () => {
 
         const process = async () => {
             try {
-                let form = new FormData();
+                const dateInput = document.getElementById('dateInput');
+                const selectedDate = dateInput.value; // Lấy giá trị ngày từ trường input
 
+                const birthDate = new Date(selectedDate).toISOString().split('T')[0]; // Định dạng lại ngày thành "yyyy-MM-dd"
+
+                console.log(birthDate);
+                let form = new FormData();
                 console.log(user);
 
                 for (let field in user) {
@@ -71,8 +82,8 @@ const PersonalPage = () => {
                     form.append("gender", true)
                 }
 
-                form.delete("birthday");
-                form.append("birthday", formattedDate);
+                form.delete("birthday")
+                form.append("birthday", birthDate);
 
                 setLoading(true);
 
@@ -97,6 +108,8 @@ const PersonalPage = () => {
 
                     setUser(update_User.data);
                     setLoading(false);
+
+                    console.log(current_user.birthday)
                 } catch (err) {
                     // if (err.request.responeText === "Cập nhật thành công!")
                     //     setErr("Cập nhật thành công");
@@ -236,7 +249,7 @@ const PersonalPage = () => {
                                         <Form.Label style={{ width: "22%" }}>Ngày sinh</Form.Label>
                                         <div className="Personal_Birthday_Tick">
                                             <input
-                                                type="date" defaultValue={formattedDate} onChange={(e) => change(e, "birthday")}
+                                                type="date" defaultValue={current_birthday} id="dateInput"
                                             />
                                         </div>
                                     </div>
