@@ -8,12 +8,11 @@ import cookie from "react-cookies";
 import { toast } from "react-toastify";
 import printer from "../assests/images/printer.png"
 import profileicon from "../assests/images/profile-icon.png"
+import profile404 from "../assests/images/profile.png"
 
 const Profile = () => {
     const [current_user, dispatch] = useContext(MyUserContext);
-    const [current_birthday, setCurrent_birthday] = useState(current_user.birthday)
-    const [birthday, setBirthday] = useState(null)
-    const [gender, setGender] = useState(null)
+    const [gender, setGender] = useState()
     const nav = useNavigate();
     const [loading, setLoading] = useState(true)
 
@@ -22,8 +21,20 @@ const Profile = () => {
     const [personalAddress, setPersonalAddress] = useState();
     const [email, setEmail] = useState();
     const [relationship, setRelationship] = useState();
+    const [birthday, setBirthday] = useState(null)
+
+    const [updateName, setUpdateName] = useState();
+    const [updatePhonenumber, setUpdatePhonenumber] = useState();
+    const [updatePersonalAddress, setUpdatePersonalAddress] = useState();
+    const [updateEmail, setUpdateEmail] = useState();
+    const [updateRelationship, setUpdateRelationship] = useState();
+    // const [updateBirthday, setUpdateBirthday] = useState();
+    // const [updateProvinceName, setUpdateProvinceName] = useState();
+    // const [updateDistrictName, setUpdateDistrictName] = useState();
+    // const [updateWardName, setUpdateWardName] = useState();
 
     const [profilePatient, setProfilePatient] = useState([]);
+    const [profile, setProfile] = useState(null);
 
     const [province, setProvince] = useState();
     const [district, setDistrict] = useState();
@@ -33,11 +44,13 @@ const Profile = () => {
     const [wardname, setWardName] = useState();
     const [selectedProvinceCode, setSelectedProvinceCode] = useState('01');
     const [selectedDistrictCode, setSelectedDistrictCode] = useState('001');
-    const [selectedWardCode, setSelectedWardCode] = useState('00001')
+    const [selectedWardCode, setSelectedWardCode] = useState('00001');
+    const [selectedProfile, setSelectedProfile] = useState();
+    // const [selectedGender, setSelectedGender] = useState();
+    // const [selectedRelationship, setSelectedRelationship] = useState(relationship);
 
     const [addProfileInfo, setAddProfileInfo] = useState(false)
     const [checkProfileInfo, setCheckProfileInfo] = useState(true)
-
 
     // const formattedDate = new Date(current_user.birthday).toISOString().substring(0, 10);
     // console.log(typeof (current_birthday))
@@ -45,12 +58,19 @@ const Profile = () => {
     // const formattedDate = current_user.birthDate.toISOString();
     // const formattedDate = new Date(current_birthday).toISOString();
 
+    const currentDate = new Date();
+    const currentFormattedDate = currentDate.toISOString().split('T')[0];
+
     const logout = () => {
         dispatch({
             "type": "logout"
         })
         nav("/")
     }
+
+    const handleRelationshipChange = (e) => {
+        setUpdateRelationship(e);
+    };
 
     useEffect(() => {
         const loadProvince = async () => {
@@ -100,6 +120,28 @@ const Profile = () => {
         loadProfilePatient();
     }, [current_user.userId])
 
+    const viewProfilePatient = (evt, pp) => {
+        evt.preventDefault();
+        console.log("pp" + pp.profilePatientId)
+        setSelectedProfile(pp.profilePatientId);
+        // console.log(selectedProfile);
+
+        const process = async () => {
+            try {
+                setLoading(true);
+                let res = await authApi().get(endpoints['view-profile-patient'](pp.profilePatientId))
+
+                setProfile(res.data);
+                console.log("profile patient");
+                console.log(res.data);
+                setLoading(false);
+            } catch (error) {
+                console.log(error);
+            }
+        }
+        process();
+    }
+
     const updateClick = () => {
         setCheckProfileInfo(!checkProfileInfo);
     }
@@ -110,7 +152,7 @@ const Profile = () => {
         const process = async () => {
             try {
                 setLoading(true);
-                console.log(name + '' + phonenumber + '' + provincename + '' + districtname + '' + wardname + '' + personalAddress + '' + relationship)
+                ///console.log(name + '' + phonenumber + '' + provincename + '' + districtname + '' + wardname + '' + personalAddress + '' + email + '' + relationship)
 
                 let res = await authApi().post(endpoints['add-profile-patient'], {
                     "name": name,
@@ -133,9 +175,58 @@ const Profile = () => {
                 toast.error("Có lỗi xảy ra!")
             }
         }
-
         process();
     }
+
+    const updateProfile = (evt) => {
+        evt.preventDefault();
+
+        const process = async () => {
+            try {
+                setLoading(true);
+                // setUpdateName(profile.name);
+                // setUpdatePhonenumber(profile.phonenumber);
+                // setUpdatePersonalAddress(profile.personalAddress);
+                // setUpdateEmail(profile.email);
+                // setUpdateRelationship(profile.relationship);
+                // setUpdateProvinceName("Hà Nội");
+                // setUpdateDistrictName("Vue.js");
+                // setUpdateWardName("Nue.js");
+                const dateInput = document.getElementById('dateInput');
+                const selectedDate = dateInput.value; // Lấy giá trị ngày từ trường input
+
+                const birthDate = new Date(selectedDate).toISOString().split('T')[0]; // Định dạng lại ngày thành "yyyy-MM-dd"
+
+                console.log(updateName + '' + updatePhonenumber + '' + gender + '' + birthDate + provincename + '' + districtname + '' + wardname + '' + updatePersonalAddress + '' + updateRelationship + '' + updateEmail)
+                let res = await authApi().post(endpoints['update-profile-patient'], {
+                    "profilePatientId": profile.profilePatientId,
+                    "name": updateName === undefined ? profile.name : updateName,
+                    "phonenumber": updatePhonenumber === undefined ? profile.phonenumber : updatePhonenumber,
+                    "gender": gender === undefined ? profile.gender : gender,
+                    "birthday": birthDate,
+                    "provinceName": provincename === undefined ? "Hà Nội" : provincename,
+                    "districtName": districtname === undefined ? "Quận Ba Đình" : districtname,
+                    "wardName": wardname === undefined ? "Xá Phúc Kiến" : wardname,
+                    "personalAddress": updatePersonalAddress === undefined ? profile.personalAddress : updatePersonalAddress,
+                    "email": updateEmail === undefined ? profile.email : updateEmail,
+                    "relationship": updateRelationship === undefined ? profile.relationship : updateRelationship
+                });
+                console.log(res.data);
+                toast.success(res.data)
+                setLoading(false);
+                setCheckProfileInfo(!checkProfileInfo);
+            } catch (error) {
+                console.log(error);
+                toast.error("Có lỗi xảy ra!")
+            }
+        }
+        process();
+    }
+
+    // const formattedDate = new Date(profile.birthday);
+    // formattedDate.setHours(formattedDate.getHours() + 7);
+
+    // const formattedDateTime = formattedDate.toISOString().substring(0, 10);
 
     const addProfileClick = () => {
         setAddProfileInfo(true);
@@ -182,6 +273,10 @@ const Profile = () => {
         setWardName(selectedWard.fullName);
     }
 
+    // const handleClickProfile = (e) => {
+    //     setSelectedProfile(e.target.value);
+    // }
+
     return <>
         <div class="Profile_Wrapper">
             <div class="Profile">
@@ -216,9 +311,9 @@ const Profile = () => {
                                             <ul>
                                                 {Object.values(profilePatient).map(pp => {
                                                     return <>
-                                                        <div class="Profile_List_Detail">
+                                                        <div class="Profile_List_Detail" value={selectedProfile} onClick={(e) => viewProfilePatient(e, pp)}>
                                                             <img src={profileicon} alt="profileicon" width={'20%'} />
-                                                            <li key={pp.profilePatientId}>{pp.name}</li>
+                                                            <li key={pp.profilePatientId} value={pp.profilePatientId}>{pp.name}</li>
                                                         </div>
                                                     </>
                                                 })}
@@ -237,61 +332,81 @@ const Profile = () => {
                             {checkProfileInfo === true ?
                                 <>
                                     <section>
-                                        <div class="Profile_Right_Header"><h3 className="text-center text-success">Thông tin cá nhân của {current_user.firstname}</h3></div>
+                                        <div class="Profile_Right_Header"><h3 className="text-center text-success mb-4">Thông tin cá nhân</h3></div>
                                         <div class="Profile_Right_Content">
-                                            <div class="Profile_Name">
-                                                <Form.Label style={{ width: "30%" }}>Họ và tên đệm</Form.Label>
-                                                <Form.Control value={current_user.lastname} type="text" disabled />
-                                            </div>
-                                            <div class="Profile_Phonenumber">
-                                                <Form.Label style={{ width: "30%" }}>Số điện thoại</Form.Label>
-                                                <Form.Control value={current_user.firstname} type="text" disabled />
-                                            </div>
-                                            <div class="Profile_Email">
-                                                <Form.Label style={{ width: "30%" }}>Email</Form.Label>
-                                                <Form.Control value={current_user.email} type="email" disabled />
-                                            </div>
-                                            <div class="Profile_Address">
-                                                <Form.Label style={{ width: "30%" }}>Địa chỉ</Form.Label>
-                                                <Form.Control value={current_user.gender === true ? "Nam" : "Nữ"} type="Text" disabled />
-                                            </div>
-                                            <div class="Profile_Gender">
-                                                <Form.Label style={{ width: "30%" }}>Giới tính</Form.Label>
-                                                <Form.Control value={current_user.gender === true ? "Nam" : "Nữ"} type="Text" disabled />
-                                            </div>
-                                            <div class="Profile_Relationship">
-                                                <Form.Label style={{ width: "30%" }}>Quan hệ</Form.Label>
-                                                <Form.Control value={current_user.gender === true ? "Nam" : "Nữ"} type="Text" disabled />
-                                            </div>
-                                            <div class="Profile_Birthday">
-                                                <Form.Label style={{ width: "30%" }}>Ngày sinh</Form.Label>
-                                                {current_user.birthday === null ? <>
-                                                    <Form.Control value="Thiết lập ngày sinh" type="Text" disabled />
-                                                </> : <>
-                                                    <Form.Control value={current_user.birthday.substring(0, 10)} type="Text" disabled />
+                                            {profile === null ? <>
+                                                <div class="Profile_Null">
+                                                    <h5 className="mb-4">Chọn hồ sơ cần xem</h5>
+                                                    <img src={profile404} alt="Not found" width={'20%'} />
+                                                </div>
+                                            </> :
+                                                <>
+                                                    <div class="Profile_Name">
+                                                        <Form.Label style={{ width: "30%" }}>Họ và tên</Form.Label>
+                                                        <Form.Control value={profile.name} type="text" disabled />
+                                                    </div>
+                                                    <div class="Profile_Phonenumber">
+                                                        <Form.Label style={{ width: "30%" }}>Số điện thoại</Form.Label>
+                                                        <Form.Control value={profile.phonenumber} type="text" disabled />
+                                                    </div>
+                                                    <div class="Profile_Email">
+                                                        <Form.Label style={{ width: "30%" }}>Email</Form.Label>
+                                                        <Form.Control value={profile.email} type="email" disabled />
+                                                    </div>
+                                                    <div class="Profile_Address">
+                                                        <Form.Label style={{ width: "30%" }}>Địa chỉ</Form.Label>
+                                                        <Form.Control value={profile.address} type="Text" disabled />
+                                                    </div>
+                                                    <div class="Profile_Gender">
+                                                        <Form.Label style={{ width: "30%" }}>Giới tính</Form.Label>
+                                                        <Form.Control value={profile.gender === true ? "Nam" : "Nữ"} type="Text" disabled />
+                                                    </div>
+                                                    <div class="Profile_Relationship">
+                                                        <Form.Label style={{ width: "30%" }}>Quan hệ</Form.Label>
+                                                        <Form.Control value={profile.relationship} type="Text" disabled />
+                                                    </div>
+                                                    <div class="Profile_Birthday">
+                                                        <Form.Label style={{ width: "30%" }}>Ngày sinh</Form.Label>
+                                                        {profile.birthday === null ? <>
+                                                            <Form.Control value="Thiết lập ngày sinh" type="Text" disabled />
+                                                        </> : <>
+                                                            {(() => {
+                                                                const formattedBirthDate = new Date(profile.birthday);
+                                                                formattedBirthDate.setHours(formattedBirthDate.getHours() + 7);
+                                                                const formattedBirthDateTime = formattedBirthDate.toISOString().substring(0, 10);
+                                                                return (
+                                                                    <Form.Control
+                                                                        value={new Date(formattedBirthDateTime).toISOString().substring(0, 10)}
+                                                                        type="text"
+                                                                        disabled
+                                                                    />
+                                                                );
+                                                            })()}
+
+                                                        </>}
+                                                    </div>
+                                                    <div class="Change_Button">
+                                                        <button type="button">Xóa</button>
+                                                        <button type="button" onClick={updateClick}>Thay đổi thông tin</button>
+                                                    </div>
                                                 </>}
-                                            </div>
-                                            <div class="Change_Button">
-                                                <button type="button">Xóa</button>
-                                                <button type="button" onClick={updateClick}>Thay đổi thông tin</button>
-                                            </div>
                                         </div>
                                     </section>
                                 </> : <>
                                     <section>
-                                        <div class="Profile_Right_Header"><h3 className="text-center text-success">Thay đổi thông tin</h3></div>
+                                        <div class="Profile_Right_Header"><h3 className="text-center text-success mb-4">Thay đổi thông tin</h3></div>
                                         <div class="Profile_Right_Content">
                                             <div class="Profile_Name">
-                                                <Form.Label style={{ width: "30%" }}>Tên</Form.Label>
-                                                <Form.Control defaultValue={name} onChange={(e) => setName(e.target.value)} type="text" placeholder="Họ và tên" required />
+                                                <Form.Label style={{ width: "30%" }}>Họ và tên</Form.Label>
+                                                <Form.Control defaultValue={profile.name} onChange={(e) => setUpdateName(e.target.value)} type="text" placeholder="Họ và tên" required />
                                             </div>
                                             <div class="Profile_Phonenumber">
                                                 <Form.Label style={{ width: "30%" }}>Số điện thoại</Form.Label>
-                                                <Form.Control defaultValue={phonenumber} onChange={(e) => setPhonenumber(e.target.value)} type="text" placeholder="Số điện thoại" required />
+                                                <Form.Control defaultValue={profile.phonenumber} onChange={(e) => setUpdatePhonenumber(e.target.value)} type="text" placeholder="Số điện thoại" required />
                                             </div>
                                             <div class="Profile_Email">
                                                 <Form.Label style={{ width: "30%" }}>Email</Form.Label>
-                                                <Form.Control defaultValue={email} type="email" onChange={(e) => setEmail(e.target.value)} placeholder="Email" required />
+                                                <Form.Control defaultValue={profile.email} type="email" onChange={(e) => setUpdateEmail(e.target.value)} placeholder="Email" required />
                                             </div>
                                             <div class="Profile_Address">
                                                 <div>
@@ -315,29 +430,55 @@ const Profile = () => {
                                             </div>
                                             <div class="Profile_Personal_Address">
                                                 <Form.Label style={{ width: "30%" }}>Địa chỉ nhà</Form.Label>
-                                                <Form.Control type="text" defaultValue={personalAddress} placeholder="Địa chỉ nhà" required onChange={(e) => setPersonalAddress(e.target.value)} />
+                                                <Form.Control type="text" defaultValue={profile.personalAddress} placeholder="Địa chỉ nhà" required onChange={(e) => setUpdatePersonalAddress(e.target.value)} />
                                             </div>
                                             <div class="Profile_Gender">
                                                 <Form.Label style={{ width: "22%" }}>Giới tính</Form.Label>
                                                 <div class="Profile_Gender_Tick">
-                                                    <Form.Check type="radio" label="Nam" name="genderOption" defaultChecked onChange={() => setGender(true)} />
-                                                    <Form.Check type="radio" label="Nữ" name="genderOption" onChange={() => setGender(false)} />
+                                                    {profile.gender === true ? <>
+                                                        <Form.Check type="radio" label="Nam" name="genderOption" defaultChecked onChange={() => setGender(true)} />
+                                                        <Form.Check type="radio" label="Nữ" name="genderOption" onChange={() => setGender(false)} />
+                                                    </> : <>
+                                                        <Form.Check type="radio" label="Nam" name="genderOption" onChange={() => setGender(true)} />
+                                                        <Form.Check type="radio" label="Nữ" name="genderOption" defaultChecked onChange={() => setGender(false)} />
+                                                    </>}
                                                 </div>
                                             </div>
-                                            <div className="Profile_Relationship">
+                                            <div class="Profile_Birthday">
+                                                <Form.Label style={{ width: "22%" }}>Ngày sinh</Form.Label>
+                                                <div class="Profile_Birthday_Tick">
+                                                    {profile.birthday === null ? <>
+                                                        <input
+                                                            type="date" id="dateInput" defaultValue={currentFormattedDate}
+                                                        />
+                                                    </> : <>
+                                                        {(() => {
+                                                            const formattedBirthDate = new Date(profile.birthday);
+                                                            formattedBirthDate.setHours(formattedBirthDate.getHours() + 7);
+                                                            const formattedBirthDateTime = formattedBirthDate.toISOString().substring(0, 10);
+                                                            return (
+                                                                <input
+                                                                    type="date" defaultValue={formattedBirthDateTime} id="dateInput"
+                                                                />
+                                                            );
+                                                        })()}
+                                                    </>}
+                                                </div>
+                                            </div>
+                                            <div class="Profile_Relationship">
                                                 <Form.Label style={{ width: "22%" }}>Mối quan hệ</Form.Label>
                                                 <div class="Profile_Relationship_Tick">
-                                                    <Form.Check type="radio" defaultValue="Cha" label="Cha" name="relationshipOption" onChange={(e) => setRelationship(e.target.value)} />
-                                                    <Form.Check type="radio" defaultValue="Mẹ" label="Mẹ" name="relationshipOption" onChange={(e) => setRelationship(e.target.value)} />
-                                                    <Form.Check type="radio" defaultValue="Con" label="Con" name="relationshipOption" onChange={(e) => setRelationship(e.target.value)} />
-                                                    <Form.Check type="radio" defaultValue="Vợ" label="Vợ" name="relationshipOption" onChange={(e) => setRelationship(e.target.value)} />
-                                                    <Form.Check type="radio" defaultValue="Chồng" label="Chồng" name="relationshipOption" onChange={(e) => setRelationship(e.target.value)} />
-                                                    <Form.Check type="radio" defaultValue="Khác" label="Khác" name="relationshipOption" defaultChecked onChange={(e) => setRelationship(e.target.value)} />
+                                                    <Form.Check type="radio" label="Cha" name="relationshipOption" defaultChecked={profile.relationship === "Cha"} onChange={(e) => handleRelationshipChange("Cha")} />
+                                                    <Form.Check type="radio" label="Mẹ" name="relationshipOption" defaultChecked={profile.relationship === "Mẹ"} onChange={(e) => handleRelationshipChange("Mẹ")} />
+                                                    <Form.Check type="radio" label="Con" name="relationshipOption" defaultChecked={profile.relationship === "Con"} onChange={(e) => handleRelationshipChange("Con")} />
+                                                    <Form.Check type="radio" label="Vợ" name="relationshipOption" defaultChecked={profile.relationship === "Vợ"} onChange={(e) => handleRelationshipChange("Vợ")} />
+                                                    <Form.Check type="radio" label="Chồng" name="relationshipOption" defaultChecked={profile.relationship === "Chồng"} onChange={(e) => handleRelationshipChange("Chồng")} />
+                                                    <Form.Check type="radio" label="Khác" name="relationshipOption" defaultChecked={profile.relationship === "Khác"} onChange={(e) => handleRelationshipChange("Khác")} />
                                                 </div>
                                             </div>
                                             <div class="Update_Button">
                                                 <button type="button" onClick={updateClick}>Hủy</button>
-                                                <button type="button">Cập nhật thông tin</button>
+                                                <button type="button" onClick={updateProfile}>Cập nhật thông tin</button>
                                             </div>
                                         </div>
                                     </section>
@@ -389,7 +530,7 @@ const Profile = () => {
                                             <Form.Check type="radio" label="Nữ" name="genderOption" onChange={() => setGender(false)} />
                                         </div>
                                     </div>
-                                    <div className="Profile_Relationship">
+                                    <div class="Profile_Relationship">
                                         <Form.Label style={{ width: "22%" }}>Mối quan hệ</Form.Label>
                                         <div class="Profile_Relationship_Tick">
                                             <Form.Check type="radio" defaultValue="Cha" label="Cha" name="relationshipOption" onChange={(e) => setRelationship(e.target.value)} />

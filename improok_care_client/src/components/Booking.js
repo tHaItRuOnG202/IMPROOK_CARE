@@ -82,17 +82,17 @@ const Booking = () => {
                             {imageClick === true ? <img src={mona} alt="mona" style={{ width: '50%' }} /> : <img src={eula} alt="eula" style={{ width: '51%' }} />}
                         </div>
                         <div class="Booking_Content_4_RightContent">
-                            <div onClick={checkImageClick}>
+                            <div >
                                 <div class="Separate"></div>
-                                <div>
+                                <div onClick={checkImageClick}>
                                     <h5 style={{ fontWeight: 'bold', fontSize: '1.5rem' }}>Đội ngũ bác sĩ</h5>
                                     <h6 style={{ fontWeight: '400' }}>Tất cả các bác sĩ đều liên kết chính thức với IMPROOKCARE.</h6>
                                 </div>
                             </div>
                             <hr />
-                            <div onClick={checkImageClick}>
+                            <div>
                                 <div class="Separate"></div>
-                                <div>
+                                <div onClick={checkImageClick}>
                                     <h5 style={{ fontWeight: 'bold', fontSize: '1.5rem' }}>Đặt khám dễ dàng, nhanh chóng, chủ động</h5>
                                     <h6 style={{ fontWeight: '400' }}>Chỉ với 1 phút, bạn có thể đặt khám thành công với bác sĩ.</h6>
                                 </div>

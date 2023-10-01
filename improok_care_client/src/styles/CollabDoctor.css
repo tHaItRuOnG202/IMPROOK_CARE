@@ -1,48 +1,48 @@
-div.Booking_Content {
+div.CollabDoctor_Content {
     max-width: 80rem;
     padding-top: 2rem;
     margin-left: auto;
     margin-right: auto;
 }
 
-div.Booking_Content_1 {
+div.CollabDoctor_Content_1 {
     background-image: linear-gradient(315deg, #4884ee 0%, #003366 74%);
     margin-top: 2rem;
     color: white;
 }
 
-div.Booking_Content_1>div {
+div.CollabDoctor_Content_1>div {
     padding-top: 2rem;
     padding-left: 5rem;
     padding-bottom: 3rem;
     padding-right: 5rem;
 }
 
-div.Booking_Content_1 h3 {
+div.CollabDoctor_Content_1 h3 {
     font-weight: bold;
     text-align: center;
     margin-bottom: 1rem;
 }
 
-div.Booking_Content_1 h5 {
+div.CollabDoctor_Content_1 h5 {
     text-align: center;
     font-weight: 600;
     font-size: medium;
     margin-bottom: 3rem;
 }
 
-div.Booking_Content_1_Content {
+div.CollabDoctor_Content_1_Content {
     text-align: center;
     position: relative;
 }
 
-div.Booking_Content_1_Content input {
+div.CollabDoctor_Content_1_Content input {
     width: 60%;
     height: 2.8rem;
     border-radius: 10rem;
 }
 
-div.Booking_Content_1_Content button {
+div.CollabDoctor_Content_1_Content button {
     position: absolute;
     right: 18rem;
     height: 2.5rem;
@@ -50,7 +50,7 @@ div.Booking_Content_1_Content button {
     border: none;
 }
 
-div.Booking_Content_3 {
+div.CollabDoctor_Content_3 {
     margin-bottom: 9rem;
 }
 
@@ -60,15 +60,15 @@ div.Specialty_List {
     gap: 2rem;
 }
 
-div.Booking_Content_3_Header>h3,
-div.Booking_Content_4_Header>h3 {
+div.CollabDoctor_Content_3_Header>h3,
+div.CollabDoctor_Content_4_Header>h3 {
     font-weight: bold;
     text-align: center;
     margin-bottom: 1rem;
 }
 
-div.Booking_Content_3_Header>h5,
-div.Booking_Content_4_Header>h5 {
+div.CollabDoctor_Content_3_Header>h5,
+div.CollabDoctor_Content_4_Header>h5 {
     text-align: center;
     font-weight: lighter;
     color: gray;
@@ -90,37 +90,37 @@ div.Specialty_Item>img {
     margin-bottom: 1.25rem;
 }
 
-div.Booking_Content_4_Content {
+div.CollabDoctor_Content_4_Content {
     display: flex;
     gap: 3rem;
 }
 
-div.Booking_Content_4_LeftContent {
+div.CollabDoctor_Content_4_LeftContent {
     width: 50%;
 }
 
-div.Booking_Content_4_RightContent {
+div.CollabDoctor_Content_4_RightContent {
     width: 50%;
 }
 
-div.Booking_Content_5 {
+div.CollabDoctor_Content_5 {
     /* background-color: #06bcfb; */
     background-image: linear-gradient(315deg, #4884ee 0%, #003366 74%);
     color: white;
     margin-top: 3rem;
 }
 
-div.Booking_Content_5 h3 {
+div.CollabDoctor_Content_5 h3 {
     font-weight: bold;
 }
 
-div.Booking_Content_5 ul {
+div.CollabDoctor_Content_5 ul {
     list-style: none;
     margin-bottom: 5rem;
     margin-top: 2.5rem;
 }
 
-div.Booking_Content_5>div {
+div.CollabDoctor_Content_5>div {
     padding-top: 2rem;
     padding-left: 5rem;
     padding-bottom: 3rem;

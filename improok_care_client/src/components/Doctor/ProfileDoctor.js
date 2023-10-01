@@ -18,6 +18,7 @@ const ProfileDoctor = () => {
     const [bookingPrice, setBookingPrice] = useState();
     const [workPlace, setWorkPlace] = useState();
     const [email, setEmail] = useState();
+    const [specialty, setSpecialty] = useState([]);
     const [position, setPosition] = useState();
 
     const [province, setProvince] = useState();
@@ -85,8 +86,17 @@ const ProfileDoctor = () => {
     }, [selectedProvinceCode, selectedDistrictCode])
 
     useEffect(() => {
-
-    })
+        const loadSpecialty = async () => {
+            try {
+                let res = await Apis.get(endpoints['specialty']);
+                setSpecialty(res.data);
+                console.log(res.data);
+            } catch (error) {
+                console.log(error);
+            }
+        }
+        loadSpecialty();
+    }, [])
 
     const updateClick = () => {
         setCheckProfileInfo(!checkProfileInfo);
@@ -171,6 +181,17 @@ const ProfileDoctor = () => {
         setWardName(selectedWard.fullName);
     }
 
+    const focusSpecialty = (e) => {
+        setSelectedSpecialty(e.target.value);
+    }
+
+    const handleSpecialtyChange = (e) => {
+        const selectedSpecialtyId = e.target.value;
+
+        setSelectedSpecialty(selectedSpecialtyId);
+    }
+
+
     if (current_user === null)
         <Navigate to="/" />
 
@@ -236,7 +257,7 @@ const ProfileDoctor = () => {
                                             </div>
                                             <div class="Profile_Doctor_Specialty">
                                                 <Form.Label style={{ width: "30%" }}>Chuyên khoa</Form.Label>
-                                                <Form.Control value={current_user.gender === true ? "Nam" : "Nữ"} type="text" disabled />
+                                                <Form.Control value={current_user.gender} type="text" disabled />
                                             </div>
                                             <div class="Profile_Doctor_Position">
                                                 <Form.Label style={{ width: "30%" }}>Vị trí</Form.Label>
@@ -294,10 +315,8 @@ const ProfileDoctor = () => {
                                             </div>
                                             <div class="Profile_Doctor_Specialty">
                                                 <Form.Label style={{ width: "30%" }}>Chuyên khoa</Form.Label>
-                                                <Form.Select defaultValue={selectedSpecialty} onChange={(e) => handleWardChange(e)} onFocus={(e) => focusWard(e)}>
-                                                    <option>Khoa Công Nghệ Thông Tin</option>
-                                                    <option>Khoa Công Nghệ Sinh Học</option>
-                                                    <option>Khoa Công Quản Trị Kinh Doanh</option>
+                                                <Form.Select defaultValue={selectedSpecialty} onChange={(e) => handleSpecialtyChange(e)} onFocus={(e) => focusSpecialty(e)}>
+                                                    {Object.values(specialty).map(s => <option key={s.specialtyId} value={s.specialtyId}>{s.specialtyName}</option>)}
                                                 </Form.Select>
                                             </div>
                                             <div class="Profile_Doctor_Position">
@@ -357,10 +376,8 @@ const ProfileDoctor = () => {
                                     </div>
                                     <div class="Profile_Doctor_Specialty">
                                         <Form.Label style={{ width: "30%" }}>Chuyên khoa</Form.Label>
-                                        <Form.Select defaultValue={selectedSpecialty} onChange={(e) => handleWardChange(e)} onFocus={(e) => focusWard(e)}>
-                                            <option>Khoa Công Nghệ Thông Tin</option>
-                                            <option>Khoa Công Nghệ Sinh Học</option>
-                                            <option>Khoa Công Quản Trị Kinh Doanh</option>
+                                        <Form.Select defaultValue={selectedSpecialty} onChange={(e) => handleSpecialtyChange(e)} onFocus={(e) => focusSpecialty(e)}>
+                                            {Object.values(specialty).map(s => <option key={s.specialtyId} value={s.specialtyId}>{s.specialtyName}</option>)}
                                         </Form.Select>
                                     </div>
                                     <div class="Profile_Doctor_Position">
@@ -376,7 +393,7 @@ const ProfileDoctor = () => {
                         </>}
                 </div>
             </div>
-        </div>
+        </div >
     </>
 }
 

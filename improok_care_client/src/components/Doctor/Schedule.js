@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { Form } from "react-bootstrap";
 import Apis, { authApi, endpoints } from "../../configs/Apis";
 import { toast } from "react-toastify";
+import MySpinner from "../../layout/MySpinner";
 
 const Schedule = () => {
     const [current_user, dispatch] = useContext(MyUserContext);
@@ -30,6 +31,7 @@ const Schedule = () => {
     }, []);
 
     useEffect(() => {
+        setLoading(true);
         const loadTimeDistance = async () => {
             try {
                 let res = await Apis.get(endpoints['time-distance']);
@@ -44,13 +46,14 @@ const Schedule = () => {
             try {
                 let res = await Apis.get(endpoints['time-slot'](selectedTimeDistanceId));
                 setTimeSlot(res.data);
-                console.log(res.data)
+                console.log(res.data);
             } catch (error) {
-                console.log(error)
+                console.log(error);
             }
         }
         loadTimeDistance();
         loadTimeSlot();
+        setLoading(false);
     }, [selectedTimeDistanceId])
 
     const timeDistanceChange = (e) => {
@@ -142,17 +145,21 @@ const Schedule = () => {
                         </div>
                         <div class="Schedule_Timeslot">
                             <div class="TimeSlot_Option">
-                                {Object.values(timeSlot).map(ts => {
-                                    const timeBegin = new Date(ts.timeBegin).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                                    const timeEnd = new Date(ts.timeEnd).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                                    const isSelected = selectedTimeSlots.includes(ts.timeSlotId);
-                                    return (
-                                        <span key={ts.timeSlotId} value={ts.timeSlotId} style={{ marginRight: '10px', background: isSelected ? 'lightblue' : 'white' }}
-                                            onClick={() => timeSlotClickCheck(ts.timeSlotId)}>
-                                            {timeBegin} - {timeEnd}
-                                        </span>
-                                    );
-                                })}
+                                {loading === true ? <MySpinner /> :
+                                    <>
+                                        {Object.values(timeSlot).map(ts => {
+                                            const timeBegin = new Date(ts.timeBegin).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                                            const timeEnd = new Date(ts.timeEnd).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                                            const isSelected = selectedTimeSlots.includes(ts.timeSlotId);
+                                            return (
+                                                <span key={ts.timeSlotId} value={ts.timeSlotId} style={{ marginRight: '10px', background: isSelected ? 'lightblue' : 'white' }}
+                                                    onClick={() => timeSlotClickCheck(ts.timeSlotId)}>
+                                                    {timeBegin} - {timeEnd}
+                                                </span>
+                                            );
+                                        })}
+                                    </>
+                                }
                             </div>
                         </div>
                     </div>

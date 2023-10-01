@@ -7,6 +7,7 @@ import { authApi, endpoints } from "../configs/Apis";
 import cookie from "react-cookies";
 import { toast } from "react-toastify";
 import avatar_user from "../assests/images/user.png"
+import Moment from "react-moment";
 
 const PersonalPage = () => {
     const [current_user, dispatch] = useContext(MyUserContext);
@@ -27,7 +28,16 @@ const PersonalPage = () => {
     })
     const [checkPersonalInfo, setCheckPersonalInfo] = useState(true)
 
-    // const formattedDate = new Date(current_user.birthday).toISOString().substring(0, 10);
+    const formattedBirthday = (
+        <Moment locale="vi" format="DD/MM/YYYY">
+            {current_user.birthday}
+        </Moment>
+    );
+
+    const formattedDate = new Date(current_user.birthday);
+    formattedDate.setHours(formattedDate.getHours() + 7);
+
+    const formattedDateTime = formattedDate.toISOString().substring(0, 10);
     // console.log(typeof (current_birthday))
     // console.log(typeof (current_user.birthday))
     // const formattedDate = current_user.birthDate.toISOString();
@@ -40,10 +50,10 @@ const PersonalPage = () => {
         nav("/")
     }
 
-    useEffect(() => {
-        const formattedDate = new Date(current_user.birthday).toISOString().substring(0, 10);
-        setCurrent_birthday(formattedDate);
-    }, [current_user.birthday]);
+    // useEffect(() => {
+    //     const formattedDate = new Date(current_user.birthday).toISOString().substring(0, 10);
+    //     setCurrent_birthday(formattedDate);
+    // }, [current_user.birthday]);
 
 
     const updateClick = () => {
@@ -205,7 +215,8 @@ const PersonalPage = () => {
                                         {current_user.birthday === null ? <>
                                             <Form.Control value="Thiết lập ngày sinh" type="Text" disabled />
                                         </> : <>
-                                            <Form.Control value={current_user.birthday.substring(0, 10)} type="Text" disabled />
+                                            {/* <Moment locale="vi" format="DD/MM/YYYY">{current_user.birthday}</Moment> */}
+                                            <Form.Control value={formattedDateTime} type="Text" disabled />
                                         </>}
                                     </div>
                                     <div class="Change_Button">
@@ -249,7 +260,7 @@ const PersonalPage = () => {
                                         <Form.Label style={{ width: "22%" }}>Ngày sinh</Form.Label>
                                         <div className="Personal_Birthday_Tick">
                                             <input
-                                                type="date" defaultValue={current_birthday} id="dateInput"
+                                                type="date" defaultValue={formattedDateTime} id="dateInput"
                                             />
                                         </div>
                                     </div>
