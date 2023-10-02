@@ -206,7 +206,7 @@ const Profile = () => {
                     "birthday": birthDate,
                     "provinceName": provincename === undefined ? "Hà Nội" : provincename,
                     "districtName": districtname === undefined ? "Quận Ba Đình" : districtname,
-                    "wardName": wardname === undefined ? "Xá Phúc Kiến" : wardname,
+                    "wardName": wardname === undefined ? "Xã Phúc Kiến" : wardname,
                     "personalAddress": updatePersonalAddress === undefined ? profile.personalAddress : updatePersonalAddress,
                     "email": updateEmail === undefined ? profile.email : updateEmail,
                     "relationship": updateRelationship === undefined ? profile.relationship : updateRelationship

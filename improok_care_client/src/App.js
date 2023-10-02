@@ -22,6 +22,8 @@ import MedicalRecord from "./components/MedicalRecord";
 import Test from "./components/Test";
 import ProfileDoctor from "./components/Doctor/ProfileDoctor";
 import Schedule from "./components/Doctor/Schedule";
+import ProfileDoctorDetail from "./components/ProfileDoctorDetail";
+import BookingDetail from "./components/BookingDetail";
 
 export const MyUserContext = createContext();
 
@@ -41,7 +43,7 @@ const App = () => {
           <Route path='/doctor' element={<Doctor />} />
           <Route path='/error' element={<Error />} />
           <Route path='/profile' element={<Profile />} />
-          <Route path='phoneverification' element={<PhoneVerification />} />
+          <Route path='/phoneverification' element={<PhoneVerification />} />
           <Route path='/register' element={<Register />} />
           <Route path='/personalpage' element={<PersonalPage />} />
           <Route path='/collabdoctor' element={<CollabDoctor />} />
@@ -50,6 +52,8 @@ const App = () => {
           <Route path='/booking' element={<Booking />} />
           <Route path='/profiledoctor' element={<ProfileDoctor />} />
           <Route path='/schedule' element={<Schedule />} />
+          <Route path='/doctor/:profileDoctorId' element={<ProfileDoctorDetail />} />
+          <Route path='/booking/doctor/:profileDoctorId' element={<BookingDetail />} />
         </Routes>
         <Footer />
         <ToastContainer />

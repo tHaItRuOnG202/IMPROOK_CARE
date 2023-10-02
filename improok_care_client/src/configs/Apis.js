@@ -18,12 +18,19 @@ export const endpoints = {
     "load-profile-patient": (userId) => `${SERVER_CONTEXT}/api/auth/user/${userId}/profile-patient/`,
     "view-profile-patient": (profilePatientId) => `${SERVER_CONTEXT}/api/auth/profile-patient/${profilePatientId}/`,
     "update-profile-patient": `${SERVER_CONTEXT}/api/auth/update-profile-patient/`,
+    "load-profile-doctor-by-userId": (userId) => `${SERVER_CONTEXT}/api/public/user/${userId}/profile-doctor/`,
+    "load-profile-doctor-by-Id": (profileDoctorId) => `${SERVER_CONTEXT}/api/public/profile-doctor/${profileDoctorId}/`,
+    "load-profile-doctor": `${SERVER_CONTEXT}/api/public/profile-doctor/`,
     "add-profile-doctor": `${SERVER_CONTEXT}/api/auth/doctor/add-profile-doctor/`,
     "update-profile-doctor": `${SERVER_CONTEXT}/api/auth/doctor/update-profile-doctor/`,
     "time-distance": `${SERVER_CONTEXT}/api/public/timeDistance/`,
     "time-slot": (timeDistanceId) => `${SERVER_CONTEXT}/api/public/timeDistance/${timeDistanceId}/timeSlot/`,
     "add-schedule": `${SERVER_CONTEXT}/api/auth/doctor/add-schedule/`,
-    "specialty": `${SERVER_CONTEXT}/api/public/specialty/`
+    "specialty": `${SERVER_CONTEXT}/api/public/specialty/`,
+    "check-scheduled": `${SERVER_CONTEXT}/api/public/check-scheduled/`,
+    "find-check-scheduled": `${SERVER_CONTEXT}/api/public/find-check-scheduled/`,
+    "date-booking": `${SERVER_CONTEXT}/api/public/date-booking/`,
+    "timeslot-booking": `${SERVER_CONTEXT}/api/public/time-slot-booking/`
 }
 
 export const authApi = () => {

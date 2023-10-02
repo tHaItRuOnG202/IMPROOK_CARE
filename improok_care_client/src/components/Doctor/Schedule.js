@@ -6,6 +6,7 @@ import { Form } from "react-bootstrap";
 import Apis, { authApi, endpoints } from "../../configs/Apis";
 import { toast } from "react-toastify";
 import MySpinner from "../../layout/MySpinner";
+import { format } from "date-fns";
 
 const Schedule = () => {
     const [current_user, dispatch] = useContext(MyUserContext);
@@ -13,10 +14,18 @@ const Schedule = () => {
     const [minDate, setMinDate] = useState('');
     const [timeDistance, setTimeDistance] = useState([]);
     const [timeSlot, setTimeSlot] = useState([]);
+    const [profileDoctorByUserId, setProfileDoctorByUserId] = useState([]);
+    const [selectedProfileDoctorId, setSeletedProfileDoctorId] = useState();
     const [selectedTimeDistanceId, setSelectedTimeDistanceId] = useState('1');
     const [selectedTimeSlots, setSelectedTimeSlots] = useState([]);
     const [timeSlotCheck, setTimeSlotCheck] = useState([]);
-    const [loading, setLoading] = useState(true)
+    const [checkSchedule, setCheckSchedule] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    // const dateInput = document.getElementById('dateInput');
+    // const selectedDate = dateInput.value; // Lấy giá trị ngày từ trường input
+
+    // const formattedDate = new Date(selectedDate).toISOString().split('T')[0];
 
     const logout = () => {
         dispatch({
@@ -51,25 +60,117 @@ const Schedule = () => {
                 console.log(error);
             }
         }
+
         loadTimeDistance();
         loadTimeSlot();
         setLoading(false);
-    }, [selectedTimeDistanceId])
+    }, [selectedTimeDistanceId, current_user.userId])
+
+
+    useEffect(() => {
+        const loadProfileDoctorByUserId = async () => {
+            try {
+                let res = await Apis.get(endpoints['load-profile-doctor-by-userId'](current_user.userId));
+                setProfileDoctorByUserId(res.data);
+                console.log(res.data);
+            } catch (error) {
+                console.log(error);
+            }
+        }
+        loadProfileDoctorByUserId();
+    }, [current_user.userId])
+
+    // useEffect(() => {
+    //     const scheduledCheck = async () => {
+    //         try {
+    //             const dateInput = document.getElementById('dateInput');
+    //             const selectedDate = dateInput.value; // Lấy giá trị ngày từ trường input
+
+    //             const formattedDate = new Date(selectedDate).toISOString().split('T')[0];
+    //             const registeredSlots = [];
+    //             for (let i = 0; i < timeSlot.length; i++) {
+    //                 const timeSlotId = timeSlot[i];
+
+    //                 let res = await Apis.post(endpoints['check-scheduled'], {
+    //                     "profileDoctorId": current_user.userId,
+    //                     "date": formattedDate,
+    //                     "timeSlotId": timeSlotId
+    //                 });
+
+    //                 if (res.data === "Lịch chữa bệnh đã đăng ký!") {
+    //                     registeredSlots.push({
+    //                         profileDoctorId: current_user.userId,
+    //                         date: formattedDate,
+    //                         timeSlotId: timeSlotId,
+    //                     });
+    //                 }
+    //                 setCheckSchedule(registeredSlots);
+    //                 console.log(registeredSlots);
+    //             }
+    //         } catch (error) {
+    //             console.log(error);
+    //         }
+    //     }
+    //     scheduledCheck();
+    // }, [selectedProfileDoctorId, selectedTimeDistanceId])
+
+    const scheduleCheck = (evt, timeSlotId) => {
+        evt.preventDefault();
+
+        const process = async () => {
+            try {
+                const dateInput = document.getElementById('dateInput');
+                const selectedDate = dateInput.value; // Lấy giá trị ngày từ trường input
+
+                const formattedDate = new Date(selectedDate).toISOString().split('T')[0];
+                console.log(current_user.userId, formattedDate, timeSlotId)
+                let res = await Apis.post(endpoints['check-scheduled'], {
+                    "profileDoctorId": current_user.userId,
+                    "date": formattedDate,
+                    "timeSlotId": timeSlotId
+                });
+                if (res.data === "Lịch chữa bệnh chưa đăng ký!") {
+                    const isSelected = selectedTimeSlots.includes(timeSlotId);
+
+                    if (isSelected) {
+                        setSelectedTimeSlots(selectedTimeSlots.filter(id => id !== timeSlotId));
+                    } else {
+                        setSelectedTimeSlots([...selectedTimeSlots, timeSlotId]);
+                    }
+                    toast(res.data)
+                }
+                else {
+                    toast(res.data)
+                }
+                setCheckSchedule(res.data);
+                console.log(res.data);
+            } catch (error) {
+                console.log(error);
+                toast.error("Có lỗi xảy ra!")
+            }
+        }
+        process();
+    }
+
 
     const timeDistanceChange = (e) => {
         setSelectedTimeDistanceId(e.target.value);
         setSelectedTimeSlots([]);
     }
 
-    const timeSlotClickCheck = (timeSlotId) => {
-        const isSelected = selectedTimeSlots.includes(timeSlotId);
-
-        if (isSelected) {
-            setSelectedTimeSlots(selectedTimeSlots.filter(id => id !== timeSlotId));
-        } else {
-            setSelectedTimeSlots([...selectedTimeSlots, timeSlotId]);
-        }
+    const profileDoctorChange = (e) => {
+        setSeletedProfileDoctorId(e.target.value);
     }
+
+    // const timeSlotClickCheck = (timeSlotId) => {
+    //     const isSelected = selectedTimeSlots.includes(timeSlotId);
+
+    //     if (isSelected) {
+    //         setSelectedTimeSlots(selectedTimeSlots.filter(id => id !== timeSlotId));
+    //     } else {
+    //         setSelectedTimeSlots([...selectedTimeSlots, timeSlotId]);
+    //     }
+    // }
 
     const addSchedule = (evt) => {
         evt.preventDefault();
@@ -111,6 +212,7 @@ const Schedule = () => {
     }
 
     console.log(selectedTimeSlots);
+    // console.log(current_user.userId);
 
     return <>
         <div class="Schedule_Wrapper">
@@ -128,13 +230,20 @@ const Schedule = () => {
                         </ul>
                     </div>
                 </div>
+                {/* <button onClick={scheduleCheck}>Xem</button> */}
                 <div class="Schedule_Right">
                     <div class="Schedule_Right_Content">
                         <h3 className="text-center text-primary">ĐĂNG KÝ LỊCH KHÁM BỆNH</h3>
                         <div class="Schedule_Option">
                             <div class="Schedule_Date_Option">
-                                <Form.Label style={{ width: "22%" }}>Chọn ngày</Form.Label>
+                                <Form.Label style={{ width: "30%" }}>Chọn ngày</Form.Label>
                                 <input type="date" style={{ width: "60%" }} defaultValue={minDate} id="dateInput" min={minDate} />
+                            </div>
+                            <div class="Schedule_Profile_Option">
+                                <Form.Label style={{ width: "30%" }}>Chọn hồ sơ</Form.Label>
+                                <select class="value" defaultValue={selectedProfileDoctorId} onChange={profileDoctorChange} onFocus={profileDoctorChange}>
+                                    {Object.values(profileDoctorByUserId).map(pd => <option key={pd.profileDoctorId} value={pd.profileDoctorId}>{pd.name}</option>)}
+                                </select>
                             </div>
                             <div class="Schedule_Distance_Option">
                                 <Form.Label class="label" style={{ width: "40%" }}>Chọn giãn cách</Form.Label>
@@ -152,8 +261,9 @@ const Schedule = () => {
                                             const timeEnd = new Date(ts.timeEnd).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
                                             const isSelected = selectedTimeSlots.includes(ts.timeSlotId);
                                             return (
-                                                <span key={ts.timeSlotId} value={ts.timeSlotId} style={{ marginRight: '10px', background: isSelected ? 'lightblue' : 'white' }}
-                                                    onClick={() => timeSlotClickCheck(ts.timeSlotId)}>
+                                                <span key={ts.timeSlotId} value={ts.timeSlotId}
+                                                    style={{ marginRight: '10px', background: isSelected ? 'lightblue' : 'white' }}
+                                                    onClick={(e) => scheduleCheck(e, ts.timeSlotId)}>
                                                     {timeBegin} - {timeEnd}
                                                 </span>
                                             );

@@ -5,16 +5,32 @@ import googleplay from "../assests/images/googleplay.svg"
 import appstore from "../assests/images/appstore.svg"
 import mona from "../assests/images/mona.png"
 import eula from "../assests/images/eula.png"
+import profileicon from "../assests/images/profile-icon.png"
 import { TiTickOutline } from "react-icons/ti";
 import { FcSearch } from "react-icons/fc";
 
 const Booking = () => {
     const [specialty, setSpecialty] = useState([]);
     const [imageClick, setImageClick] = useState(true);
+    const [listDoctor, setListDoctor] = useState([]);
 
     const checkImageClick = () => {
         setImageClick(!imageClick);
     }
+
+    // useEffect(() => {
+    //     const loadProfileDoctorById = async () => {
+    //         try {
+    //             let res = await Apis.get(endpoints['specialty']);
+    //             setSpecialty(res.data);
+    //             console.log(res.data);
+    //         } catch (error) {
+    //             console.log(error);
+    //         }
+    //     }
+
+    //     loadProfileDoctorById();
+    // }, [])
 
     useEffect(() => {
         const loadSpecialty = async () => {
@@ -26,6 +42,17 @@ const Booking = () => {
                 console.log(error);
             }
         }
+
+        const loadProfileDoctor = async () => {
+            try {
+                let res = await Apis.get(endpoints['load-profile-doctor']);
+                setListDoctor(res.data);
+                console.log(res.data);
+            } catch (error) {
+                console.log(error);
+            }
+        }
+        loadProfileDoctor();
         loadSpecialty();
     }, [])
 
@@ -49,8 +76,20 @@ const Booking = () => {
                     <div class="Booking_Content_2_Header">
                         <h4>Đặt khám bác sĩ</h4>
                     </div>
-                    <div>
-
+                    <div class="Booking_Content_2_Content">
+                        <div class="Doctor_List">
+                            {Object.values(listDoctor).map(ld => {
+                                let url = `/doctor/${ld.profileDoctorId}`
+                                return <>
+                                    <div class="Doctor_Item">
+                                        <img src={profileicon} style={{ width: '25%' }} alt="404" />
+                                        <span>{ld.name}</span>
+                                        <span>{ld.specialtyId.specialtyName}</span>
+                                        <button><a href={url}>Đặt khám ngay</a></button>
+                                    </div>
+                                </>
+                            })}
+                        </div>
                     </div>
                 </div>
                 <div class="Booking_Content_3">

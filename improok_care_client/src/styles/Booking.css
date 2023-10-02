@@ -9,6 +9,7 @@ div.Booking_Content_1 {
     background-image: linear-gradient(315deg, #4884ee 0%, #003366 74%);
     margin-top: 2rem;
     color: white;
+    margin-bottom: 3rem;
 }
 
 div.Booking_Content_1>div {
@@ -50,8 +51,37 @@ div.Booking_Content_1_Content button {
     border: none;
 }
 
-div.Booking_Content_3 {
+div.Booking_Content_2 {
     margin-bottom: 9rem;
+}
+
+div.Doctor_List {
+    display: flex;
+    white-space: nowrap;
+    max-width: 90rem;
+    overflow-x: auto;
+    gap: 2rem;
+}
+
+div.Doctor_Item {
+    flex: 0 0 auto;
+    width: 15%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+    border: .05rem solid gray;
+}
+
+div.Doctor_Item button>a {
+    text-decoration: none;
+    color: black;
+}
+
+div.Booking_Content_3 {
+    margin-bottom: 8rem;
 }
 
 div.Specialty_List {
@@ -60,11 +90,17 @@ div.Specialty_List {
     gap: 2rem;
 }
 
+div.Booking_Content_2_Header>h4 {
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
 div.Booking_Content_3_Header>h3,
 div.Booking_Content_4_Header>h3 {
     font-weight: bold;
     text-align: center;
-    margin-bottom: 1rem;
+    margin-bottom: 2rem;
 }
 
 div.Booking_Content_3_Header>h5,
