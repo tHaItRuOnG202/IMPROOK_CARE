@@ -30,7 +30,17 @@ export const endpoints = {
     "check-scheduled": `${SERVER_CONTEXT}/api/public/check-scheduled/`,
     "find-check-scheduled": `${SERVER_CONTEXT}/api/public/find-check-scheduled/`,
     "date-booking": `${SERVER_CONTEXT}/api/public/date-booking/`,
-    "timeslot-booking": `${SERVER_CONTEXT}/api/public/time-slot-booking/`
+    "timeslot-booking": `${SERVER_CONTEXT}/api/public/time-slot-booking/`,
+    "add-booking": `${SERVER_CONTEXT}/api/auth/add-booking/`,
+    "send-form-email": `${SERVER_CONTEXT}/api/public/send-form-email/`,
+    "send-custom-email": `${SERVER_CONTEXT}/api/public/send-custom-email/`,
+    "forgot-password": `${SERVER_CONTEXT}/api/public/forgot-password/`,
+    "change-password": `${SERVER_CONTEXT}/api/auth/change-password/`,
+    "booking-user-view": `${SERVER_CONTEXT}/api/auth/booking-user-view/`,
+    "booking-doctor-view": `${SERVER_CONTEXT}/api/auth/booking-doctor-view/`,
+    "accept-booking": `${SERVER_CONTEXT}/api/auth/doctor/accept-booking/`,
+    "deny-booking": `${SERVER_CONTEXT}/api/auth/doctor/deny-booking/`,
+    "cancel-booking": `${SERVER_CONTEXT}/api/auth/cancel-booking/`
 }
 
 export const authApi = () => {

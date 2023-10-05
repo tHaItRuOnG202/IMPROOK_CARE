@@ -1,0 +1,61 @@
+div.Profile_Doctor_Detail_Content {
+    max-width: 70rem;
+    display: flex;
+    flex-direction: column;
+    margin-left: auto;
+    margin-right: auto;
+    flex-wrap: wrap;
+    padding-top: 2rem;
+}
+
+div.Profile_Doctor_Detail_Header {
+    display: flex;
+}
+
+div.Profile_Doctor_Avatar {
+    width: 40%;
+}
+
+div.Profile_Doctor_Avatar>img {
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 50%;
+}
+
+div.Profile_Doctor_Info {
+    display: flex;
+    flex-direction: column;
+    width: 60%;
+}
+
+div.Profile_Doctor_Detail_Footer {
+    margin-top: 2rem;
+}
+
+div.Phonenumber {
+    display: flex;
+    gap: 2rem
+}
+
+div.Phonenumber>div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 15%;
+}
+
+div.Phonenumber>button {
+    width: 100%;
+    background-color: #1975dc;
+    border-radius: .5rem;
+}
+
+div.Phonenumber>button>a {
+    text-decoration: none;
+    color: white;
+    font-weight: 700;
+}
+
+div.Profile_Doctor_Detail_Body {
+    margin-top: 2rem;
+}

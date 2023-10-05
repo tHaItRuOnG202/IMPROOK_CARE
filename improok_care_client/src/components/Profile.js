@@ -111,7 +111,7 @@ const Profile = () => {
         const loadProfilePatient = async () => {
             try {
                 let res = await authApi().get(endpoints['load-profile-patient'](current_user.userId))
-                setProfilePatient(res.data)
+                setProfilePatient(res.data);
                 console.log(res.data);
             } catch (error) {
                 console.log(error)
@@ -428,9 +428,11 @@ const Profile = () => {
                                                     </Form.Select>
                                                 </div>
                                             </div>
-                                            <div class="Profile_Personal_Address">
-                                                <Form.Label style={{ width: "30%" }}>Địa chỉ nhà</Form.Label>
-                                                <Form.Control type="text" defaultValue={profile.personalAddress} placeholder="Địa chỉ nhà" required onChange={(e) => setUpdatePersonalAddress(e.target.value)} />
+                                            <div class="Profile_Address_Personal">
+                                                <div class="Profile_Personal_Address">
+                                                    <Form.Label style={{ width: "30%" }}>Địa chỉ nhà</Form.Label>
+                                                    <Form.Control type="text" defaultValue={profile.personalAddress} placeholder="Địa chỉ nhà" required onChange={(e) => setUpdatePersonalAddress(e.target.value)} />
+                                                </div>
                                             </div>
                                             <div class="Profile_Gender">
                                                 <Form.Label style={{ width: "22%" }}>Giới tính</Form.Label>

@@ -7,6 +7,7 @@ import { authApi, endpoints } from "../../configs/Apis";
 import cookie from "react-cookies";
 import { toast } from "react-toastify";
 import avatar_user from "../../assests/images/user.png"
+import Moment from "react-moment";
 
 const Doctor = () => {
     const [current_user, dispatch] = useContext(MyUserContext);
@@ -51,13 +52,20 @@ const Doctor = () => {
         "firstname": current_user.firstname,
         "lastname": current_user.lastname,
         "userId": current_user.userId,
-        "birthday": "",
+        "birthday": current_user.birthday,
         "gender": current_user.gender,
         "avatar": current_user.avatar
     })
     const [checkPersonalInfo, setCheckPersonalInfo] = useState(true)
+    const formattedBirthday = (
+        <Moment locale="vi" format="DD/MM/YYYY">
+            {current_user.birthday}
+        </Moment>
+    );
 
-    const formattedDate = new Date(current_user.birthday).toISOString().substring(0, 10);
+    const formattedDate = new Date(current_user.birthday);
+    formattedDate.setHours(formattedDate.getHours() + 7);
+    const formattedDateTime = formattedDate.toISOString().substring(0, 10);
     // console.log(typeof (current_birthday))
     // console.log(typeof (current_user.birthday))
     // const formattedDate = current_user.birthDate.toISOString();
@@ -82,6 +90,10 @@ const Doctor = () => {
                 let form = new FormData();
 
                 console.log(user);
+                const dateInput = document.getElementById('dateInput');
+                const selectedDate = dateInput.value; // Lấy giá trị ngày từ trường input
+
+                const birthDate = new Date(selectedDate).toISOString().split('T')[0];
 
                 for (let field in user) {
                     if (field !== "avatar" || field !== "gender" || field !== "birthday")
@@ -102,7 +114,7 @@ const Doctor = () => {
                 }
 
                 form.delete("birthday");
-                form.append("birthday", formattedDate);
+                form.append("birthday", birthDate);
 
                 setLoading(true);
 
@@ -223,7 +235,7 @@ const Doctor = () => {
                                         {current_user.birthday === null ? <>
                                             <Form.Control value="Thiết lập ngày sinh" type="Text" disabled />
                                         </> : <>
-                                            <Form.Control value={current_user.birthday.substring(0, 10)} type="Text" disabled />
+                                            <Form.Control value={formattedDateTime} type="Text" disabled />
                                         </>}
                                     </div>
                                     <div class="Change_Button">
@@ -267,7 +279,7 @@ const Doctor = () => {
                                         <Form.Label style={{ width: "22%" }}>Ngày sinh</Form.Label>
                                         <div className="Doctor_Birthday_Tick">
                                             <input
-                                                type="date" defaultValue={formattedDate} onChange={(e) => change(e, "birthday")}
+                                                type="date" defaultValue={formattedDateTime} id="dateInput"
                                             />
                                         </div>
                                     </div>

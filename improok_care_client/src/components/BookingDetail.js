@@ -6,17 +6,33 @@ import { MyUserContext } from "../App";
 import printer from "../assests/images/printer.png"
 import profileicon from "../assests/images/profile-icon.png"
 import profile404 from "../assests/images/profile.png"
+import googleplay from "../assests/images/googleplay.svg"
+import appstore from "../assests/images/appstore.svg"
+import { Badge } from "react-bootstrap";
+import { FaAngleDown, FaArrowRight } from "react-icons/fa";
+import { TiTickOutline } from "react-icons/ti";
+import { toast } from "react-toastify";
 
 const BookingDetail = () => {
     const [current_user, dispatch] = useContext(MyUserContext);
     const { profileDoctorId } = useParams();
     const [doctorDetail, setDoctorDetail] = useState('');
     const [profilePatient, setProfilePatient] = useState([]);
+    const [profilePatientName, setProfilePatientName] = useState('')
+    const [profilePatientId, setProfilePatientId] = useState('')
     const [dateBooking, setDateBooking] = useState([]);
     const [timeSlotBooking, setTimeSlotBooking] = useState([]);
-    const [selectedDateBooking, setSeleectedDateBooking] = useState('');
-    const [selectedTimeSlotBooking, setSelectedTimeSlotBooking] = useState('');
-    const [selectedProfileBooking, setSelectedProfileBooking] = useState('');
+    const [bookingStep, setBookingStep] = useState(true);
+    const [bookingDate, setBookingDate] = useState('');
+    const [bookingTimeSlot, setBookingTimeSlot] = useState('');
+    const [scheduleId, setScheduleId] = useState('')
+    const [timeSlotId, setTimeSlotId] = useState('')
+    const [bookingProfile, setBookingProfile] = useState('');
+    const [selectedDate, setSelectedDate] = useState('');
+
+    const handleDateClick = (formattedDate) => {
+        setSelectedDate(formattedDate);
+    };
 
     useEffect(() => {
         const loadProfileDoctorById = async () => {
@@ -29,7 +45,6 @@ const BookingDetail = () => {
                 console.log(error);
             }
         }
-
         loadProfileDoctorById();
     }, [profileDoctorId])
 
@@ -48,6 +63,81 @@ const BookingDetail = () => {
         loadDateBooking();
     }, [profileDoctorId])
 
+    const checkBookingStep = (e, timeBegin, timeEnd) => {
+        setBookingStep(!bookingStep);
+        setBookingTimeSlot(`${timeBegin} - ${timeEnd}`)
+    }
+
+    const profilePatientChoice = (evt, profilePatientId, profilePatientName) => {
+        evt.preventDefault();
+
+        const process = async () => {
+            try {
+                setProfilePatientId(profilePatientId);
+                setProfilePatientName(profilePatientName);
+
+                console.log(profilePatientId, profilePatientName);
+            } catch (error) {
+                console.log(error);
+            }
+        }
+        process();
+    }
+
+    const addBooking = (evt, timeBegin, timeEnd, timeSlotId) => {
+        evt.preventDefault();
+
+        const process = async () => {
+            setBookingStep(!bookingStep);
+            setBookingTimeSlot(`${timeBegin} - ${timeEnd}`)
+            setTimeSlotId(timeSlotId);
+            const [day, month, year] = bookingDate.split('/');
+            const formattedDateNew = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+            console.log(formattedDateNew, timeSlotId, profileDoctorId)
+
+            let res = await Apis.post(endpoints['find-check-scheduled'], {
+                "profileDoctorId": profileDoctorId,
+                "date": formattedDateNew,
+                "timeSlotId": timeSlotId
+            })
+            console.log(res.data);
+            const scheduleId = res.data.scheduleId;
+            setScheduleId(scheduleId)
+            console.log(scheduleId)
+        }
+        process();
+    }
+
+    const saveBooking = (evt) => {
+        evt.preventDefault();
+
+        const process = async () => {
+            try {
+                console.log(scheduleId, profilePatientName)
+                let res = await Apis.post(endpoints['add-booking'], {
+                    "scheduleId": scheduleId,
+                    "profilePatientId": profilePatientId
+                })
+
+                let mes = await Apis.post(endpoints['send-custom-email'], {
+                    "mailTo": "2051050549tuan@ou.edu.vn",
+                    "mailSubject": "Chào bạn!",
+                    "mailContent": "Mời bạn đến TOD quẩy cùng mấy DJ, Rapper nhé!"
+                })
+
+                if (res.data === "Đặt lịch thành công!")
+                    toast.success(res.data)
+                else
+                    toast.error(res.data)
+                console.log(mes.data);
+                console.log(res.data)
+            } catch (error) {
+                console.log(error);
+            }
+        }
+        process();
+    }
+
     useEffect(() => {
         const loadProfilePatient = async () => {
             try {
@@ -61,85 +151,241 @@ const BookingDetail = () => {
         loadProfilePatient();
     }, [current_user.userId])
 
+    const dateBookingChoice = (evt, formattedDate) => {
+        evt.preventDefault();
+
+        const process = async () => {
+            try {
+                setBookingDate(formattedDate)
+                const [day, month, year] = formattedDate.split('/');
+                const formattedDateNew = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+                console.log(profileDoctorId, formattedDateNew)
+                let res = await Apis.post(endpoints['timeslot-booking'], {
+                    "profileDoctorId": profileDoctorId,
+                    "date": formattedDateNew
+                })
+                setTimeSlotBooking(res.data);
+                console.log(res.data)
+            } catch (error) {
+                console.log(error)
+            }
+        }
+        process();
+    }
+
     return <>
-        <h3>Đặt khám bác sĩ {doctorDetail.name}</h3>
         <div class="Booking_Detail_Wrapper">
-            <div class="Booking_Detail">
-                <div class="Booking_Detail_Header">
-                    <div class="Booking_Step">
-                        <div class="Booking_Step_1">
-                            <span>1</span>
-                            <span>Thời gian khám</span>
-                        </div>
-                        <div class="Booking-Step_2">
-                            <span>2</span>
-                            <span>Bệnh nhân</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="Booking_Detail_Body">
-                    <div class="Booking_Detail_Body_Left">
-                        <div class="Booking_Date_Time">
-                            <div>
-                                <span>1</span>
-                                <span>Ngày và giờ khám</span>
+            {bookingStep === true ?
+                <>
+                    <div class="Booking_Detail">
+                        <div class="Booking_Detail_Header" style={{ marginBottom: "3rem" }}>
+                            <div class="Booking_Step">
+                                <div class="Booking_Step_1">
+                                    <span style={{ marginRight: ".5rem" }}><Badge bg="success">1</Badge></span>
+                                    <span>Thời gian khám</span>
+                                </div>
                             </div>
-                            <div>
-                                {dateBooking.length === 0 ? (
-                                    <h5>Bác sĩ này chưa có lịch</h5>
-                                ) : (
-                                    Object.values(dateBooking).map(db => {
-                                        const currentDate = new Date();
-                                        const bookingDate = new Date(db);
+                        </div>
+                        <div class="Booking_Detail_Body">
+                            <div class="Booking_Detail_Body_Left">
+                                <div class="Booking_Date_Time">
+                                    <div>
+                                        <span style={{ marginRight: ".5rem" }}><Badge bg="primary">1</Badge></span>
+                                        <span style={{ marginRight: ".5rem" }}>Ngày và giờ khám</span>
+                                        <span style={{ marginLeft: "auto" }}><FaAngleDown /></span>
+                                    </div>
+                                    <div class="Booking_Date">
+                                        {dateBooking.length === 0 ? (
+                                            <h5>Bác sĩ này chưa có lịch</h5>
+                                        ) : (
+                                            Object.values(dateBooking).map(db => {
+                                                const currentDate = new Date();
+                                                const bookingDate = new Date(db);
 
-                                        if (bookingDate > currentDate) {
-                                            return (
-                                                <div className="Booking_Date_Item" key={db}>
-                                                    <span>{db}</span>
-                                                </div>
-                                            );
-                                        }
-                                    })
-                                )}
-                            </div>
-                            <div></div>
-                        </div>
-                        <div class="Booking_Patient">
-                            <div>
-                                <span>2</span>
-                                <span>Bệnh nhân</span>
-                            </div>
-                            <div>
-                                {profilePatient.length === 0 ? (
-                                    <>
-                                        <h6>Chọn hồ sơ bạn muốn đặt khám</h6>
-                                        <div class="Profile_List_404">
-                                            <img src={printer} alt="404" width={'20%'} />
-                                            <span>Không tìm thấy kết quả</span>
+                                                if (bookingDate > currentDate) {
+                                                    const dateObj = new Date(db);
+                                                    const dayOfWeek = dateObj.toLocaleString('vi-VN', { weekday: 'long' });
+                                                    const day = dateObj.getDate();
+                                                    const month = dateObj.getMonth() + 1;
+                                                    const year = dateObj.getFullYear();
+                                                    const formattedDate = `${day}/${month}/${year}`;
+                                                    return (
+                                                        <div className="Booking_Date_Item" key={db} onClick={(evt) => dateBookingChoice(evt, formattedDate)}>
+                                                            <span style={{ marginRight: ".25rem" }}>{dayOfWeek},</span>
+                                                            <span id="dateInput">{formattedDate}</span>
+                                                        </div>
+                                                    );
+                                                }
+                                            })
+                                        )}
+                                    </div>
+                                    <div class="Booking_TimeSlot">
+                                        <div class="Booking_Time_Slot_List">
+                                            {Object.values(timeSlotBooking).map(ts => {
+                                                const timeSlotId = ts[0];
+                                                const timeBegin = new Date(ts[1]).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                                                const timeEnd = new Date(ts[2]).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                                                return (
+                                                    <span key={timeSlotId} value={timeSlotId}
+                                                        style={{ marginRight: '10px' }} onClick={(evt) => addBooking(evt, timeBegin, timeEnd, timeSlotId)}>
+                                                        {timeBegin} - {timeEnd}
+                                                    </span>
+                                                );
+                                            })}
                                         </div>
-                                    </>
-                                ) : (
-                                    Object.values(profilePatient).map(pp => {
-                                        return <>
-                                            <div class="Profile_List_Detail">
-                                                <img src={profileicon} alt="profileicon" width={'20%'} />
-                                                <li key={pp.profilePatientId} value={pp.profilePatientId}>{pp.name}</li>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="Booking_Detail_Body_Right">
+                                <div>
+                                    <h5>Thông tin đặt khám</h5>
+                                    <div class="Booking_Detail_Body_Doctor">
+                                        <div>
+                                            {doctorDetail?.userId?.avatar && (
+                                                <div className="Booking_Detail_Doctor_Avatar">
+                                                    <img src={doctorDetail.userId.avatar} width={"80%"} alt="Doctor Avatar" />
+                                                </div>
+                                            )}
+                                            <div>
+                                                <span style={{ fontWeight: "700", fontSize: "1.5rem" }}>{doctorDetail.name}</span>
+                                                <span style={{ fontWeight: "300", fontSize: "1rem" }}>{doctorDetail.workAddress}</span>
                                             </div>
-                                        </>
-                                    })
-                                )}
+                                        </div>
+                                        <div class="Booking_Detail_Body_Info">
+                                            <div class="Booking_Date_Info" style={{ width: "100%" }}>
+                                                <span>Ngày khám</span>
+                                                <span>{bookingDate}</span>
+                                            </div>
+                                            <div class="Booking__TimeSlotInfo" style={{ width: "100%" }}>
+                                                <span>Khung giờ</span>
+                                                <span></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button style={{ backgroundColor: "grey", cursor: "not-allowed" }}>Xác nhận đặt khám</button>
+                                </div>
+                                <span>Bằng cách nhấn nút xác nhận, bạn đã đồng ý với các điều khoản và điều kiện đặt khám</span>
+                            </div>
+                        </div>
+                        <div class="Booking_Detail_Footer">
+                            <div>
+                                <span>Đặt lịch khám Bác sĩ dễ dàng</span>
+                                <h3>Tải ngay IMPROOKCARE</h3>
+                                <div>
+                                    <a href="/" style={{ marginRight: '1rem' }}><img src={googleplay} alt="GooglePlay" /></a>
+                                    <a href="/"><img src={appstore} alt="AppStore" /></a>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="Booking_Detail_Body_Right">
-                        <div>
-
+                </> :
+                <>
+                    <div class="Booking_Detail">
+                        <div class="Booking_Detail_Header" style={{ marginBottom: "3rem" }}>
+                            <div class="Booking_Step">
+                                <div class="Booking_Step_1">
+                                    <span style={{ marginRight: ".5rem", cursor: "pointer" }} onClick={() => checkBookingStep()}><Badge bg="primary"><TiTickOutline /></Badge></span>
+                                    <span>Thời gian khám</span>
+                                </div>
+                                <div>
+                                    <FaArrowRight />
+                                </div>
+                                <div class="Booking-Step_2">
+                                    <span style={{ marginRight: ".5rem" }}><Badge bg="success">2</Badge></span>
+                                    <span>Bệnh nhân</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="Booking_Detail_Body">
+                            <div class="Booking_Detail_Body_Left">
+                                <div class="Booking_Date_Time" style={{ marginBottom: "3rem" }}>
+                                    <div>
+                                        <span style={{ marginRight: ".5rem" }}><Badge bg="primary">1</Badge></span>
+                                        <span style={{ marginRight: ".5rem" }}>Ngày và giờ khám</span>
+                                        <span style={{ marginLeft: "auto", cursor: "pointer" }} onClick={() => checkBookingStep()}><FaAngleDown /></span>
+                                    </div>
+                                    <div></div>
+                                </div>
+                                <div class="Booking_Patient">
+                                    <div style={{ marginBottom: "3rem" }}>
+                                        <span style={{ marginRight: ".5rem" }}><Badge bg="primary">2</Badge></span>
+                                        <span>Hồ sơ bệnh nhân</span>
+                                    </div>
+                                    <div>
+                                        {profilePatient.length === 0 ? (
+                                            <>
+                                                <h6>Chọn hồ sơ bạn muốn đặt khám</h6>
+                                                <div class="Profile_List_404">
+                                                    <img src={printer} alt="404" width={'20%'} />
+                                                    <span>Không tìm thấy kết quả</span>
+                                                </div>
+                                            </>
+                                        ) : (
+                                            Object.values(profilePatient).map(pp => {
+                                                return <>
+                                                    <div class="Profile_List_Detail" key={pp.profilePatientId} onClick={(e) => profilePatientChoice(e, pp.profilePatientId, pp.name)}>
+                                                        <ul>
+                                                            <li class="Image_Patient"><img src={profileicon} alt="profileicon" width={"100%"} /></li>
+                                                            <li class="Name_Patient" key={pp.profilePatientId} value={pp.profilePatientId}>{pp.name}</li>
+                                                        </ul>
+                                                    </div>
+                                                </>
+                                            })
+                                        )}
+                                    </div>
+                                    <div>
+                                        <button>Thêm hồ sơ mới</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="Booking_Detail_Body_Right">
+                                <div>
+                                    <h5>Thông tin đặt khám</h5>
+                                    <div class="Booking_Detail_Body_Doctor">
+                                        <div>
+                                            {doctorDetail?.userId?.avatar && (
+                                                <div className="Booking_Detail_Doctor_Avatar">
+                                                    <img src={doctorDetail.userId.avatar} width={"80%"} alt="Doctor Avatar" />
+                                                </div>
+                                            )}
+                                            <div>
+                                                <span style={{ fontWeight: "700", fontSize: "1.5rem" }}>{doctorDetail.name}</span>
+                                                <span style={{ fontWeight: "300", fontSize: "1rem" }}>{doctorDetail.workAddress}</span>
+                                            </div>
+                                        </div>
+                                        <div class="Booking_Detail_Body_Info">
+                                            <div class="Booking_Date_Info" style={{ width: "100%" }}>
+                                                <span>Ngày khám</span>
+                                                <span>{bookingDate}</span>
+                                            </div>
+                                            <div class="Booking__TimeSlotInfo" style={{ width: "100%" }}>
+                                                <span>Khung giờ</span>
+                                                <span>{bookingTimeSlot}</span>
+                                            </div>
+                                            <div class="Booking_Patient_Info" style={{ width: "100%" }}>
+                                                <span>Bệnh nhân</span>
+                                                <span>{profilePatientName}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button onClick={(e) => saveBooking(e)}>Đặt lịch</button>
+                                    <span>Bằng cách nhấn nút xác nhận, bạn đã đồng ý với các điều khoản và điều kiện đặt khám</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="Booking_Detail_Footer">
+                            <div>
+                                <span>Đặt lịch khám Bác sĩ dễ dàng</span>
+                                <h3>Tải ngay IMPROOKCARE</h3>
+                                <div>
+                                    <a href="/" style={{ marginRight: '1rem' }}><img src={googleplay} alt="GooglePlay" /></a>
+                                    <a href="/"><img src={appstore} alt="AppStore" /></a>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="Booking_Detail_Footer"></div>
-            </div>
-        </div>
+                </>}
+        </div >
     </>
 }
 

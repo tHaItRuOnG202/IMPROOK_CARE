@@ -125,7 +125,7 @@ const Schedule = () => {
                 const formattedDate = new Date(selectedDate).toISOString().split('T')[0];
                 console.log(current_user.userId, formattedDate, timeSlotId)
                 let res = await Apis.post(endpoints['check-scheduled'], {
-                    "profileDoctorId": current_user.userId,
+                    "profileDoctorId": selectedProfileDoctorId,
                     "date": formattedDate,
                     "timeSlotId": timeSlotId
                 });
@@ -193,7 +193,7 @@ const Schedule = () => {
                     const timeSlotId = selectedTimeSlots[i];
 
                     let res = await authApi().post(endpoints['add-schedule'], {
-                        "profileDoctorId": current_user.userId,
+                        "profileDoctorId": selectedProfileDoctorId,
                         "date": formattedDate,
                         "timeSlotId": timeSlotId
                     });

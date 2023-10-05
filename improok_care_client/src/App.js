@@ -24,6 +24,8 @@ import ProfileDoctor from "./components/Doctor/ProfileDoctor";
 import Schedule from "./components/Doctor/Schedule";
 import ProfileDoctorDetail from "./components/ProfileDoctorDetail";
 import BookingDetail from "./components/BookingDetail";
+import ChangePassword from "./components/ChangePassword"
+import ForgetPassword from "./components/ForgetPassword"
 
 export const MyUserContext = createContext();
 
@@ -54,6 +56,8 @@ const App = () => {
           <Route path='/schedule' element={<Schedule />} />
           <Route path='/doctor/:profileDoctorId' element={<ProfileDoctorDetail />} />
           <Route path='/booking/doctor/:profileDoctorId' element={<BookingDetail />} />
+          <Route path='/changepassword' element={<ChangePassword />} />
+          <Route path='/forgetpassword' element={<ForgetPassword />} />
         </Routes>
         <Footer />
         <ToastContainer />

@@ -98,7 +98,7 @@ const Login = () => {
                                         <span>
                                             <span><input type="checkbox" /> Ghi nhớ mật khẩu</span>
                                         </span>
-                                        <a href="/">Quên mật khẩu</a>
+                                        <a href="/forgetpassword">Quên mật khẩu</a>
                                     </div>
                                     <div class="Login_Option">
                                         <div class="Login_Or">
