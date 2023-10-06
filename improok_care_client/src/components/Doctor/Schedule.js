@@ -6,7 +6,6 @@ import { Form } from "react-bootstrap";
 import Apis, { authApi, endpoints } from "../../configs/Apis";
 import { toast } from "react-toastify";
 import MySpinner from "../../layout/MySpinner";
-import { format } from "date-fns";
 
 const Schedule = () => {
     const [current_user, dispatch] = useContext(MyUserContext);
@@ -72,13 +71,20 @@ const Schedule = () => {
             try {
                 let res = await Apis.get(endpoints['load-profile-doctor-by-userId'](current_user.userId));
                 setProfileDoctorByUserId(res.data);
+                if (res.data.length === 0) {
+                    toast.info("Vui lòng tạo hồ sơ trước khi đăng ký lịch khám!");
+                    nav('/profiledoctor');
+                }
+                if (res.data[0] !== undefined) {
+                    setSeletedProfileDoctorId(res.data[0].profileDoctorId)
+                }
                 console.log(res.data);
             } catch (error) {
                 console.log(error);
             }
         }
         loadProfileDoctorByUserId();
-    }, [current_user.userId])
+    }, [])
 
     // useEffect(() => {
     //     const scheduledCheck = async () => {
@@ -123,7 +129,7 @@ const Schedule = () => {
                 const selectedDate = dateInput.value; // Lấy giá trị ngày từ trường input
 
                 const formattedDate = new Date(selectedDate).toISOString().split('T')[0];
-                console.log(current_user.userId, formattedDate, timeSlotId)
+                console.log(selectedProfileDoctorId, formattedDate, timeSlotId)
                 let res = await Apis.post(endpoints['check-scheduled'], {
                     "profileDoctorId": selectedProfileDoctorId,
                     "date": formattedDate,
@@ -151,7 +157,6 @@ const Schedule = () => {
         }
         process();
     }
-
 
     const timeDistanceChange = (e) => {
         setSelectedTimeDistanceId(e.target.value);
@@ -223,7 +228,7 @@ const Schedule = () => {
                             <li><a href="/doctor">Thông tin cá nhân</a></li>
                             <li><a href="/test">Đổi mật khẩu</a></li>
                             <li><a href="/schedule">Đăng ký lịch khám</a></li>
-                            <li><a href="/">Lịch hẹn</a></li>
+                            <li><a href="/bookingmanagement">Lịch hẹn</a></li>
                             <li><a href="/profiledoctor">Hồ sơ</a></li>
                             <li><a href="/">Tạo đơn thuốc</a></li>
                             <li onClick={logout}>Đăng xuất</li>
@@ -241,7 +246,7 @@ const Schedule = () => {
                             </div>
                             <div class="Schedule_Profile_Option">
                                 <Form.Label style={{ width: "30%" }}>Chọn hồ sơ</Form.Label>
-                                <select class="value" defaultValue={selectedProfileDoctorId} onChange={profileDoctorChange} onFocus={profileDoctorChange}>
+                                <select class="value" defaultValue={selectedProfileDoctorId} onChange={(e) => profileDoctorChange(e)} onFocus={(e) => profileDoctorChange(e)}>
                                     {Object.values(profileDoctorByUserId).map(pd => <option key={pd.profileDoctorId} value={pd.profileDoctorId}>{pd.name}</option>)}
                                 </select>
                             </div>

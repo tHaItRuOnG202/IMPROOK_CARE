@@ -18,7 +18,7 @@ const Admin = () => {
             if (user === null) {
                 toast("Vui lòng đăng nhập!")
                 isLogin = 1;
-                navigate("/login");
+                navigate('/login');
             }
         }
     }

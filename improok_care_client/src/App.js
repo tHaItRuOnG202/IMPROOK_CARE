@@ -26,8 +26,10 @@ import ProfileDoctorDetail from "./components/ProfileDoctorDetail";
 import BookingDetail from "./components/BookingDetail";
 import ChangePassword from "./components/ChangePassword"
 import ForgetPassword from "./components/ForgetPassword"
+import BookingManagement from "./components/Doctor/BookingManagement";
 
 export const MyUserContext = createContext();
+// export const PhonenumberContext = createContext();
 
 const App = () => {
 
@@ -58,6 +60,7 @@ const App = () => {
           <Route path='/booking/doctor/:profileDoctorId' element={<BookingDetail />} />
           <Route path='/changepassword' element={<ChangePassword />} />
           <Route path='/forgetpassword' element={<ForgetPassword />} />
+          <Route path='/bookingmanagement' element={<BookingManagement />} />
         </Routes>
         <Footer />
         <ToastContainer />

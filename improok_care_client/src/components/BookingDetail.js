@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import "../styles/BookingDetail.css"
 import { useContext, useEffect, useState } from "react";
 import Apis, { authApi, endpoints } from "../configs/Apis";
@@ -29,6 +29,8 @@ const BookingDetail = () => {
     const [timeSlotId, setTimeSlotId] = useState('')
     const [bookingProfile, setBookingProfile] = useState('');
     const [selectedDate, setSelectedDate] = useState('');
+
+    const nav = useNavigate();
 
     const handleDateClick = (formattedDate) => {
         setSelectedDate(formattedDate);
@@ -119,17 +121,18 @@ const BookingDetail = () => {
                     "profilePatientId": profilePatientId
                 })
 
-                let mes = await Apis.post(endpoints['send-custom-email'], {
-                    "mailTo": "2051050549tuan@ou.edu.vn",
-                    "mailSubject": "Chào bạn!",
-                    "mailContent": "Mời bạn đến TOD quẩy cùng mấy DJ, Rapper nhé!"
-                })
-
-                if (res.data === "Đặt lịch thành công!")
-                    toast.success(res.data)
+                if (res.data === "Đặt lịch thành công!") {
+                    toast.success(res.data);
+                    let mes = await Apis.post(endpoints['send-custom-email'], {
+                        "mailTo": "2051050549tuan@ou.edu.vn",
+                        "mailSubject": "Chào bạn!",
+                        "mailContent": "Mời bạn đến TOD quẩy cùng mấy DJ, Rapper nhé!"
+                    })
+                    console.log(mes.data);
+                    nav('/');
+                }
                 else
                     toast.error(res.data)
-                console.log(mes.data);
                 console.log(res.data)
             } catch (error) {
                 console.log(error);

@@ -12,7 +12,7 @@ import cookie from "react-cookies"
 import { toast } from "react-toastify";
 import MySpinner from "../layout/MySpinner";
 
-const Register = () => {
+const Register = (props) => {
     const [current_user,] = useContext(MyUserContext)
     // const [user, setUser] = useState({
     //     "firstname": "",
@@ -27,6 +27,7 @@ const Register = () => {
     const [firstname, setFirstname] = useState('');
     const [lastname, setLastname] = useState('');
     const [username,] = useState(cookie.load("phonenumber"));
+    // const [username,] = useState(props.username);
     const [password, setPassword] = useState('');
     const [confirmPass, setConfirmPass] = useState('');
     const [gender, setGender] = useState(true)

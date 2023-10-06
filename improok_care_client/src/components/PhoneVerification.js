@@ -9,6 +9,7 @@ import MySpinner from "../layout/MySpinner";
 import { MyUserContext } from "../App";
 import { toast } from "react-toastify";
 import cookie from "react-cookies"
+import Register from "./Register";
 
 const PhoneVerification = () => {
     const [user,] = useContext(MyUserContext)
@@ -97,6 +98,8 @@ const PhoneVerification = () => {
     }
 
     const toRegister = () => {
+        // const phonenumber1 = "01236547896";
+        // <Register username={phonenumber1} />
         setPhonenumber(phonenumber);
         cookie.save("phonenumber", phonenumber)
         nav('/register')
@@ -123,6 +126,9 @@ const PhoneVerification = () => {
             setPhonenumber(evt.target.value);
         }
     }
+
+    // const phonenumber1 = "01236547896";
+    // <Register username={phonenumber1} />
 
     if (user !== null)
         return <Navigate to="/" />
