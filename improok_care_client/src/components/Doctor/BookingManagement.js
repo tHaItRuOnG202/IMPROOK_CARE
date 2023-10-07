@@ -3,7 +3,7 @@ import { MyUserContext } from "../../App";
 import { useNavigate } from "react-router-dom";
 import "../../styles/BookingManagement.css";
 import Apis, { authApi, endpoints } from "../../configs/Apis";
-import { Button, Form, Table } from "react-bootstrap";
+import { Badge, Button, Form, Table } from "react-bootstrap";
 import { toast } from "react-toastify";
 
 const BookingManagement = () => {
@@ -14,6 +14,7 @@ const BookingManagement = () => {
     const [minDate, setMinDate] = useState('');
     const nav = useNavigate();
     const [selectedOption, setSelectedOption] = useState('new');
+    const [bookingListCheck, setBookingListCheck] = useState("");
     // const [selectedBookingId, setSelectedBookingId] = useState('');
 
     const logout = () => {
@@ -61,13 +62,16 @@ const BookingManagement = () => {
                     "profiledoctorId": selectedProfileDoctorId
                 })
                 setBookingList(res.data);
+                // setBookingListCheck(res.data[][5]);
                 console.log(res.data);
             } catch (error) {
                 console.log(error);
             }
         }
-        loadWaitingBooking();
+        if (!bookingList)
+            loadWaitingBooking();
     }, [selectedProfileDoctorId])
+
 
     const handleOptionClick = (option) => {
         setSelectedOption(option);
@@ -135,36 +139,36 @@ const BookingManagement = () => {
         process();
     }
 
-    const cancelBooking = (evt, bookingId) => {
-        evt.preventDefault();
+    // const cancelBooking = (evt, bookingId) => {
+    //     evt.preventDefault();
 
-        const process = async () => {
-            try {
-                const requestBody = bookingId.toString()
-                let res = await authApi().post(endpoints['cancel-booking'], requestBody, {
-                    headers: {
-                        'Content-Type': 'text/plain'
-                    }
-                })
-                if (res.data === "Hủy thành công lịch đặt khám!") {
-                    toast.success(res.data);
-                    let mes = await Apis.post(endpoints['send-custom-email'], {
-                        "mailTo": "2051050549tuan@ou.edu.vn",
-                        "mailSubject": "Hello quý khách đã tin tưởng dịch vụ bên em",
-                        "mailContent": "Điểm em quá thấp mời em đến nhập học ĐH Family"
-                    })
-                    console.log(mes.data);
-                }
-                else {
-                    toast.error(res.data);
-                }
-                console.log(res.data);
-            } catch (error) {
-                console.log(error);
-            }
-        }
-        process();
-    }
+    //     const process = async () => {
+    //         try {
+    //             const requestBody = bookingId.toString()
+    //             let res = await authApi().post(endpoints['cancel-booking'], requestBody, {
+    //                 headers: {
+    //                     'Content-Type': 'text/plain'
+    //                 }
+    //             })
+    //             if (res.data === "Hủy thành công lịch đặt khám!") {
+    //                 toast.success(res.data);
+    //                 let mes = await Apis.post(endpoints['send-custom-email'], {
+    //                     "mailTo": "2051050549tuan@ou.edu.vn",
+    //                     "mailSubject": "Hello quý khách đã tin tưởng dịch vụ bên em",
+    //                     "mailContent": "Điểm em quá thấp mời em đến nhập học ĐH Family"
+    //                 })
+    //                 console.log(mes.data);
+    //             }
+    //             else {
+    //                 toast.error(res.data);
+    //             }
+    //             console.log(res.data);
+    //         } catch (error) {
+    //             console.log(error);
+    //         }
+    //     }
+    //     process();
+    // }
 
     const renderContent = () => {
         switch (selectedOption) {
@@ -178,23 +182,26 @@ const BookingManagement = () => {
                                         <th>#</th>
                                         <th>Tên bệnh nhân</th>
                                         <th>Ngày</th>
+                                        <th>Khung giờ</th>
                                         <th>Tình trạng</th>
                                         <th></th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {Object.values(bookingList).map((bl, index) => {
-                                        if (bl[3] === "Chờ xác nhận") {
+                                        const timeBegin = new Date(bl[3]).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                                        const timeEnd = new Date(bl[4]).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                                        if (bl[5] === "Chờ xác nhận") {
                                             return <>
                                                 <tr key={index}>
                                                     <td>{bl[0]}</td>
-                                                    <td>{bl[4]}</td>
+                                                    <td>{bl[6]}</td>
                                                     <td>{bl[2]}</td>
-                                                    <td>{bl[3]}</td>
+                                                    <td>{timeBegin} - {timeEnd}</td>
+                                                    <td>{bl[5]}</td>
                                                     <td>
                                                         <Button style={{ marginRight: '.5rem' }} variant="success" onClick={(evt) => acceptBooking(evt, bl[0])}>Xác nhận</Button>
-                                                        <Button style={{ marginRight: '.5rem' }} variant="danger" onClick={(evt) => denyBooking(evt, bl[0])}>Từ chối</Button>
-                                                        <Button variant="primary" onClick={(evt) => cancelBooking(evt, bl[0])}>Hủy</Button>
+                                                        <Button variant="danger" onClick={(evt) => denyBooking(evt, bl[0])}>Từ chối</Button>
                                                     </td>
                                                 </tr>
                                             </>
@@ -215,18 +222,22 @@ const BookingManagement = () => {
                                         <th>#</th>
                                         <th>Tên bệnh nhân</th>
                                         <th>Ngày</th>
+                                        <th>Khung giờ</th>
                                         <th>Tình trạng</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {Object.values(bookingList).map((bl, index) => {
-                                        if (bl[3] === "Đã xác nhận") {
+                                        const timeBegin = new Date(bl[3]).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                                        const timeEnd = new Date(bl[4]).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                                        if (bl[5] === "Đã xác nhận") {
                                             return <>
                                                 <tr key={index}>
                                                     <td>{bl[0]}</td>
-                                                    <td>{bl[4]}</td>
+                                                    <td>{bl[6]}</td>
                                                     <td>{bl[2]}</td>
-                                                    <td>{bl[3]}</td>
+                                                    <td>{timeBegin} - {timeEnd}</td>
+                                                    <td><Badge bg="success">{bl[5]}</Badge></td>
                                                 </tr>
                                             </>
                                         }
@@ -251,13 +262,16 @@ const BookingManagement = () => {
                                 </thead>
                                 <tbody>
                                     {Object.values(bookingList).map((bl, index) => {
-                                        if (bl[3] === "Từ chối") {
+                                        const timeBegin = new Date(bl[3]).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                                        const timeEnd = new Date(bl[4]).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                                        if (bl[5] === "Từ chối") {
                                             return <>
                                                 <tr key={index}>
                                                     <td>{bl[0]}</td>
-                                                    <td>{bl[4]}</td>
+                                                    <td>{bl[6]}</td>
                                                     <td>{bl[2]}</td>
-                                                    <td>{bl[3]}</td>
+                                                    <td>{timeBegin} - {timeEnd}</td>
+                                                    <td><Badge bg="danger">Đã {bl[5]}</Badge></td>
                                                 </tr>
                                             </>
                                         }

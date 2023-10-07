@@ -165,8 +165,12 @@ const Schedule = () => {
 
     const profileDoctorChange = (e) => {
         setSeletedProfileDoctorId(e.target.value);
+        setSelectedTimeSlots([]);
     }
 
+    const scheduleDateChange = () => {
+        setSelectedTimeSlots([]);
+    }
     // const timeSlotClickCheck = (timeSlotId) => {
     //     const isSelected = selectedTimeSlots.includes(timeSlotId);
 
@@ -242,7 +246,7 @@ const Schedule = () => {
                         <div class="Schedule_Option">
                             <div class="Schedule_Date_Option">
                                 <Form.Label style={{ width: "30%" }}>Chọn ngày</Form.Label>
-                                <input type="date" style={{ width: "60%" }} defaultValue={minDate} id="dateInput" min={minDate} />
+                                <input type="date" style={{ width: "60%" }} defaultValue={minDate} onChange={() => scheduleDateChange()} id="dateInput" min={minDate} />
                             </div>
                             <div class="Schedule_Profile_Option">
                                 <Form.Label style={{ width: "30%" }}>Chọn hồ sơ</Form.Label>
