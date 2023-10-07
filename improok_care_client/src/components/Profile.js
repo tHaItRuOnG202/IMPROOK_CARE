@@ -132,7 +132,6 @@ const Profile = () => {
                 let res = await authApi().get(endpoints['view-profile-patient'](pp.profilePatientId))
 
                 setProfile(res.data);
-                console.log("profile patient");
                 console.log(res.data);
                 setLoading(false);
             } catch (error) {
@@ -284,8 +283,8 @@ const Profile = () => {
                     <div class="Profile_Left_Content">
                         <ul>
                             <li><a href="/personalpage">Thông tin cá nhân</a></li>
-                            <li><a href="/test">Đổi mật khẩu</a></li>
-                            <li><a href="/booking">Lịch khám</a></li>
+                            <li><a href="/changepassword">Đổi mật khẩu</a></li>
+                            <li><a href="/appointment">Lịch khám</a></li>
                             <li><a href="/medicalrecord">Lịch sử khám</a></li>
                             <li><a href="/profile">Hồ sơ</a></li>
                             <li onClick={logout}>Đăng xuất</li>

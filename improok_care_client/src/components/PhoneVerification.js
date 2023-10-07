@@ -9,7 +9,6 @@ import MySpinner from "../layout/MySpinner";
 import { MyUserContext } from "../App";
 import { toast } from "react-toastify";
 import cookie from "react-cookies"
-import Register from "./Register";
 
 const PhoneVerification = () => {
     const [user,] = useContext(MyUserContext)

@@ -10,7 +10,6 @@ import MyUserReducer from "./reducers/MyUserReducer";
 import cookie from "react-cookies"
 import Admin from "./components/Admin/Admin";
 import Doctor from "./components/Doctor/Doctor";
-import Error from "./components/Error";
 import Profile from "./components/Profile"
 import Booking from "./components/Booking"
 import PhoneVerification from "./components/PhoneVerification"
@@ -19,7 +18,6 @@ import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer } from "react-toastify";
 import CollabDoctor from "./components/CollabDoctor";
 import MedicalRecord from "./components/MedicalRecord";
-import Test from "./components/Test";
 import ProfileDoctor from "./components/Doctor/ProfileDoctor";
 import Schedule from "./components/Doctor/Schedule";
 import ProfileDoctorDetail from "./components/ProfileDoctorDetail";
@@ -27,6 +25,7 @@ import BookingDetail from "./components/BookingDetail";
 import ChangePassword from "./components/ChangePassword"
 import ForgetPassword from "./components/ForgetPassword"
 import BookingManagement from "./components/Doctor/BookingManagement";
+import Appointment from "./components/Appointment";
 
 export const MyUserContext = createContext();
 // export const PhonenumberContext = createContext();
@@ -45,14 +44,12 @@ const App = () => {
           <Route path='/register' element={<Register />} />
           <Route path='/admin' element={<Admin />} />
           <Route path='/doctor' element={<Doctor />} />
-          <Route path='/error' element={<Error />} />
           <Route path='/profile' element={<Profile />} />
           <Route path='/phoneverification' element={<PhoneVerification />} />
           <Route path='/register' element={<Register />} />
           <Route path='/personalpage' element={<PersonalPage />} />
           <Route path='/collabdoctor' element={<CollabDoctor />} />
           <Route path='/medicalrecord' element={<MedicalRecord />} />
-          <Route path='/test' element={<Test />} />
           <Route path='/booking' element={<Booking />} />
           <Route path='/profiledoctor' element={<ProfileDoctor />} />
           <Route path='/schedule' element={<Schedule />} />
@@ -61,6 +58,7 @@ const App = () => {
           <Route path='/changepassword' element={<ChangePassword />} />
           <Route path='/forgetpassword' element={<ForgetPassword />} />
           <Route path='/bookingmanagement' element={<BookingManagement />} />
+          <Route path='/appointment' element={<Appointment />} />
         </Routes>
         <Footer />
         <ToastContainer />

@@ -172,8 +172,8 @@ const PersonalPage = () => {
                     <div class="PersonalPage_Left_Content">
                         <ul>
                             <li><a href="/personalpage">Thông tin cá nhân</a></li>
-                            <li><a href="/test">Đổi mật khẩu</a></li>
-                            <li><a href="/">Lịch khám</a></li>
+                            <li><a href="/changepassword">Đổi mật khẩu</a></li>
+                            <li><a href="/appointment">Lịch khám</a></li>
                             <li><a href="/medicalrecord">Lịch sử khám</a></li>
                             <li><a href="/profile">Hồ sơ</a></li>
                             <li onClick={logout}>Đăng xuất</li>

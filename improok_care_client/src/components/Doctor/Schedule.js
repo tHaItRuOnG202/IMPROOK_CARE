@@ -230,7 +230,7 @@ const Schedule = () => {
                     <div class="Schedule_Left_Content">
                         <ul>
                             <li><a href="/doctor">Thông tin cá nhân</a></li>
-                            <li><a href="/test">Đổi mật khẩu</a></li>
+                            <li><a href="/changepassword">Đổi mật khẩu</a></li>
                             <li><a href="/schedule">Đăng ký lịch khám</a></li>
                             <li><a href="/bookingmanagement">Lịch hẹn</a></li>
                             <li><a href="/profiledoctor">Hồ sơ</a></li>

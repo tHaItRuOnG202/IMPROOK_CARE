@@ -54,24 +54,43 @@ const BookingManagement = () => {
         setMinDate(today);
     }, []);
 
-    useEffect(() => {
-        const loadWaitingBooking = async () => {
-            try {
-                console.log(selectedProfileDoctorId);
-                let res = await authApi().post(endpoints['booking-doctor-view'], {
-                    "profiledoctorId": selectedProfileDoctorId
-                })
-                setBookingList(res.data);
-                // setBookingListCheck(res.data[][5]);
-                console.log(res.data);
-            } catch (error) {
-                console.log(error);
-            }
+    const loadWaitingBooking = async () => {
+        try {
+            console.log(selectedProfileDoctorId);
+            let res = await authApi().post(endpoints['booking-doctor-view'], {
+                "profiledoctorId": selectedProfileDoctorId
+            })
+            setBookingList(res.data);
+            console.log(res.data);
+        } catch (error) {
+            console.log(error);
         }
-        if (!bookingList)
-            loadWaitingBooking();
+    }
+
+    useEffect(() => {
+        loadWaitingBooking();
     }, [selectedProfileDoctorId])
 
+    // useEffect(() => {
+    //     loadWaitingBooking();
+    // }, [bookingList])
+
+    // const loadWaitingBooking = async () => {
+    //     try {
+    //         console.log(selectedProfileDoctorId);
+    //         let res = await authApi().post(endpoints['booking-doctor-view'], {
+    //             "profiledoctorId": selectedProfileDoctorId
+    //         });
+    //         setBookingList(res.data);
+    //         console.log(res.data);
+    //     } catch (error) {
+    //         console.log(error);
+    //     }
+    // };
+
+    // useEffect(() => {
+    //     loadWaitingBooking();
+    // }, [selectedProfileDoctorId]);
 
     const handleOptionClick = (option) => {
         setSelectedOption(option);
@@ -90,6 +109,7 @@ const BookingManagement = () => {
                 })
                 if (res.data === "Xác nhận thành công lịch đặt khám!") {
                     toast.success(res.data);
+                    loadWaitingBooking();
                     let mes = await Apis.post(endpoints['send-custom-email'], {
                         "mailTo": "2051050549tuan@ou.edu.vn",
                         "mailSubject": "Hello quý khách đã tin tưởng dịch vụ bên em",
@@ -297,7 +317,7 @@ const BookingManagement = () => {
                     <div class="BookingManagement_Left_Content">
                         <ul>
                             <li><a href="/doctor">Thông tin cá nhân</a></li>
-                            <li><a href="/test">Đổi mật khẩu</a></li>
+                            <li><a href="/changepassword">Đổi mật khẩu</a></li>
                             <li><a href="/schedule">Đăng ký lịch khám</a></li>
                             <li><a href="/bookingmanagement">Lịch hẹn</a></li>
                             <li><a href="/profiledoctor">Hồ sơ</a></li>
