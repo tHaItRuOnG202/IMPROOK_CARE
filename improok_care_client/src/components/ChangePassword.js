@@ -55,18 +55,25 @@ const ChangePassword = () => {
                     "newPassword": newPassword
                 });
 
-                if (res.status === 200) {
+                if (res.data === "Đổi mật khẩu thành công!") {
                     toast.success("Đổi mật khẩu thành công!")
                     nav("/");
                     console.log(res.data)
-                } else {
-                    toast.error(res.data);
-                    console.log(res.data);
                 }
                 setLoading(false);
             } catch (error) {
-                toast.error(error)
-                console.log(error);
+                if (error.request.responseText === "Người dùng không tồn tại!") {
+                    toast.error(error.request.responseText)
+                    console.log(error.request.responseText)
+                }
+                else if (error.request.responseText === "Mật khẩu hiện tại và mật khẩu cũ không khớp!") {
+                    toast.error(error.request.responseText)
+                    console.log(error.request.responseText)
+                }
+                else {
+                    toast.error(error.request.responseText)
+                    console.log(error.request.responseText)
+                }
                 setLoading(false);
             }
         }

@@ -40,6 +40,8 @@ div.Booking_Date_Item {
     border-radius: 1rem;
     padding-top: 0.5rem;
     padding-bottom: 0.5rem;
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
     cursor: pointer;
 }
 
@@ -98,7 +100,7 @@ div.Booking_Date_Time>div {
 div.Booking_Time_Slot_List {
     margin-top: 1rem;
     margin-bottom: 1rem;
-    max-height: 10rem;
+    height: 15rem;
     width: 100%;
     overflow-y: scroll;
     gap: 1rem;
@@ -106,7 +108,7 @@ div.Booking_Time_Slot_List {
     padding-bottom: 2rem;
 }
 
-div.Booking_Time_Slot_List>span {
+div.Booking_Time_Slot_List>button {
     border: 0.005rem solid gray;
     padding-top: 0.5rem;
     padding-bottom: 0.5rem;
@@ -115,9 +117,9 @@ div.Booking_Time_Slot_List>span {
     border-radius: 0.5rem;
 }
 
-div.Booking_Time_Slot_List>span:hover {
-    color: white;
-    background-color: #1975dc;
+div.Booking_Time_Slot_List>button:hover {
+    color: white !important;
+    background-color: #1975dc !important;
     cursor: pointer;
 }
 

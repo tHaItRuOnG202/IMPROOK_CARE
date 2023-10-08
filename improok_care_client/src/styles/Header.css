@@ -4,7 +4,7 @@
 
 div.Header {
     height: 100%;
-    padding-top: 1.5rem;
+    padding-top: 0.75rem;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -15,8 +15,13 @@ div.Header1 {
     width: 23%;
 }
 
+
 div.Header1>a {
     text-decoration: none;
+}
+
+div.Header1>a>img {
+    width: 70%;
 }
 
 div.Header2 {

@@ -9,6 +9,7 @@ import { MyUserContext } from "../App"
 import { useNavigate } from "react-router-dom"
 import { Dropdown, NavDropdown } from "react-bootstrap";
 import 'bootstrap/dist/css/bootstrap.min.css';
+import logo from "../assests/images/tech-health-care.png"
 
 const Header = () => {
 
@@ -27,7 +28,10 @@ const Header = () => {
     return (<>
         <div class="Header">
             <div class="Header1">
-                <a href="/"><h2 class="Title"><FaSeedling /> IM'PROOK CARE</h2></a>
+                {/* <a href="/"><h2 class="Title"><FaSeedling /> IM'PROOK CARE</h2></a> */}
+                <a href="/">
+                    <img src={logo} alt="IMPROOKCARE" />
+                </a>
             </div>
             <div class="Header2">
                 <ul class="Menu-bar">

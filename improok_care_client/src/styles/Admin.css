@@ -1,0 +1,24 @@
+div.Admin_Content {
+    display: flex;
+    margin: auto;
+}
+
+div.Admin_Content_Left {
+    width: 20%;
+}
+
+div.Admin_Content_Left>ul {
+    list-style: none;
+}
+
+div.Admin_Content_Right {
+    width: 80%;
+}
+
+div.System_Management {
+    margin-top: 2rem;
+}
+
+div.Utilities_Service {
+    margin-top: 2rem;
+}

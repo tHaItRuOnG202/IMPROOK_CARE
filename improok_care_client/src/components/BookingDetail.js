@@ -228,12 +228,23 @@ const BookingDetail = () => {
                                                 const timeSlotId = ts[0];
                                                 const timeBegin = new Date(ts[1]).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
                                                 const timeEnd = new Date(ts[2]).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                                                const booked = ts[3];
+
+                                                const spanStyle = {
+                                                    marginRight: '10px',
+                                                    backgroundColor: booked ? 'gray' : 'white',
+                                                    color: booked ? 'white' : 'black',
+                                                    cursor: booked ? 'not-allowed' : 'pointer'
+                                                };
+
+                                                const buttonDisabled = booked ? true : false;
+
                                                 return (
-                                                    <span key={timeSlotId} value={timeSlotId}
-                                                        style={{ marginRight: '10px' }} onClick={(evt) => addBooking(evt, timeBegin, timeEnd, timeSlotId)}>
+                                                    <button style={spanStyle} disabled={buttonDisabled}><span key={timeSlotId} value={timeSlotId}
+                                                        onClick={(evt) => addBooking(evt, timeBegin, timeEnd, timeSlotId)}>
                                                         {timeBegin} - {timeEnd}
-                                                    </span>
-                                                );
+                                                    </span></button>
+                                                )
                                             })}
                                         </div>
                                     </div>
@@ -335,9 +346,6 @@ const BookingDetail = () => {
                                                 </>
                                             })
                                         )}
-                                    </div>
-                                    <div>
-                                        <button>Thêm hồ sơ mới</button>
                                     </div>
                                 </div>
                             </div>
