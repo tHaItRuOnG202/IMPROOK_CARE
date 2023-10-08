@@ -75,3 +75,68 @@ div.Appointment_List_Detail {
 div.Appointment_Right {
     width: 45%;
 }
+
+div.Doctor_Avatar_Name {
+    display: flex;
+    gap: 1rem;
+}
+
+div.Doctor_Avatar_Name>img {
+    width: 20%;
+}
+
+div.Doctor_Avatar_Name>div {
+    display: flex;
+    width: 80%;
+    flex-direction: column;
+    justify-content: center;
+}
+
+div.Doctor_Avatar_Name>div span {
+    display: block;
+}
+
+div.Doctor_Avatar_Name>div>span:first-child {
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+div.Booking_In4 {
+    margin-top: 1rem;
+}
+
+div.Patient_In4 {
+    margin-top: 1rem;
+}
+
+div.Result {
+    margin-top: 1rem;
+}
+
+div.Cancel_Button {
+    margin-top: 1rem;
+}
+
+div.Cancel_Button>button {
+    display: inline-block;
+    outline: 0;
+    appearance: none;
+    padding: 0px 12px;
+    border: 0px solid transparent;
+    border-radius: 4px;
+    text-decoration: none;
+    cursor: pointer;
+    background-color: rgb(9, 128, 76);
+    box-shadow: rgb(19 170 82 / 40%) 0px 2px 3px;
+    color: rgb(255, 255, 255);
+    font-size: 14px;
+    font-weight: 400;
+    height: 36px;
+    transition: all 150ms ease-in-out 0s;
+}
+
+div.Cancel_Button>button:hover {
+    color: rgb(255, 255, 255);
+    background-color: rgb(17, 97, 73);
+    box-shadow: rgb(19 170 82 / 40%) 0px 2px 3px, rgb(195 231 202) 0px 0px 0px 3px;
+}

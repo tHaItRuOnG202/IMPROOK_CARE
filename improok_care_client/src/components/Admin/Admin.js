@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { MyUserContext } from "../../App";
 import { useNavigate } from "react-router-dom";
-import { Button } from "react-bootstrap";
+import { Button, Table } from "react-bootstrap";
 import { toast } from "react-toastify";
 import MySpinner from "../../layout/MySpinner";
 import "../../styles/Admin.css";
@@ -13,12 +13,16 @@ import ListItemText from '@mui/material/ListItemText';
 import Collapse from '@mui/material/Collapse';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
-import { AddCircle, Analytics, LocalHospital, LocalPharmacy, Medication, MonetizationOn, People, Person, PersonAdd, Speed } from "@mui/icons-material";
+import { AddCircle, Analytics, Category, LocalHospital, LocalPharmacy, Medication, MonetizationOn, People, Person, PersonAdd, Speed } from "@mui/icons-material";
 import { Box, Paper, Typography } from "@mui/material";
+import Apis, { endpoints } from "../../configs/Apis";
+import moment from 'moment';
+import { HiPlus } from "react-icons/hi";
 
 
 const Admin = () => {
     const [user,] = useContext(MyUserContext);
+    const [userList, setUserList] = useState([]);
     const [loading, setLoading] = useState(false);
     const [selectedOption, setSelectedOption] = useState('overview');
     const navigate = useNavigate();
@@ -67,15 +71,71 @@ const Admin = () => {
         setStatisticalTick(!statisticalTick);
     }
 
+    const loadUser = async () => {
+        try {
+            let res = await Apis.get(endpoints['load-user'])
+            setUserList(res.data)
+            console.log(res.data)
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    useEffect(() => {
+        loadUser();
+    }, [])
+
     const renderContent = () => {
         switch (selectedOption) {
             case "overview":
                 return <>
-                    <div>Nội dung tổng quan</div>
+                    <div></div>
                 </>
             case "alluser":
                 return <>
-                    <div>Nội dung tất cả người dùng</div>
+                    <div>
+                        <div>
+                            <div class="Add_User">
+                                <button onClick={() => handleOptionClick("adduser")}><HiPlus /> Thêm 1 người dùng mới</button>
+                            </div>
+                            <Table striped bordered hover>
+                                <thead>
+                                    <tr>
+                                        <th>Ảnh đại diện</th>
+                                        <th>#</th>
+                                        <th>Họ và tên đệm</th>
+                                        <th>Tên</th>
+                                        <th>Tài khoản/Số điện thoại</th>
+                                        <th>Ngày sinh</th>
+                                        <th>Giới tính</th>
+                                        <th>Email</th>
+                                        <th>Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {Object.values(userList).map(u => {
+                                        const dateTimeString = u.birthday;
+                                        const formattedDate = moment(dateTimeString).format('DD-MM-YYYY');
+                                        return <>
+                                            <tr key={u.userId}>
+                                                <td style={{ width: '11%' }}><img src={u.avatar} alt="avatar" width={'100%'} /></td>
+                                                <td>{u.userId}</td>
+                                                <td>{u.lastname}</td>
+                                                <td>{u.firstname}</td>
+                                                <td>{u.username}</td>
+                                                <td>{formattedDate}</td>
+                                                <td>{u.gender === true ? 'Nam' : 'Nữ'}</td>
+                                                <td>{u.email}</td>
+                                                <td>
+                                                    <Button variant="success">Cập nhật</Button>
+                                                </td>
+                                            </tr>
+                                        </>
+                                    })}
+                                </tbody>
+                            </Table>
+                        </div>
+                    </div>
                 </>
             case "adduser":
                 return <>
@@ -84,6 +144,10 @@ const Admin = () => {
             case "allmedicine":
                 return <>
                     <div>Nội dung cho tất cả thuốc</div>
+                </>
+            case "medicinecategory":
+                return <>
+                    <div>Nội dung cho danh mục thuốc</div>
                 </>
             case "addmedicine":
                 return <>
@@ -169,6 +233,12 @@ const Admin = () => {
                                                                 <Medication />
                                                             </ListItemIcon>
                                                             <ListItemText primary="Tất cả thuốc" />
+                                                        </ListItemButton>
+                                                        <ListItemButton sx={{ pl: 4 }} onClick={() => handleOptionClick("medicinecategory")}>
+                                                            <ListItemIcon>
+                                                                <Category />
+                                                            </ListItemIcon>
+                                                            <ListItemText primary="Danh mục thuốc" />
                                                         </ListItemButton>
                                                         <ListItemButton sx={{ pl: 4 }} onClick={() => handleOptionClick("addmedicine")}>
                                                             <ListItemIcon>

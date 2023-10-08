@@ -6,11 +6,13 @@ import { authApi, endpoints } from "../configs/Apis";
 import printer from "../assests/images/printer.png"
 import { Form } from "react-bootstrap";
 import schedule from "../assests/images/schedule.png"
+import { set } from "date-fns";
 
 const Appointment = () => {
     const [current_user, dispatch] = useContext(MyUserContext);
     const nav = useNavigate();
     const [booking, setBooking] = useState([]);
+    const [bookingDetail, setBookingDetail] = useState(null);
     const [selectedBooking, setSelectedBooking] = useState('');
 
     const logout = () => {
@@ -36,20 +38,25 @@ const Appointment = () => {
         loadUserBooking();
     }, [current_user.userId])
 
-    // const viewBookingDetail = (evt, b) => {
-    //     evt.preventDefault();
+    const viewBookingDetail = (evt, b) => {
+        evt.preventDefault();
+        // setSelectedBooking(b[8]);
+        console.log(b[8])
 
-    //     const process = async () => {
-    //         try {
-    //             let res = await authApi().post(endpoints['booking-user-view'], {
-    //                 "userId": current_user.userId
-    //             })
-    //         } catch (error) {
-    //             console.log(error);
-    //         }
-    //     }
-    //     process();
-    // }
+        const process = async () => {
+            try {
+                // console.log(selectedBooking)
+                let res = await authApi().post(endpoints['booking-details-user-view'], {
+                    "bookingId": b[8]
+                })
+                setBookingDetail(res.data);
+                console.log(res.data);
+            } catch (error) {
+                console.log(error);
+            }
+        }
+        process();
+    }
 
     return <>
         <div class="Appointment_Wrapper">
@@ -90,8 +97,8 @@ const Appointment = () => {
                                                     const formattedDate = created_date.toLocaleDateString(); // Định dạng ngày
                                                     const formattedTime = created_date.toLocaleTimeString(); // Định dạng giờ
                                                     return <>
-                                                        <div class="Appointment_List_Detail" value={selectedBooking}>
-                                                            <li key={b[0]} style={{ fontWeight: 'bold', fontSize: '1.25rem' }} value={b[0]}>{b[4]}</li>
+                                                        <div class="Appointment_List_Detail" value={selectedBooking} onClick={(e) => viewBookingDetail(e, b)}>
+                                                            <li key={b[8]} style={{ fontWeight: 'bold', fontSize: '1.25rem' }} value={b[8]}>{b[4]}</li>
                                                             <li >{formattedTime} - {formattedDate}</li>
                                                             <li >{b[2]}</li>
                                                             <li style={{ color: isCancelled ? 'red' : 'green', fontSize: '0.8rem' }}>
@@ -110,45 +117,73 @@ const Appointment = () => {
                 </div>
                 <div class="Appointment_Right">
                     <section>
-                        <div class="Profile_Right_Content">
-                            {booking === null ? <>
-                                <div class="Profile_Null">
+                        <div class="Appointment_Right_Content">
+                            {bookingDetail === null ? <>
+                                <div class="Appointment_Null">
                                     <h5 className="mb-4">Chọn hồ sơ cần xem</h5>
                                     <img src={schedule} alt="Not found" width={'20%'} />
                                 </div>
                             </> :
                                 <>
-                                    <div class="Profile_Name">
-                                        <Form.Label style={{ width: "30%" }}>Họ và tên</Form.Label>
-                                        <Form.Control type="text" disabled />
-                                    </div>
-                                    <div class="Profile_Phonenumber">
-                                        <Form.Label style={{ width: "30%" }}>Số điện thoại</Form.Label>
-                                        <Form.Control type="text" disabled />
-                                    </div>
-                                    <div class="Profile_Email">
-                                        <Form.Label style={{ width: "30%" }}>Email</Form.Label>
-                                        <Form.Control type="email" disabled />
-                                    </div>
-                                    <div class="Profile_Address">
-                                        <Form.Label style={{ width: "30%" }}>Địa chỉ</Form.Label>
-                                        <Form.Control type="Text" disabled />
-                                    </div>
-                                    <div class="Profile_Gender">
-                                        <Form.Label style={{ width: "30%" }}>Giới tính</Form.Label>
-                                        <Form.Control type="Text" disabled />
-                                    </div>
-                                    <div class="Profile_Relationship">
-                                        <Form.Label style={{ width: "30%" }}>Quan hệ</Form.Label>
-                                        <Form.Control type="Text" disabled />
-                                    </div>
-                                    <div class="Profile_Birthday">
-                                        <Form.Label style={{ width: "30%" }}>Ngày sinh</Form.Label>
-
-                                    </div>
-                                    <div class="Change_Button">
-                                        <button type="button">Hủy Lịch</button>
-                                    </div>
+                                    {Object.values(bookingDetail).map(bd => {
+                                        // const formattedDate = created_date.toLocaleDateString(); // Định dạng ngày
+                                        // const formattedTime = created_date.toLocaleTimeString(); // Định dạng giờ
+                                        return <>
+                                            <div class="Doctor_In4">
+                                                <div class="Doctor_Avatar_Name">
+                                                    <img src={bd[10]?.avatar} alt="avatar" width={'50%'} />
+                                                    <div>
+                                                        <span>{bd[0]}</span>
+                                                        <span>{bd[1]}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="Booking_In4">
+                                                <div style={{ fontSize: '1.1rem', fontWeight: '600' }}>Thông tin đặt khám</div>
+                                                <div>
+                                                    <span>Ngày khám</span>
+                                                    <span>{bd[4]}</span>
+                                                </div>
+                                                <div>
+                                                    <span>Chuyên khoa</span>
+                                                    <span>{bd[2]?.specialtyName}</span>
+                                                </div>
+                                                <div>
+                                                    <span>Phí khám</span>
+                                                    <span>{bd[3]}</span>
+                                                </div>
+                                            </div>
+                                            <div class="Patient_In4">
+                                                <div style={{ fontSize: '1.1rem', fontWeight: '600' }}>Thông tin bệnh nhân</div>
+                                                <div>
+                                                    <span>Họ tên</span>
+                                                    <span>{bd[5]}</span>
+                                                </div>
+                                                <div>
+                                                    <span>Ngày sinh</span>
+                                                    <span>{bd[6] === null ? 'Chưa cập nhật' : bd[6]}</span>
+                                                </div>
+                                                <div>
+                                                    <span>Giới tính</span>
+                                                    <span>{bd[9] === false ? 'Nam' : 'Nữ'}</span>
+                                                </div>
+                                                <div>
+                                                    <span>Số điện thoại</span>
+                                                    <span>{bd[7]}</span>
+                                                </div>
+                                                <div>
+                                                    <span>Địa chỉ</span>
+                                                    <span>{bd[8]}</span>
+                                                </div>
+                                            </div>
+                                            <div class="Result">
+                                                <h6>Kết quả</h6>
+                                            </div>
+                                            <div class="Cancel_Button">
+                                                <button type="button">Hủy Lịch</button>
+                                            </div>
+                                        </>
+                                    })}
                                 </>}
                         </div>
                     </section>

@@ -41,7 +41,9 @@ export const endpoints = {
     "accept-booking": `${SERVER_CONTEXT}/api/auth/doctor/accept-booking/`,
     "deny-booking": `${SERVER_CONTEXT}/api/auth/doctor/deny-booking/`,
     "cancel-booking": `${SERVER_CONTEXT}/api/auth/cancel-booking/`,
-    "verification-forgot-password": `${SERVER_CONTEXT}/api/public/verification-forgot-password/`
+    "verification-forgot-password": `${SERVER_CONTEXT}/api/public/verification-forgot-password/`,
+    "load-user": `${SERVER_CONTEXT}/api/public/users/`,
+    "booking-details-user-view": `${SERVER_CONTEXT}/api/auth/booking-details-user-view/`
 }
 
 export const authApi = () => {

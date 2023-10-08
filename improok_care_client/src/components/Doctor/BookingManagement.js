@@ -141,6 +141,7 @@ const BookingManagement = () => {
                 })
                 if (res.data === "Từ chối thành công lịch đặt khám!") {
                     toast.success(res.data);
+                    loadWaitingBooking();
                     let mes = await Apis.post(endpoints['send-custom-email'], {
                         "mailTo": "2051050549tuan@ou.edu.vn",
                         "mailSubject": "Hello quý khách đã tin tưởng dịch vụ bên em",
@@ -277,6 +278,7 @@ const BookingManagement = () => {
                                         <th>#</th>
                                         <th>Tên bệnh nhân</th>
                                         <th>Ngày</th>
+                                        <th>Khung giờ</th>
                                         <th>Tình trạng</th>
                                     </tr>
                                 </thead>
