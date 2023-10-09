@@ -43,7 +43,11 @@ export const endpoints = {
     "cancel-booking": `${SERVER_CONTEXT}/api/auth/cancel-booking/`,
     "verification-forgot-password": `${SERVER_CONTEXT}/api/public/verification-forgot-password/`,
     "load-user": `${SERVER_CONTEXT}/api/public/users/`,
-    "booking-details-user-view": `${SERVER_CONTEXT}/api/auth/booking-details-user-view/`
+    "booking-details-user-view": `${SERVER_CONTEXT}/api/auth/booking-details-user-view/`,
+    "admin-add-user": `${SERVER_CONTEXT}/api/auth/admin/add-user/`,
+    "admin-update-user": `${SERVER_CONTEXT}/api/auth/admin/update-user/`,
+    "load-user-by-Id": (userId) => `${SERVER_CONTEXT}/api/public/user/${userId}/`,
+    "roles": `${SERVER_CONTEXT}/api/public/roles/`
 }
 
 export const authApi = () => {
