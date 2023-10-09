@@ -4,7 +4,7 @@ import { MyUserContext } from "../App";
 import "../styles/Appointment.css";
 import { authApi, endpoints } from "../configs/Apis";
 import printer from "../assests/images/printer.png"
-import { Form } from "react-bootstrap";
+import { Badge, Form } from "react-bootstrap";
 import schedule from "../assests/images/schedule.png"
 import { set } from "date-fns";
 
@@ -50,6 +50,26 @@ const Appointment = () => {
                     "bookingId": b[8]
                 })
                 setBookingDetail(res.data);
+                console.log(res.data);
+            } catch (error) {
+                console.log(error);
+            }
+        }
+        process();
+    }
+
+    const cancelBooking = (evt, bookingId) => {
+        evt.preventDefault();
+
+        const process = async () => {
+            try {
+                const requestBody = bookingId.toString()
+                let res = await authApi().post(endpoints['cancel-booking'], requestBody, {
+                    headers: {
+                        'Content-Type': 'text/plain'
+                    }
+                })
+
                 console.log(res.data);
             } catch (error) {
                 console.log(error);
@@ -140,47 +160,58 @@ const Appointment = () => {
                                             </div>
                                             <div class="Booking_In4">
                                                 <div style={{ fontSize: '1.1rem', fontWeight: '600' }}>Thông tin đặt khám</div>
-                                                <div>
+                                                <div class="Booking_In4_1">
                                                     <span>Ngày khám</span>
                                                     <span>{bd[4]}</span>
                                                 </div>
-                                                <div>
+                                                <div class="Booking_In4_2">
                                                     <span>Chuyên khoa</span>
                                                     <span>{bd[2]?.specialtyName}</span>
                                                 </div>
-                                                <div>
+                                                <div class="Booking_In4_3">
                                                     <span>Phí khám</span>
                                                     <span>{bd[3]}</span>
                                                 </div>
                                             </div>
                                             <div class="Patient_In4">
                                                 <div style={{ fontSize: '1.1rem', fontWeight: '600' }}>Thông tin bệnh nhân</div>
-                                                <div>
+                                                <div class="Patient_In4_1">
                                                     <span>Họ tên</span>
                                                     <span>{bd[5]}</span>
                                                 </div>
-                                                <div>
+                                                <div class="Patient_In4_2">
                                                     <span>Ngày sinh</span>
-                                                    <span>{bd[6] === null ? 'Chưa cập nhật' : bd[6]}</span>
+                                                    <span>{bd[6] === null ? 'Chưa cập nhật' : bd[6].substring(0, 10)}</span>
                                                 </div>
-                                                <div>
+                                                <div class="Patient_In4_3">
                                                     <span>Giới tính</span>
                                                     <span>{bd[9] === false ? 'Nam' : 'Nữ'}</span>
                                                 </div>
-                                                <div>
+                                                <div class="Patient_In4_4">
                                                     <span>Số điện thoại</span>
                                                     <span>{bd[7]}</span>
                                                 </div>
-                                                <div>
+                                                <div class="Patient_In4_5">
                                                     <span>Địa chỉ</span>
                                                     <span>{bd[8]}</span>
                                                 </div>
                                             </div>
-                                            <div class="Result">
-                                                <h6>Kết quả</h6>
+                                            <div class="Result_Info">
+                                                <div style={{ fontSize: '1.1rem', fontWeight: '600' }}>Tình trạng & Kết quả</div>
+                                                <div class="Result_In4_1">
+                                                    <span>Tình trạng</span>
+                                                    <span>{bd[11] === true ? <Badge bg="danger">Đã hủy</Badge> : <Badge bg="success">Đã đặt lịch</Badge>}</span>
+                                                </div>
+                                                <div class="Result_In4_2">
+                                                    <span>Kết quả</span>
+                                                    <span>{bd[12]?.statusValue === "Chờ xác nhận" ? <Badge bg="warning">Chờ xác nhận</Badge> :
+                                                        bd[12]?.statusValue === "Đã xác nhận" ? <Badge bg="success">Đã xác nhận</Badge> :
+                                                            <Badge bg="danger">Từ chối</Badge>
+                                                    }</span>
+                                                </div>
                                             </div>
                                             <div class="Cancel_Button">
-                                                <button type="button">Hủy Lịch</button>
+                                                <button type="button" onClick={(evt) => cancelBooking(evt, bd[13])}>Hủy Lịch</button>
                                             </div>
                                         </>
                                     })}

@@ -107,16 +107,17 @@ const Profile = () => {
         loadWard()
     }, [selectedProvinceCode, selectedDistrictCode])
 
-    useEffect(() => {
-        const loadProfilePatient = async () => {
-            try {
-                let res = await authApi().get(endpoints['load-profile-patient'](current_user.userId))
-                setProfilePatient(res.data);
-                console.log(res.data);
-            } catch (error) {
-                console.log(error)
-            }
+    const loadProfilePatient = async () => {
+        try {
+            let res = await authApi().get(endpoints['load-profile-patient'](current_user.userId))
+            setProfilePatient(res.data);
+            console.log(res.data);
+        } catch (error) {
+            console.log(error)
         }
+    }
+
+    useEffect(() => {
         loadProfilePatient();
     }, [current_user.userId])
 
@@ -152,22 +153,31 @@ const Profile = () => {
             try {
                 setLoading(true);
                 ///console.log(name + '' + phonenumber + '' + provincename + '' + districtname + '' + wardname + '' + personalAddress + '' + email + '' + relationship)
+                const dateInput = document.getElementById('birthdayInput');
+                const selectedDate = dateInput.value; // Lấy giá trị ngày từ trường input
+
+                const birthDate = new Date(selectedDate).toISOString().split('T')[0];
+
+                console.log(name, phonenumber, gender, birthDate, province[0].name, district[0].name, ward[0].name, personalAddress, relationship, current_user.userId)
 
                 let res = await authApi().post(endpoints['add-profile-patient'], {
                     "name": name,
                     "phonenumber": phonenumber,
-                    "provinceName": provincename,
-                    "districtName": districtname,
-                    "wardName": wardname,
+                    "gender": gender === undefined ? true : gender,
+                    "birthday": birthDate,
+                    "provinceName": provincename === undefined ? province[0].name : provincename,
+                    "districtName": districtname === undefined ? district[0].name : districtname,
+                    "wardName": wardname === undefined ? ward[0].name : wardname,
                     "personalAddress": personalAddress,
                     "email": email,
-                    "relationship": relationship,
+                    "relationship": relationship === undefined ? 'Khác' : relationship,
                     "userId": current_user.userId
                 });
                 console.log(res.data);
-                toast.success(res.data)
+                toast.success(res.data);
                 setLoading(false);
                 setAddProfileInfo(false);
+                loadProfilePatient();
 
             } catch (error) {
                 console.log(error);
@@ -529,6 +539,14 @@ const Profile = () => {
                                         <div class="Profile_Gender_Tick">
                                             <Form.Check type="radio" label="Nam" name="genderOption" defaultChecked onChange={() => setGender(true)} />
                                             <Form.Check type="radio" label="Nữ" name="genderOption" onChange={() => setGender(false)} />
+                                        </div>
+                                    </div>
+                                    <div class="Profile_Birthday">
+                                        <Form.Label style={{ width: "22%" }}>Ngày sinh</Form.Label>
+                                        <div class="Profile_Birthday_Tick">
+                                            <input
+                                                type="date" id="birthdayInput" defaultValue={currentFormattedDate}
+                                            />
                                         </div>
                                     </div>
                                     <div class="Profile_Relationship">
