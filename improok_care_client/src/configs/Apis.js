@@ -47,7 +47,13 @@ export const endpoints = {
     "admin-add-user": `${SERVER_CONTEXT}/api/auth/admin/add-user/`,
     "admin-update-user": `${SERVER_CONTEXT}/api/auth/admin/update-user/`,
     "load-user-by-Id": (userId) => `${SERVER_CONTEXT}/api/public/user/${userId}/`,
-    "roles": `${SERVER_CONTEXT}/api/public/roles/`
+    "roles": `${SERVER_CONTEXT}/api/public/roles/`,
+    "search-users": `${SERVER_CONTEXT}/api/public/search-users/`,
+    "medicine-categories": `${SERVER_CONTEXT}/api/public/medicine-categories/`,
+    "add-medicine-categories": `${SERVER_CONTEXT}/api/auth/admin/add-medicine-category/`,
+    "update-medicine-categories": `${SERVER_CONTEXT}/api/auth/admin/update-medicine-category/`,
+    "medicines": `${SERVER_CONTEXT}/api/public/medicines/`,
+    "search-medicines": `${SERVER_CONTEXT}/api/public/search-medicines/`
 }
 
 export const authApi = () => {

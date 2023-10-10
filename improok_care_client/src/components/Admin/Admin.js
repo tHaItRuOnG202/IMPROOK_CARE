@@ -1,6 +1,6 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import { MyUserContext } from "../../App";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button, Form, Table } from "react-bootstrap";
 import { toast } from "react-toastify";
 import MySpinner from "../../layout/MySpinner";
@@ -19,6 +19,7 @@ import Apis, { authApi, endpoints } from "../../configs/Apis";
 import moment from 'moment';
 import { HiPlus } from "react-icons/hi";
 import avatar_user from "../../assests/images/avatar-user.png"
+import PageNavigation from "../../utils/PageNavigation";
 
 
 const Admin = () => {
@@ -32,6 +33,14 @@ const Admin = () => {
     const avatar = useRef();
     const [roles, setRoles] = useState();
     const [selectedRole, setSelectedRole] = useState('1');
+    const [totalPages, setTotalPages] = useState('1');
+    const [totalMedicinePages, setTotalMedicinePages] = useState('1')
+    const [medicineCategoryName, setMedicineCategoryName] = useState('');
+    const [selectedCategoryId, setSelectedCategoryId] = useState('')
+    const [editCategoryName, setEditCategoryName] = useState('');
+    const [medicineList, setMedicineList] = useState([]);
+
+    const [editingIndex, setEditingIndex] = useState(-1);
 
     const [user, setUser] = useState({
         "username": "",
@@ -53,12 +62,16 @@ const Admin = () => {
     //     "avatar": userInfo.avatar
     // })
 
+    const [selectedPage, setSelectedPage] = useState('1');
+
     const [userUpdate, setUserUpdate] = useState(null)
 
     const currentDate = new Date();
     const currentFormattedDate = currentDate.toISOString().split('T')[0];
 
     const [selectedImage, setSelectedImage] = useState('');
+
+    const [categories, setCategories] = useState([]);
 
     const handleImageChange = (event) => {
         const file = event.target.files[0];
@@ -120,8 +133,10 @@ const Admin = () => {
     const loadUser = async () => {
         try {
             setLoading(true);
-            let res = await Apis.get(endpoints['load-user'])
-            setUserList(res.data);
+
+            let res = await Apis.get(endpoints['search-users'])
+            setUserList(res.data.content);
+            setTotalPages(res.data.totalPages);
             setLoading(false);
             console.log(res.data);
         } catch (error) {
@@ -129,7 +144,29 @@ const Admin = () => {
         }
     }
 
+    const loadUserPage = async (pageNumber) => {
+        try {
+            setLoading(true);
+            let e = endpoints['search-users'];
+            // let pageNumber = document.getElementsByClassName("active").id;
+            console.log(pageNumber)
+            if (pageNumber !== null) {
+                e = `${e}?pageNumber=${pageNumber - 1}`
+            }
+            // let url = `/users/${pageNumber}`
+            let res = await Apis.get(e);
+            setUserList(res.data.content);
+            setTotalPages(res.data.totalPages);
+            // navigate(url);
+            setLoading(false);
+            console.log(res.data);
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
     useEffect(() => {
+        loadUserPage();
         loadUser();
     }, [])
 
@@ -311,6 +348,151 @@ const Admin = () => {
         setSelectedRole(selectedRoleId);
     }
 
+    const pages = Array.from({ length: totalPages }, (_, index) => index + 1);
+    const handlePageChange = (pageNumber) => {
+        // TODO: Xử lý sự kiện khi người dùng chuyển trang
+        setSelectedPage(pageNumber);
+        loadUserPage(pageNumber);
+        console.log(`Chuyển đến trang ${pageNumber}`);
+    };
+
+    const medicinePages = Array.from({ length: totalMedicinePages }, (_, index) => index + 1);
+    const handleMedicinePageChange = (pageNumber) => {
+        // TODO: Xử lý sự kiện khi người dùng chuyển trang
+        setSelectedPage(pageNumber);
+        loadMedicinePage(pageNumber);
+        console.log(`Chuyển đến trang ${pageNumber}`);
+    };
+
+    const loadMedicineCategories = async () => {
+        try {
+            setLoading(true);
+            let res = await Apis.get(endpoints['medicine-categories'])
+            setCategories(res.data);
+            // setTotalPages(res.data.totalPages);
+            setLoading(false);
+            console.log(res.data);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const addMedicineCategory = (evt) => {
+        evt.preventDefault();
+
+        const process = async () => {
+            try {
+                setLoading(true)
+                if (medicineCategoryName === '') {
+                    toast.warning("Vui lòng nhập tên thuốc");
+                    setLoading(false);
+                    return
+                }
+                let res = await authApi().post(endpoints['add-medicine-categories'], {
+                    "medicineCategoryName": medicineCategoryName
+                });
+                if (res.status === 200) {
+                    toast.success(res.data)
+                    handleOptionClick("medicinecategory");
+                    loadMedicineCategories();
+                }
+                setLoading(false);
+            } catch (error) {
+                if (error.request.responseText === "Thêm danh mục thuốc thất bại!")
+                    toast.error(error.request.responseText);
+                else
+                    toast.error(error.request.responseText);
+                console.log(error);
+            }
+        }
+        process();
+    }
+
+    const updateMedicineCategory = (evt, categoryName) => {
+        evt.preventDefault();
+
+        const process = async () => {
+            try {
+                setLoading(true)
+                console.log(selectedCategoryId, editCategoryName)
+                let res = await authApi().post(endpoints['update-medicine-categories'], {
+                    "medicineCategoryId": selectedCategoryId,
+                    "medicineCategoryName": editCategoryName === '' ? categoryName : editCategoryName
+                });
+                if (res.status === 200) {
+                    toast.success(res.data)
+                    handleOptionClick("medicinecategory");
+                    loadMedicineCategories();
+                }
+                console.log(res.data);
+                setEditCategoryName('');
+                setEditingIndex(-1);
+                setLoading(false);
+            } catch (error) {
+                if (error.request.responseText === "Danh mục thuốc không tồn tại!")
+                    toast.error(error.request.responseText);
+                else
+                    toast.error(error.request.responseText);
+                console.log(error);
+            }
+        }
+        process();
+    }
+
+    const handleEdit = (index, categoryId) => {
+        setEditingIndex(index);
+        setSelectedCategoryId(categoryId)
+    };
+
+    const handleCancel = () => {
+        setEditingIndex(-1);
+    };
+
+    useEffect(() => {
+        loadMedicineCategories();
+        console.log(medicineCategoryName);
+    }, [])
+
+
+    const loadMedicine = async () => {
+        try {
+            setLoading(true);
+            let res = await Apis.get(endpoints['search-medicines'])
+            setMedicineList(res.data.content);
+            setTotalPages(res.data.totalPages);
+            setLoading(false);
+            console.log(res.data);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const loadMedicinePage = async (pageNumber) => {
+        try {
+            setLoading(true);
+            let e = endpoints['search-medicines'];
+            // let pageNumber = document.getElementsByClassName("active").id;
+            console.log(pageNumber)
+            if (pageNumber !== null) {
+                e = `${e}?pageNumber=${pageNumber - 1}`
+            }
+            // let url = `/users/${pageNumber}`
+            let res = await Apis.get(e);
+            setMedicineList(res.data.content);
+            setTotalMedicinePages(res.data.totalPages);
+            // navigate(url);
+            setLoading(false);
+            console.log(res.data);
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    useEffect(() => {
+        loadMedicine();
+        loadMedicinePage();
+    }, [])
+
     const renderContent = () => {
         switch (selectedOption) {
             case "overview":
@@ -364,6 +546,15 @@ const Admin = () => {
                                     })}
                                 </tbody>
                             </Table>
+                            <div className="Page_Nav">
+                                {pages.map((page) => (
+                                    <button id={`${page}`} key={page} onClick={() => handlePageChange(page)}
+                                        className={page === selectedPage ? 'active' : ''}>
+                                        {page}
+                                    </button>
+                                ))}
+                            </div>
+                            {/* <PageNavigation totalPages={totalPages} onClick={loadUserPage} /> */}
                         </div>
                     </div>
                 </>
@@ -496,11 +687,131 @@ const Admin = () => {
                 </>
             case "allmedicine":
                 return <>
-                    <div>Nội dung cho tất cả thuốc</div>
+                    <div>
+                        <div>
+                            <div class="Medicine">
+                                <button onClick={() => handleOptionClick("addmedicine")}><HiPlus /> Thêm 1 thuốc mới</button>
+                            </div>
+                            <Table striped bordered hover>
+                                <thead>
+                                    <tr>
+                                        <th>Ảnh đại diện</th>
+                                        <th>#</th>
+                                        <th>Tên thuốc</th>
+                                        <th>Mô tả</th>
+                                        <th>Thành phần</th>
+                                        <th>Liều lượng</th>
+                                        <th>Đơn giá</th>
+                                        <th>Loại</th>
+                                        <th>Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {Object.values(medicineList).map(m => {
+                                        return <>
+                                            <tr key={m.medicineId}>
+                                                <td style={{ width: '11%' }}><img src={m.avatar} alt="avatar" width={'100%'} /></td>
+                                                <td>{m.medicineId}</td>
+                                                <td>{m.medicineName}</td>
+                                                <td>{m.description}</td>
+                                                <td>{m.ingredients}</td>
+                                                <td>{m.dosage}</td>
+                                                <td>{m.unitPrice}</td>
+                                                <td>{m.categoryId.categoryName}</td>
+                                                <td>
+                                                    <Button variant="success" onClick={(e) => {
+                                                        handleOptionClickAndUpdateUser(e, m.medicineId)
+                                                    }}>Cập nhật</Button>
+                                                </td>
+                                            </tr>
+                                        </>
+                                    })}
+                                </tbody>
+                            </Table>
+                            <div className="Page_Nav">
+                                {medicinePages.map((page) => (
+                                    <button id={`${page}`} key={page} onClick={() => handleMedicinePageChange(page)}
+                                        className={page === selectedPage ? 'active' : ''}>
+                                        {page}
+                                    </button>
+                                ))}
+                            </div>
+                            {/* <PageNavigation totalPages={totalPages} onClick={loadUserPage} /> */}
+                        </div>
+                    </div>
                 </>
             case "medicinecategory":
                 return <>
-                    <div>Nội dung cho danh mục thuốc</div>
+                    <div>
+                        <div>
+                            <div class="Medicine_Category_Header">
+                                <h4 className="text-primary">Thông tin danh mục thuốc</h4>
+                            </div>
+                            <div class="Medicine_Catagory">
+                                <Form.Label style={{ width: "78%" }}>Thêm danh mục thuốc</Form.Label>
+                                <div class="Add_Medicine_Category">
+                                    <Form.Control type="text" defaultValue={medicineCategoryName} onChange={(e) => setMedicineCategoryName(e.target.value)} placeholder="Tên danh mục thuốc" required />
+                                    <Button variant="secondary" onClick={(e) => {
+                                        addMedicineCategory(e);
+                                        setMedicineCategoryName(''); // Xóa nội dung input
+                                    }}>Thêm</Button>
+                                </div>
+                            </div>
+                            <Table striped bordered hover>
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Tên danh mục</th>
+                                        <th>Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {Object.values(categories).map((c, index) => (
+                                        <tr key={c.categoryId}>
+                                            <td style={{ width: '20%' }}>{c.categoryId}</td>
+                                            <td style={{ width: '40%' }}>
+                                                {editingIndex === index ? (
+                                                    <input
+                                                        type="text"
+                                                        defaultValue={c.categoryName}
+                                                        onChange={(e) => setEditCategoryName(e.target.value)}
+                                                    />
+                                                ) : (
+                                                    c.categoryName
+                                                )}
+                                            </td>
+                                            <td style={{ width: '30%' }}>
+                                                {editingIndex === index ? (
+                                                    <>
+                                                        <Button style={{ marginRight: '0.5rem' }} variant="success" onClick={(e) => updateMedicineCategory(e, c.categoryName)}>
+                                                            Cập nhật
+                                                        </Button>
+                                                        <Button style={{ marginRight: '0.5rem' }} variant="warning" onClick={handleCancel}>
+                                                            Hủy
+                                                        </Button>
+                                                    </>
+                                                ) : (
+                                                    <Button style={{ marginRight: '0.5rem' }} variant="primary" onClick={() => handleEdit(index, c.categoryId)}>
+                                                        Sửa
+                                                    </Button>
+                                                )}
+                                                <Button variant="danger">Xóa</Button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </Table>
+                            <div className="Page_Nav">
+                                {pages.map((page) => (
+                                    <button id={`${page}`} key={page} onClick={() => handlePageChange(page)}
+                                        className={page === selectedPage ? 'active' : ''}>
+                                        {page}
+                                    </button>
+                                ))}
+                            </div>
+                            {/* <PageNavigation totalPages={totalPages} onClick={loadUserPage} /> */}
+                        </div>
+                    </div>
                 </>
             case "addmedicine":
                 return <>

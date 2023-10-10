@@ -25,7 +25,8 @@ div.Utilities_Service {
     margin-top: 2rem;
 }
 
-div.Add_User {
+div.Add_User,
+div.Medicine {
     margin-bottom: 1rem;
 }
 
@@ -33,7 +34,8 @@ div.Add_User_Header {
     margin-bottom: 2.5rem;
 }
 
-div.Add_User>button {
+div.Add_User>button,
+div.Medicine>button {
     display: inline-block;
     outline: 0;
     appearance: none;
@@ -57,7 +59,8 @@ div.Add_User_Body {
     gap: 1rem;
 }
 
-div.Add_User>button:hover {
+div.Add_User>button:hover,
+div.Medicine>button:hover {
     color: rgb(255, 255, 255);
     background-color: rgb(17, 97, 73);
     box-shadow: rgb(19 170 82 / 40%) 0px 2px 3px, rgb(195 231 202) 0px 0px 0px 3px;
@@ -298,4 +301,33 @@ div.Update_Avatar_Choice>div {
     width: 15rem;
     height: 15rem;
     margin-bottom: 0.25rem;
+}
+
+div.Page_Nav {
+    display: flex;
+    gap: 0.25rem;
+}
+
+div.Page_Nav button {
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    background-color: transparent;
+    border: none;
+}
+
+div.Page_Nav button.active {
+    background-color: #1a76e3;
+    color: white;
+}
+
+div.Add_Medicine_Category {
+    display: flex;
+    gap: 0.25rem;
+    margin-bottom: 0.75rem;
+}
+
+div.Medicine_Category_Header {
+    margin-bottom: 2.5rem;
 }
