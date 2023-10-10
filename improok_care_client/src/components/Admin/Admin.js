@@ -19,7 +19,7 @@ import Apis, { authApi, endpoints } from "../../configs/Apis";
 import moment from 'moment';
 import { HiPlus } from "react-icons/hi";
 import avatar_user from "../../assests/images/avatar-user.png"
-import PageNavigation from "../../utils/PageNavigation";
+import medicine_image from "../../assests/images/medicine.png"
 
 
 const Admin = () => {
@@ -39,6 +39,7 @@ const Admin = () => {
     const [selectedCategoryId, setSelectedCategoryId] = useState('')
     const [editCategoryName, setEditCategoryName] = useState('');
     const [medicineList, setMedicineList] = useState([]);
+    const [selectedCategory, setSelectedCategory] = useState('1');
 
     const [editingIndex, setEditingIndex] = useState(-1);
 
@@ -50,6 +51,16 @@ const Admin = () => {
         "gender": "",
         "avatar": "",
         "birthday": ""
+    })
+
+    const [medicine, setMedicine] = useState({
+        "medicineName": "",
+        "description": "",
+        "ingredients": "",
+        "dosage": "",
+        "unitPrice": "",
+        "medicineCategoryId": "",
+        "avatar": "",
     })
 
     // const [userUpdate, setUserUpdate] = useState({
@@ -65,6 +76,7 @@ const Admin = () => {
     const [selectedPage, setSelectedPage] = useState('1');
 
     const [userUpdate, setUserUpdate] = useState(null)
+    const [newMedicine, setNewMedicine] = useState(null);
 
     const currentDate = new Date();
     const currentFormattedDate = currentDate.toISOString().split('T')[0];
@@ -231,7 +243,7 @@ const Admin = () => {
                 console.log("Đây là userInfo");
                 console.log(res.data);
                 console.log(userUpdate);
-                setGender(res.data['gender'])
+                setGender(res.data['gender']);
             } catch (error) {
                 console.log(error);
             }
@@ -348,6 +360,12 @@ const Admin = () => {
         setSelectedRole(selectedRoleId);
     }
 
+    const handleCategoryChange = (e) => {
+        const selectedCategoryId = e.target.value;
+        setSelectedCategory(selectedCategoryId);
+
+    }
+
     const pages = Array.from({ length: totalPages }, (_, index) => index + 1);
     const handlePageChange = (pageNumber) => {
         // TODO: Xử lý sự kiện khi người dùng chuyển trang
@@ -453,13 +471,36 @@ const Admin = () => {
         console.log(medicineCategoryName);
     }, [])
 
+    const handleOptionClickAndUpdateMedicine = (e, medicineId) => {
+        handleOptionClick("updatemedicine");
+        loadMedicineById(e, medicineId);
+    };
+
+    const loadMedicineById = (evt, medicineId) => {
+        evt.preventDefault();
+
+        const process = async () => {
+            try {
+                setLoading(true);
+                console.log(medicineId)
+                let res = await Apis.get(endpoints['load-medicine-by-Id'](medicineId))
+                setNewMedicine(res.data);
+                setLoading(false);
+                console.log(res.data);
+                console.log(newMedicine);
+            } catch (error) {
+                console.log(error);
+            }
+        }
+        process();
+    }
 
     const loadMedicine = async () => {
         try {
             setLoading(true);
             let res = await Apis.get(endpoints['search-medicines'])
             setMedicineList(res.data.content);
-            setTotalPages(res.data.totalPages);
+            setTotalMedicinePages(res.data.totalPages);
             setLoading(false);
             console.log(res.data);
         } catch (error) {
@@ -492,6 +533,114 @@ const Admin = () => {
         loadMedicine();
         loadMedicinePage();
     }, [])
+
+    const addMedicine = (evt) => {
+        evt.preventDefault();
+
+        const process = async () => {
+            try {
+                console.log(avatar.current.files[0]);
+                let form = new FormData();
+                for (let field in medicine)
+                    if (field !== "medicineCategoryId" && field !== "avatar")
+                        form.append(field, medicine[field]);
+
+                if (avatar.current.files[0] !== undefined)
+                    form.append("avatar", avatar.current.files[0]);
+                else
+                    form.append("avatar", new Blob());
+
+                form.append("medicineCategoryId", selectedCategory);
+
+                setLoading(true);
+
+                let res = await Apis.post(endpoints['admin-add-medicine'], form);
+                if (res.status === 200) {
+                    toast.success(res.data);
+                    loadMedicine();
+                }
+                setLoading(false);
+            } catch (error) {
+                if (error.request.responseText === "Thêm thuốc thất bại!")
+                    toast.error(error.request.responseText);
+                else
+                    toast.error(error.request.responseText);
+                console.log(error);
+            }
+        }
+        process();
+    }
+
+    const updateMedicine = (evt) => {
+        evt.preventDefault();
+
+        const process = async () => {
+            try {
+                const medicineId = newMedicine['medicineId'];
+                console.log(avatar.current.files[0]);
+                console.log(medicineId);
+                let form = new FormData();
+
+                console.log("For nhé cả nhà")
+                let count = 0
+                for (let field in newMedicine)
+                    if (field !== "createdDate" && field !== "updatedDate" && field !== "deletedDate" && field !== "active" && field !== "categoryId" && field !== "avatar" && field !== "medicineId") {
+                        console.log(field + ": " + newMedicine[field])
+                        form.append(field, newMedicine[field]);
+                        console.log("Đây là count " + count++);
+                    }
+                console.log("Bye for nhé cả nhà")
+                form.append("medicineId", medicineId);
+
+                if (avatar.current.files[0] !== undefined)
+                    form.append("avatar", avatar.current.files[0]);
+                else
+                    form.append("avatar", new Blob());
+
+                console.log(selectedCategory)
+                form.append("medicineCategoryId", selectedCategory);
+
+                console.log(selectedCategory, avatar.current.files[0], medicineId)
+
+                console.log(newMedicine);
+
+                setLoading(true);
+
+                let res = await authApi().post(endpoints['admin-update-medicine'], form, {
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                    },
+                });
+                if (res.status === 200) {
+                    toast.success(res.data)
+                    handleOptionClick("allmedicine");
+                    loadMedicine();
+                }
+                setLoading(false);
+            } catch (error) {
+                if (error.request.responseText === "Thuốc không tồn tại!")
+                    toast.error(error.request.responseText);
+                else
+                    toast.error(error.request.responseText);
+                console.log(error);
+            }
+        }
+        process();
+    }
+
+    const changeMedicine = (evt, field) => {
+        // setUser({...user, [field]: evt.target.value})
+        setMedicine(current => {
+            return { ...current, [field]: evt.target.value }
+        })
+    }
+
+    const updateMedicineChange = (evt, field) => {
+        // setUser({...user, [field]: evt.target.value})
+        setNewMedicine(current => {
+            return { ...current, [field]: evt.target.value }
+        })
+    }
 
     const renderContent = () => {
         switch (selectedOption) {
@@ -720,7 +869,7 @@ const Admin = () => {
                                                 <td>{m.categoryId.categoryName}</td>
                                                 <td>
                                                     <Button variant="success" onClick={(e) => {
-                                                        handleOptionClickAndUpdateUser(e, m.medicineId)
+                                                        handleOptionClickAndUpdateMedicine(e, m.medicineId)
                                                     }}>Cập nhật</Button>
                                                 </td>
                                             </tr>
@@ -815,7 +964,119 @@ const Admin = () => {
                 </>
             case "addmedicine":
                 return <>
-                    <div>Nội dung cho thêm thuốc</div>
+                    <div>
+                        <div>
+                            <div class="Add_Medicine_Header">
+                                <h4 className="text-primary">Thông tin thuốc</h4>
+                            </div>
+                            <div class="Add_Medicine_Body">
+                                <div class="Add_Medicine_MedicineName">
+                                    <Form.Label style={{ width: "20%" }}>Tên thuốc</Form.Label>
+                                    <Form.Control type="text" onChange={(e) => changeMedicine(e, "medicineName")} placeholder="Tên thuốc" required />
+                                </div>
+                                <div class="Add_Medicine_Description">
+                                    <Form.Label style={{ width: "20%" }}>Mô tả</Form.Label>
+                                    <Form.Control as="textarea" onChange={(e) => changeMedicine(e, "description")} placeholder="Mô tả" required />
+                                </div>
+                                <div class="Add_Medicine_Ingredient">
+                                    <Form.Label style={{ width: "20%" }}>Thành phần</Form.Label>
+                                    <Form.Control type="Text" onChange={(e) => changeMedicine(e, "ingredients")} placeholder="Thành phần" required />
+                                </div>
+                                <div class="Add_Medicine_Dosage">
+                                    <Form.Label style={{ width: "20%" }}>Liều lượng</Form.Label>
+                                    <Form.Control type="Text" onChange={(e) => changeMedicine(e, "dosage")} placeholder="Liều lượng" required />
+                                </div>
+                                <div class="Add_Medicine_UnitPrice">
+                                    <Form.Label style={{ width: "20%" }}>Đơn giá</Form.Label>
+                                    <Form.Control type="Text" onChange={(e) => changeMedicine(e, "unitPrice")} placeholder="Đơn giá" required />
+                                </div>
+                                <div class="Add_Medicine_Category">
+                                    <Form.Label style={{ width: "20%" }}>Loại thuốc</Form.Label>
+                                    <Form.Select onChange={(e) => handleCategoryChange(e)}>
+                                        {Object.values(categories).map(c => <option key={c.categoryId} value={c.categoryId}>{c.categoryName}</option>)}
+                                    </Form.Select>
+                                </div>
+                                <div class="Add_Medicine_Avatar">
+                                    <Form.Label style={{ width: "16%" }}>Ảnh đại diện</Form.Label>
+                                    <div class="Avatar_Choice">
+                                        {selectedImage ? (
+                                            <div>
+                                                <img src={selectedImage} alt="Selected" width="100%" />
+                                            </div>
+                                        ) : (
+                                            <div class="Avatar_Null">
+                                                <span>Vui lòng chọn ảnh</span>
+                                                <img src={medicine_image} alt="medicine avatar" />
+                                            </div>
+                                        )}
+                                        <Form.Control type="File" ref={avatar} onChange={handleImageChange} width={'50%'} />
+                                    </div>
+                                </div>
+                                <div class="Add_Medicine_Button">
+                                    <button type="button">Hủy</button>
+                                    <button type="button" onClick={(e) => addMedicine(e)}>Thêm</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </>
+            case "updatemedicine":
+                return <>
+                    <div>
+                        <div>
+                            <div class="Update_Medicine_Header">
+                                <h4 className="text-primary">Thông tin thuốc</h4>
+                            </div>
+                            <div class="Update_Medicine_Body">
+                                <div class="Update_Medicine_MedicineName">
+                                    <Form.Label style={{ width: "20%" }}>Tên thuốc</Form.Label>
+                                    <Form.Control type="text" defaultValue={newMedicine.medicineName} onChange={(e) => updateMedicineChange(e, "medicineName")} placeholder="Tên thuốc" required />
+                                </div>
+                                <div class="Update_Medicine_Description">
+                                    <Form.Label style={{ width: "20%" }}>Mô tả</Form.Label>
+                                    <Form.Control as="textarea" defaultValue={newMedicine.description} onChange={(e) => updateMedicineChange(e, "description")} placeholder="Mô tả" required />
+                                </div>
+                                <div class="Update_Medicine_Ingredient">
+                                    <Form.Label style={{ width: "20%" }}>Thành phần</Form.Label>
+                                    <Form.Control type="Text" defaultValue={newMedicine.ingredients} onChange={(e) => updateMedicineChange(e, "ingredients")} placeholder="Thành phần" required />
+                                </div>
+                                <div class="Update_Medicine_Dosage">
+                                    <Form.Label style={{ width: "20%" }}>Liều lượng</Form.Label>
+                                    <Form.Control type="Text" defaultValue={newMedicine.dosage} onChange={(e) => updateMedicineChange(e, "dosage")} placeholder="Liều lượng" required />
+                                </div>
+                                <div class="Update_Medicine_UnitPrice">
+                                    <Form.Label style={{ width: "20%" }}>Đơn giá</Form.Label>
+                                    <Form.Control type="Text" defaultValue={newMedicine.unitPrice} onChange={(e) => updateMedicineChange(e, "unitPrice")} placeholder="Đơn giá" required />
+                                </div>
+                                <div class="Update_Medicine_Category">
+                                    <Form.Label style={{ width: "20%" }}>Loại thuốc</Form.Label>
+                                    <Form.Select onChange={(e) => handleCategoryChange(e)}>
+                                        {Object.values(categories).map(c => <option key={c.categoryId} value={c.categoryId}>{c.categoryName}</option>)}
+                                    </Form.Select>
+                                </div>
+                                <div class="Update_Medicine_Avatar">
+                                    <Form.Label style={{ width: "16%" }}>Ảnh đại diện</Form.Label>
+                                    <div class="Avatar_Choice">
+                                        {selectedImage ? (
+                                            <div>
+                                                <img src={selectedImage} alt="Selected" width="100%" />
+                                            </div>
+                                        ) : (
+                                            <div class="Avatar_Null">
+                                                <span>Vui lòng chọn ảnh</span>
+                                                <img src={medicine_image} alt="medicine avatar" />
+                                            </div>
+                                        )}
+                                        <Form.Control type="File" ref={avatar} onChange={handleImageChange} width={'50%'} />
+                                    </div>
+                                </div>
+                                <div class="Update_Medicine_Button">
+                                    <button type="button">Hủy</button>
+                                    <button type="button" onClick={(e) => updateMedicine(e)}>Cập nhật</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </>
             case "revenue":
                 return <>

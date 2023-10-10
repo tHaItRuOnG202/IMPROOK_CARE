@@ -53,7 +53,10 @@ export const endpoints = {
     "add-medicine-categories": `${SERVER_CONTEXT}/api/auth/admin/add-medicine-category/`,
     "update-medicine-categories": `${SERVER_CONTEXT}/api/auth/admin/update-medicine-category/`,
     "medicines": `${SERVER_CONTEXT}/api/public/medicines/`,
-    "search-medicines": `${SERVER_CONTEXT}/api/public/search-medicines/`
+    "search-medicines": `${SERVER_CONTEXT}/api/public/search-medicines/`,
+    "admin-add-medicine": `${SERVER_CONTEXT}/api/auth/admin/add-medicine/`,
+    "load-medicine-by-Id": (medicineId) => `${SERVER_CONTEXT}/api/public/medicines/${medicineId}/`,
+    "admin-update-medicine": `${SERVER_CONTEXT}/api/auth/admin/update-medicine/`
 }
 
 export const authApi = () => {
