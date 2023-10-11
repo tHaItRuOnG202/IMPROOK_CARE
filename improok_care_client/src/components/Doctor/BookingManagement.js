@@ -1,20 +1,32 @@
 import { useContext, useEffect, useState } from "react";
 import { MyUserContext } from "../../App";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import "../../styles/BookingManagement.css";
 import Apis, { authApi, endpoints } from "../../configs/Apis";
 import { Badge, Button, Form, Table } from "react-bootstrap";
 import { toast } from "react-toastify";
+import ProfileDoctor from "./ProfileDoctor";
 
 const BookingManagement = () => {
     const [current_user, dispatch] = useContext(MyUserContext);
     const [profileDoctorByUserId, setProfileDoctorByUserId] = useState([]);
-    const [selectedProfileDoctorId, setSeletedProfileDoctorId] = useState();
+    const [selectedProfileDoctorId, setSelectedProfileDoctorId] = useState('');
     const [bookingList, setBookingList] = useState([]);
     const [minDate, setMinDate] = useState('');
     const nav = useNavigate();
     const [selectedOption, setSelectedOption] = useState('new');
     const [bookingListCheck, setBookingListCheck] = useState("");
+
+    const [bookingPrice, setBookingPrice] = useState('');
+    const [selectedDoctorName, setSelectedDoctorName] = useState('');
+
+    const [selectedBookingId, setSelectedBookingId] = useState("");
+    const [selectedProfilePatientName, setSelectedProfilePatientName] = useState("");
+
+    const [profileDoctor, setProfileDoctor] = useState();
+
+    const [loading, setLoading] = useState(false);
+
     // const [selectedBookingId, setSelectedBookingId] = useState('');
 
     const logout = () => {
@@ -35,7 +47,7 @@ const BookingManagement = () => {
                     nav('/profiledoctor');
                 }
                 if (res.data[0] !== undefined) {
-                    setSeletedProfileDoctorId(res.data[0].profileDoctorId)
+                    setSelectedProfileDoctorId(res.data[0].profileDoctorId)
                 }
                 console.log(res.data);
             } catch (error) {
@@ -45,9 +57,52 @@ const BookingManagement = () => {
         loadProfileDoctorByUserId();
     }, [])
 
+    // const profileDoctorChange = (e) => {
+    //     // const selectedId = e.target.value;
+    //     setSelectedProfileDoctorId(e.target.value);
+
+    //     console.log("Id của bác sĩ được chọn", selectedProfileDoctorId)
+
+    //     // console.log("List các bác sĩ", profileDoctorByUserId)
+
+    //     // Lấy tên bác sĩ từ danh sách bác sĩ ban đầu
+    //     const selectedDoctor = Object.values(profileDoctorByUserId).find(pd => pd.profileDoctorId === selectedProfileDoctorId);
+    //     // console.log(Object.values(profileDoctorByUserId).map(pd => pd.profileDoctorId))
+    //     console.log("select: " + selectedDoctor)
+    //     console.log("Id của bác sĩ được chọn", selectedProfileDoctorId)
+    //     // const doctorBookingPrice = Object.values(profileDoctorByUserId).find(pd => pd.bookingPrice === selectedId)
+    //     if (selectedDoctor) {
+    //         setSelectedDoctorName(selectedDoctor.name);
+    //         setBookingPrice(selectedDoctor.bookingPrice)
+    //     }
+    //     else {
+    //         setSelectedDoctorName('');
+    //         setBookingPrice('');
+    //     }
+    // }
+
     const profileDoctorChange = (e) => {
-        setSeletedProfileDoctorId(e.target.value);
-    }
+        const selectedId = e.target.value;
+        setSelectedProfileDoctorId(selectedId);
+    };
+
+    useEffect(() => {
+        console.log("Id của bác sĩ được chọn", selectedProfileDoctorId);
+
+        const selectedDoctor = Object.values(profileDoctorByUserId).find(pd => pd.profileDoctorId === selectedProfileDoctorId);
+        console.log("select: ", selectedDoctor);
+
+        console.log(Object.values(profileDoctorByUserId).map(pd => pd.profileDoctorId === selectedProfileDoctorId))
+        console.log(Object.values(profileDoctorByUserId).map(pd => pd.profiledoctorId))
+
+        if (selectedDoctor) {
+            setSelectedDoctorName(selectedDoctor.name);
+            setBookingPrice(selectedDoctor.bookingPrice);
+        } else {
+            setSelectedDoctorName('');
+            setBookingPrice('');
+        }
+    }, [selectedProfileDoctorId, profileDoctorByUserId]);
 
     useEffect(() => {
         const today = new Date().toISOString().split("T")[0];
@@ -56,9 +111,10 @@ const BookingManagement = () => {
 
     const loadWaitingBooking = async () => {
         try {
+            // console.log("qq");
             console.log(selectedProfileDoctorId);
             let res = await authApi().post(endpoints['booking-doctor-view'], {
-                "profiledoctorId": selectedProfileDoctorId
+                "profileDoctorId": selectedProfileDoctorId
             })
             setBookingList(res.data);
             console.log(res.data);
@@ -69,6 +125,33 @@ const BookingManagement = () => {
 
     useEffect(() => {
         loadWaitingBooking();
+    }, [selectedProfileDoctorId])
+
+    const handleCreatePrescription = (e, bookingId, profilePatientName) => {
+        setSelectedBookingId(bookingId);
+        setSelectedProfilePatientName(profilePatientName);
+        loadDoctorById();
+        console.log(bookingId)
+        console.log(profilePatientName)
+    };
+
+    const loadDoctorById = async () => {
+        try {
+            setLoading(true);
+            console.log(selectedProfileDoctorId)
+            let res = await Apis.get(endpoints['load-profile-doctor-by-Id'](selectedProfileDoctorId))
+            setProfileDoctor(res.data);
+            setLoading(false);
+            console.log("Đây là userInfo");
+            console.log(res.data);
+            console.log(profileDoctor);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    useEffect(() => {
+        loadDoctorById()
     }, [selectedProfileDoctorId])
 
     // useEffect(() => {
@@ -261,7 +344,8 @@ const BookingManagement = () => {
                                                     <td>{bl[2]}</td>
                                                     <td>{timeBegin} - {timeEnd}</td>
                                                     <td><Badge bg="success">{bl[5]}</Badge></td>
-                                                    <td><Button variant="primary">Tạo đơn thuốc</Button></td>
+                                                    {/* <td><Button variant="primary" onClick={(e) => handleCreatePrescription(e, bl[0], bl[6])}><Link to={`/prescription/?bookingId=${bl[0]}&&profilePatientName=${bl[6]}`}>Tạo đơn thuốc</Link></Button></td> */}
+                                                    <Link to={{ pathname: '/prescription', state: { paramA: "CCCCCCCCCCCCCCC" } }}>CCCC </Link>
                                                 </tr>
                                             </>
                                         }
@@ -321,12 +405,12 @@ const BookingManagement = () => {
                 <div class="BookingManagement_Left">
                     <div class="BookingManagement_Left_Content">
                         <ul>
-                            <li><a href="/doctor">Thông tin cá nhân</a></li>
-                            <li><a href="/changepassword">Đổi mật khẩu</a></li>
-                            <li><a href="/schedule">Đăng ký lịch khám</a></li>
-                            <li><a href="/bookingmanagement">Lịch hẹn</a></li>
-                            <li><a href="/profiledoctor">Hồ sơ</a></li>
-                            <li><a href="/prescription">Tạo đơn thuốc</a></li>
+                            <li><Link to="/doctor">Thông tin cá nhân</Link></li>
+                            <li><Link to="/changepassword">Đổi mật khẩu</Link></li>
+                            <li><Link to="/schedule">Đăng ký lịch khám</Link></li>
+                            <li><Link to="/bookingmanagement">Lịch hẹn</Link></li>
+                            <li><Link to="/profiledoctor">Hồ sơ</Link></li>
+                            <li><Link to="/prescription">Tạo đơn thuốc</Link></li>
                             <li onClick={logout}>Đăng xuất</li>
                         </ul>
                     </div>
@@ -342,7 +426,7 @@ const BookingManagement = () => {
                         </div> */}
                         <div class="BookingManagement_Profile_Option">
                             <Form.Label style={{ width: "30%" }}>Chọn hồ sơ</Form.Label>
-                            <select style={{ width: "60%" }} class="value" defaultValue={selectedProfileDoctorId} onChange={(e) => profileDoctorChange(e)} onFocus={(e) => profileDoctorChange(e)}>
+                            <select style={{ width: "60%" }} class="value" defaultValue={selectedProfileDoctorId} onChange={(e) => profileDoctorChange(e)}>
                                 {Object.values(profileDoctorByUserId).map(pd => <option key={pd.profileDoctorId} value={pd.profileDoctorId}>{pd.name}</option>)}
                             </select>
                         </div>

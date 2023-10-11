@@ -1,5 +1,5 @@
 import { useContext, useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { MyUserContext } from "../App";
 import "../styles/PersonalPage.css";
 import { Form, Image } from "react-bootstrap";
@@ -171,11 +171,11 @@ const PersonalPage = () => {
                 <div class="PersonalPage_Left">
                     <div class="PersonalPage_Left_Content">
                         <ul>
-                            <li><a href="/personalpage">Thông tin cá nhân</a></li>
-                            <li><a href="/changepassword">Đổi mật khẩu</a></li>
-                            <li><a href="/appointment">Lịch khám</a></li>
-                            <li><a href="/medicalrecord">Lịch sử khám</a></li>
-                            <li><a href="/profile">Hồ sơ</a></li>
+                            <li><Link to="/personalpage">Thông tin cá nhân</Link></li>
+                            <li><Link to="/changepassword">Đổi mật khẩu</Link></li>
+                            <li><Link to="/appointment">Lịch khám</Link></li>
+                            <li><Link to="/medicalrecord">Lịch sử khám</Link></li>
+                            <li><Link to="/profile">Hồ sơ</Link></li>
                             <li onClick={logout}>Đăng xuất</li>
                         </ul>
                     </div>

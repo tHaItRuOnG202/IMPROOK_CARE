@@ -4,7 +4,7 @@ import yaemiko from "../assests/images/yaemiko.png"
 import { useContext, useState } from "react";
 import { Form } from "react-bootstrap"
 import Apis, { endpoints } from "../configs/Apis";
-import { Navigate, useNavigate } from "react-router-dom"
+import { Navigate, useNavigate, Link } from "react-router-dom"
 import MySpinner from "../layout/MySpinner";
 import { MyUserContext } from "../App";
 import { toast } from "react-toastify";
@@ -191,16 +191,16 @@ const PhoneVerification = () => {
                                         <div class="PhoneVerification_Policy">
                                             <div>
                                                 Bằng việc đăng kí, bạn đã đồng ý với Spring Care về
-                                                <a href="/"> Điều khoản dịch vụ </a>
+                                                <Link to="/"> Điều khoản dịch vụ </Link>
                                                 &
-                                                <a href="/"> Chính sách bảo mật</a>
+                                                <Link to="/"> Chính sách bảo mật</Link>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="To_Login">
                                         <div>
                                             Bạn đã có tài khoản?
-                                            <a href="/login"> Đăng nhập</a>
+                                            <Link to="/login"> Đăng nhập</Link>
                                         </div>
                                     </div>
                                 </div>

@@ -29,6 +29,8 @@ import Appointment from "./components/Appointment";
 import Presciption from "./components/Doctor/Presciption";
 
 export const MyUserContext = createContext();
+
+export const MyPrescriptionContext = createContext();
 // export const PhonenumberContext = createContext();
 
 const App = () => {

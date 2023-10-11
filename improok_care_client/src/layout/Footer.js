@@ -2,6 +2,7 @@ import { FaFacebookSquare, FaLinkedin, FaTiktok, FaYoutube } from "react-icons/f
 import "../styles/Footer.css"
 import dadangky from "../assests/images/dadangky.svg"
 import dmcabadge from "../assests/images/dmca-badge.png"
+import { Link } from "react-router-dom";
 
 const Footer = () => {
     return (<>
@@ -11,7 +12,7 @@ const Footer = () => {
                     <p style={{ fontWeight: 600 }}>CÔNG TY TNHH IMPROOK VIỆT NAM</p>
                     <p><strong>VPĐD:</strong> 371 Nguyễn Kiệm, P.3, Q.Gò Vấp, Tp. HCM</p>
                     <p>Số ĐKKD 0315268642 do Sở Kế hoạch và Đầu tư TP. Hồ Chí Minh cấp lần đầu ngày 28/08/2023</p>
-                    <p>Chịu trách nhiệm nội dung: <a href="https://www.youtube.com/@tuantran0168">PGS. TS. Tuấn Trần</a></p>
+                    <p>Chịu trách nhiệm nội dung: <Link to="https://www.youtube.com/@tuantran0168">PGS. TS. Tuấn Trần</Link></p>
                 </div>
                 <div class="Footer1_2">
                     <label style={{ fontWeight: 600 }}>Về Spring Care</label>
@@ -38,7 +39,7 @@ const Footer = () => {
                         <li>Điều khoản sử dụng</li>
                         <li>Chính sách bảo mật</li>
                         <li>Chính sách giải quyết khiếu nại</li>
-                        <li>Hỗ trợ khách hàng: <a href="mailto:cskh@spring.vn">cskh@improok.vn</a></li>
+                        <li>Hỗ trợ khách hàng: <Link to="mailto:cskh@spring.vn">cskh@improok.vn</Link></li>
                     </ul>
                 </div>
                 <div class="Footer1_5">
@@ -53,14 +54,14 @@ const Footer = () => {
                 <div class="Footer1_6">
                     <ul>
                         <li>
-                            <a href="/">
+                            <Link to="/">
                                 <img src={dadangky} alt="Đã đăng ký bộ công thương" width={'80%'} />
-                            </a>
+                            </Link>
                         </li>
                         <li>
-                            <a href="/">
+                            <Link to="/">
                                 <img src={dmcabadge} alt="dmca" width={'100%'} />
-                            </a>
+                            </Link>
                         </li>
                     </ul>
                 </div>

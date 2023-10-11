@@ -6,7 +6,7 @@ import { FaSeedling } from "react-icons/fa"
 import "../styles/Header.css"
 import { useContext, useState } from "react"
 import { MyUserContext } from "../App"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, Link } from "react-router-dom"
 import { Dropdown, NavDropdown } from "react-bootstrap";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import logo from "../assests/images/tech-health-care.png"
@@ -29,18 +29,18 @@ const Header = () => {
         <div class="Header">
             <div class="Header1">
                 {/* <a href="/"><h2 class="Title"><FaSeedling /> IM'PROOK CARE</h2></a> */}
-                <a href="/">
+                <Link to="/">
                     <img src={logo} alt="IMPROOKCARE" />
-                </a>
+                </Link>
             </div>
             <div class="Header2">
                 <ul class="Menu-bar">
                     <li>
-                        <a href="/booking">Đặt khám</a>
+                        <Link to="/booking">Đặt khám</Link>
                         <span>Đặt khám ngay</span>
                     </li>
                     <li>
-                        <a href="/">Chuyên khoa</a>
+                        <Link to="/">Chuyên khoa</Link>
                         <span>Tìm bác sĩ theo chuyên khoa</span>
                     </li>
                     {/* <li>
@@ -49,7 +49,7 @@ const Header = () => {
                     </li> */}
 
                     <li>
-                        <a href="/">Tin tức</a>
+                        <Link to="/">Tin tức</Link>
                         <span>Tin tức về y tế thế giới</span>
                     </li>
                     <li>
@@ -64,17 +64,17 @@ const Header = () => {
             </div>
             <div class="Header3">
                 {user === null ?
-                    <><button class="Sign-in"><a href="/phoneverification">Đăng ký</a></button>
-                        <button class="Log-in"><a href="/login">Đăng nhập</a></button></> :
+                    <><button class="Sign-in"><Link to="/phoneverification">Đăng ký</Link></button>
+                        <button class="Log-in"><Link to="/login">Đăng nhập</Link></button></> :
                     <>
                         {user.roleId.roleId === 1 ?
                             <>
-                                <button class="Admin"><a href="/admin">Quản trị</a></button>
+                                <button class="Admin"><Link to="/admin">Quản trị</Link></button>
                             </> :
                             <>
                                 {user.roleId.roleId === 2 ?
                                     <>
-                                        <button class="Doctor"><a href="/doctor">Bác sĩ</a></button>
+                                        <button class="Doctor"><Link to="/doctor">Bác sĩ</Link></button>
                                     </> :
                                     <></>}
                             </>

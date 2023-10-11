@@ -33,3 +33,13 @@ div.Prescription_Left_Content>ul>li a {
 div.Prescription_Right {
     width: 70%;
 }
+
+div.Prescription_Right_Body_1 {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+}
+
+div.Prescription_Right_Body_1 div {
+    width: 30%;
+}

@@ -4,7 +4,7 @@ import yaemiko from "../assests/images/yaemiko.png"
 import { useContext, useState } from "react";
 import { Form } from "react-bootstrap"
 import Apis, { endpoints } from "../configs/Apis";
-import { Navigate, useNavigate } from "react-router-dom"
+import { Navigate, useNavigate, Link } from "react-router-dom"
 import { Spinner } from "react-bootstrap";
 import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import { MyUserContext } from "../App";
@@ -183,9 +183,9 @@ const Register = (props) => {
                                         <div class="Register_Policy">
                                             <div>
                                                 Bằng việc đăng kí, bạn đã đồng ý với Spring Care về
-                                                <a href="/"> Điều khoản dịch vụ </a>
+                                                <Link to="/"> Điều khoản dịch vụ </Link>
                                                 &
-                                                <a href="/"> Chính sách bảo mật</a>
+                                                <Link to="/"> Chính sách bảo mật</Link>
                                             </div>
                                         </div>
                                     </div>

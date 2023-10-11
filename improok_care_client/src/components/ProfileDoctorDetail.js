@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import "../styles/ProfileDoctorDetail.css"
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import Apis, { endpoints } from "../configs/Apis";
 import verified from "../assests/images/verified.svg"
 import MySpinner from "../layout/MySpinner";
@@ -60,7 +60,7 @@ const ProfileDoctorDetail = () => {
                             <span>Hỗ trợ đặt khám</span>
                             <span>2051052125</span>
                         </div>
-                        {current_user === null ? <button><a href='/login'>Đăng nhập để đặt khám</a></button> : <button><a href={url}>ĐẶT KHÁM NGAY</a></button>}
+                        {current_user === null ? <button><Link to='/login'>Đăng nhập để đặt khám</Link></button> : <button><Link to={url}>ĐẶT KHÁM NGAY</Link></button>}
 
                     </div>
                 </div>
@@ -69,8 +69,8 @@ const ProfileDoctorDetail = () => {
                         <span>Đặt lịch khám Bác sĩ dễ dàng</span>
                         <h3>Tải ngay IMPROOKCARE</h3>
                         <div>
-                            <a href="/" style={{ marginRight: '1rem' }}><img src={googleplay} alt="GooglePlay" /></a>
-                            <a href="/"><img src={appstore} alt="AppStore" /></a>
+                            <Link to="/" style={{ marginRight: '1rem' }}><img src={googleplay} alt="GooglePlay" /></Link>
+                            <Link to="/"><img src={appstore} alt="AppStore" /></Link>
                         </div>
                     </div>
                 </div>

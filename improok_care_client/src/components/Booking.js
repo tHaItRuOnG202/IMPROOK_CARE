@@ -8,6 +8,7 @@ import eula from "../assests/images/eula.png"
 import profileicon from "../assests/images/profile-icon.png"
 import { TiTickOutline } from "react-icons/ti";
 import { FcSearch } from "react-icons/fc";
+import { Link } from "react-router-dom";
 
 const Booking = () => {
     const [specialty, setSpecialty] = useState([]);
@@ -85,7 +86,7 @@ const Booking = () => {
                                         <img src={profileicon} style={{ width: '25%' }} alt="404" />
                                         <span>{ld.name}</span>
                                         <span>{ld.specialtyId.specialtyName}</span>
-                                        <button><a href={url}>Đặt khám ngay</a></button>
+                                        <button><Link to={url}>Đặt khám ngay</Link></button>
                                     </div>
                                 </>
                             })}
@@ -155,8 +156,8 @@ const Booking = () => {
                             </li>
                         </ul>
                         <div>
-                            <a href="/" style={{ marginRight: '1rem' }}><img src={googleplay} alt="GooglePlay" /></a>
-                            <a href="/"><img src={appstore} alt="AppStore" /></a>
+                            <Link to="/" style={{ marginRight: '1rem' }}><img src={googleplay} alt="GooglePlay" /></Link>
+                            <Link to="/"><img src={appstore} alt="AppStore" /></Link>
                         </div>
                     </div>
                     <div class="Booking_Content_5_Right">

@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, Link } from "react-router-dom";
 import "../styles/BookingDetail.css"
 import { useContext, useEffect, useState } from "react";
 import Apis, { authApi, endpoints } from "../configs/Apis";
@@ -286,8 +286,8 @@ const BookingDetail = () => {
                                 <span>Đặt lịch khám Bác sĩ dễ dàng</span>
                                 <h3>Tải ngay IMPROOKCARE</h3>
                                 <div>
-                                    <a href="/" style={{ marginRight: '1rem' }}><img src={googleplay} alt="GooglePlay" /></a>
-                                    <a href="/"><img src={appstore} alt="AppStore" /></a>
+                                    <Link to="/" style={{ marginRight: '1rem' }}><img src={googleplay} alt="GooglePlay" /></Link>
+                                    <Link to="/"><img src={appstore} alt="AppStore" /></Link>
                                 </div>
                             </div>
                         </div>
@@ -389,8 +389,8 @@ const BookingDetail = () => {
                                 <span>Đặt lịch khám Bác sĩ dễ dàng</span>
                                 <h3>Tải ngay IMPROOKCARE</h3>
                                 <div>
-                                    <a href="/" style={{ marginRight: '1rem' }}><img src={googleplay} alt="GooglePlay" /></a>
-                                    <a href="/"><img src={appstore} alt="AppStore" /></a>
+                                    <Link to="/" style={{ marginRight: '1rem' }}><img src={googleplay} alt="GooglePlay" /></Link>
+                                    <Link to="/"><img src={appstore} alt="AppStore" /></Link>
                                 </div>
                             </div>
                         </div>

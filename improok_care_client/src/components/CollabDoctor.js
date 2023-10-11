@@ -7,6 +7,7 @@ import mona from "../assests/images/mona.png"
 import eula from "../assests/images/eula.png"
 import { TiTickOutline } from "react-icons/ti";
 import { FcSearch } from "react-icons/fc";
+import { Link } from "react-router-dom";
 
 const CollabDoctor = () => {
     const [imageClick, setImageClick] = useState(true);
@@ -94,8 +95,8 @@ const CollabDoctor = () => {
                             </li>
                         </ul>
                         <div>
-                            <a href="/" style={{ marginRight: '1rem' }}><img src={googleplay} alt="GooglePlay" /></a>
-                            <a href="/"><img src={appstore} alt="AppStore" /></a>
+                            <Link to="/" style={{ marginRight: '1rem' }}><img src={googleplay} alt="GooglePlay" /></Link>
+                            <Link to="/"><img src={appstore} alt="AppStore" /></Link>
                         </div>
                     </div>
                     <div class="CollabDoctor_Content_5_Right">

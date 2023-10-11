@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { MyUserContext } from "../App";
 import "../styles/Appointment.css";
 import { authApi, endpoints } from "../configs/Apis";
@@ -84,11 +84,11 @@ const Appointment = () => {
                 <div class="Appointment_Left">
                     <div class="Appointment_Left_Content">
                         <ul>
-                            <li><a href="/personalpage">Thông tin cá nhân</a></li>
-                            <li><a href="/changepassword">Đổi mật khẩu</a></li>
-                            <li><a href="/appointment">Lịch khám</a></li>
-                            <li><a href="/medicalrecord">Lịch sử khám</a></li>
-                            <li><a href="/profile">Hồ sơ</a></li>
+                            <li><Link to="/personalpage">Thông tin cá nhân</Link></li>
+                            <li><Link to="/changepassword">Đổi mật khẩu</Link></li>
+                            <li><Link to="/appointment">Lịch khám</Link></li>
+                            <li><Link to="/medicalrecord">Lịch sử khám</Link></li>
+                            <li><Link to="/profile">Hồ sơ</Link></li>
                             <li onClick={logout}>Đăng xuất</li>
                         </ul>
                     </div>

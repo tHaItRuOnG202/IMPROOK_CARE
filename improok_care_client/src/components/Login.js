@@ -6,7 +6,7 @@ import { useState } from "react";
 import cookie from "react-cookies"
 import { useContext } from "react";
 import { MyUserContext } from "../App";
-import { Navigate, useNavigate } from "react-router-dom"
+import { Navigate, useNavigate, Link } from "react-router-dom"
 import { Form } from "react-bootstrap"
 import Apis, { authApi, endpoints } from "../configs/Apis";
 import { toast } from "react-toastify";
@@ -98,7 +98,7 @@ const Login = () => {
                                         <span>
                                             <span><input type="checkbox" /> Ghi nhớ mật khẩu</span>
                                         </span>
-                                        <a href="/forgetpassword">Quên mật khẩu</a>
+                                        <Link to="/forgetpassword">Quên mật khẩu</Link>
                                     </div>
                                     <div class="Login_Option">
                                         <div class="Login_Or">
@@ -115,7 +115,7 @@ const Login = () => {
                                 <div class="To_Register">
                                     <div>
                                         Bạn mới biết đến đền I'MPROOK Care?
-                                        <a href="/register"> Đăng ký</a>
+                                        <Link to="/register"> Đăng ký</Link>
                                     </div>
                                 </div>
                             </div>

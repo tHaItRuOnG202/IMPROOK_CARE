@@ -1,5 +1,5 @@
 import { useContext, useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { MyUserContext } from "../../App";
 import "../../styles/Doctor.css";
 import { Form, Image } from "react-bootstrap";
@@ -188,12 +188,12 @@ const Doctor = () => {
                 <div class="Doctor_Left">
                     <div class="Doctor_Left_Content">
                         <ul>
-                            <li><a href="/doctor">Thông tin cá nhân</a></li>
-                            <li><a href="/changepassword">Đổi mật khẩu</a></li>
-                            <li><a href="/schedule">Đăng ký lịch khám</a></li>
-                            <li><a href="/bookingmanagement">Lịch hẹn</a></li>
-                            <li><a href="/profiledoctor">Hồ sơ</a></li>
-                            <li><a href="/prescription">Tạo đơn thuốc</a></li>
+                            <li><Link to="/doctor">Thông tin cá nhân</Link></li>
+                            <li><Link to="/changepassword">Đổi mật khẩu</Link></li>
+                            <li><Link to="/schedule">Đăng ký lịch khám</Link></li>
+                            <li><Link to="/bookingmanagement">Lịch hẹn</Link></li>
+                            <li><Link to="/profiledoctor">Hồ sơ</Link></li>
+                            <li><Link to="/prescription">Tạo đơn thuốc</Link></li>
                             <li onClick={logout}>Đăng xuất</li>
                         </ul>
                     </div>
