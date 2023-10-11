@@ -234,7 +234,7 @@ const Schedule = () => {
                             <li><a href="/schedule">Đăng ký lịch khám</a></li>
                             <li><a href="/bookingmanagement">Lịch hẹn</a></li>
                             <li><a href="/profiledoctor">Hồ sơ</a></li>
-                            <li><a href="/">Tạo đơn thuốc</a></li>
+                            <li><a href="/prescription">Tạo đơn thuốc</a></li>
                             <li onClick={logout}>Đăng xuất</li>
                         </ul>
                     </div>

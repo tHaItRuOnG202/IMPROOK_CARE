@@ -489,3 +489,36 @@ div.Update_Medicine_Button button:hover {
 div.Update_Medicine_Button button:focus-visible {
     outline-offset: 1px;
 }
+
+/* ====================== */
+div.User_Search_Input {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.User_Search_Firstname,
+.User_Search_Lastname,
+.User_Search_Role {
+    width: 33%;
+    border-radius: 0.05rem;
+}
+
+button.User_Search_Butt {
+    display: inline-block;
+    outline: 0;
+    appearance: none;
+    padding: 0px 12px;
+    border: 0px solid transparent;
+    border-radius: 4px;
+    text-decoration: none;
+    cursor: pointer;
+    background-color: rgb(9, 128, 76);
+    box-shadow: rgb(19 170 82 / 40%) 0px 2px 3px;
+    color: rgb(255, 255, 255);
+    font-size: 14px;
+    font-weight: 400;
+    height: 36px;
+    transition: all 150ms ease-in-out 0s;
+    margin-bottom: 0.5rem;
+}

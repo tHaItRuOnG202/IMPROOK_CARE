@@ -213,9 +213,9 @@ const Profile = () => {
                     "phonenumber": updatePhonenumber === undefined ? profile.phonenumber : updatePhonenumber,
                     "gender": gender === undefined ? profile.gender : gender,
                     "birthday": birthDate,
-                    "provinceName": provincename === undefined ? "Hà Nội" : provincename,
-                    "districtName": districtname === undefined ? "Quận Ba Đình" : districtname,
-                    "wardName": wardname === undefined ? "Xã Phúc Kiến" : wardname,
+                    "provinceName": provincename === undefined ? province[0].name : provincename,
+                    "districtName": districtname === undefined ? district[0].name : districtname,
+                    "wardName": wardname === undefined ? ward[0].name : wardname,
                     "personalAddress": updatePersonalAddress === undefined ? profile.personalAddress : updatePersonalAddress,
                     "email": updateEmail === undefined ? profile.email : updateEmail,
                     "relationship": updateRelationship === undefined ? profile.relationship : updateRelationship

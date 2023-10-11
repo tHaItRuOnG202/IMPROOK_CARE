@@ -17,14 +17,12 @@ const Doctor = () => {
     const checkLogin = (current_user) => {
         if (isLogin === 0) {
             if (current_user === null) {
-                toast("Vui lòng đăng nhập!")
+                toast("Vui lòng đăng nhập!");
                 isLogin = 1;
-                nav("/login");
+                nav('/login');
             }
         }
     }
-
-    //Đá trước khi vô!
 
     const doctorAuth = (current_user) => {
         if (isDoctor === 0) {
@@ -195,7 +193,7 @@ const Doctor = () => {
                             <li><a href="/schedule">Đăng ký lịch khám</a></li>
                             <li><a href="/bookingmanagement">Lịch hẹn</a></li>
                             <li><a href="/profiledoctor">Hồ sơ</a></li>
-                            <li><a href="/">Tạo đơn thuốc</a></li>
+                            <li><a href="/prescription">Tạo đơn thuốc</a></li>
                             <li onClick={logout}>Đăng xuất</li>
                         </ul>
                     </div>

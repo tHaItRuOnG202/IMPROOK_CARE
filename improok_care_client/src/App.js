@@ -26,6 +26,7 @@ import ChangePassword from "./components/ChangePassword"
 import ForgetPassword from "./components/ForgetPassword"
 import BookingManagement from "./components/Doctor/BookingManagement";
 import Appointment from "./components/Appointment";
+import Presciption from "./components/Doctor/Presciption";
 
 export const MyUserContext = createContext();
 // export const PhonenumberContext = createContext();
@@ -59,6 +60,7 @@ const App = () => {
           <Route path='/forgetpassword' element={<ForgetPassword />} />
           <Route path='/bookingmanagement' element={<BookingManagement />} />
           <Route path='/appointment' element={<Appointment />} />
+          <Route path='/prescription' element={<Presciption />} />
         </Routes>
         <Footer />
         <ToastContainer />

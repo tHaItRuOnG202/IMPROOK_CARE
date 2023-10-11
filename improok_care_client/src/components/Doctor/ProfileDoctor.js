@@ -7,11 +7,15 @@ import Apis, { authApi, endpoints } from "../../configs/Apis";
 import cookie from "react-cookies";
 import { toast } from "react-toastify";
 import doctorprofile from "../../assests/images/doctor-profile-icon.png"
+import printer from "../../assests/images/printer.png"
+import profileicon from "../../assests/images/profile-icon.png"
+import profile404 from "../../assests/images/profile.png"
 
 const ProfileDoctor = () => {
     const [current_user, dispatch] = useContext(MyUserContext);
     const nav = useNavigate();
-    const [loading, setLoading] = useState(true)
+    const [loading, setLoading] = useState(true);
+    const [profileDoctor, setProfileDoctor] = useState([]);
 
     const [name, setName] = useState();
     const [phonenumber, setPhonenumber] = useState();
@@ -32,9 +36,17 @@ const ProfileDoctor = () => {
     const [selectedWardCode, setSelectedWardCode] = useState('00001');
     const [selectedSpecialty, setSelectedSpecialty] = useState('1');
 
-    const [addProfileInfo, setAddProfileInfo] = useState(false)
-    const [profile, setProfile] = useState([]);
-    const [checkProfileInfo, setCheckProfileInfo] = useState(true)
+    const [addProfileInfo, setAddProfileInfo] = useState(false);
+    const [profile, setProfile] = useState(null);
+    const [checkProfileInfo, setCheckProfileInfo] = useState(true);
+    const [selectedProfile, setSelectedProfile] = useState();
+
+    const [updateName, setUpdateName] = useState();
+    const [updatePhonenumber, setUpdatePhonenumber] = useState();
+    const [updateWorkPlace, setUpdateWorkPlace] = useState();
+    const [updateBookingPrice, setUpdateBookingPrice] = useState();
+    const [updateEmail, setUpdateEmail] = useState();
+    const [updatePosition, setUpdatePosition] = useState();
 
 
     // const formattedDate = new Date(current_user.birthday).toISOString().substring(0, 10);
@@ -98,6 +110,41 @@ const ProfileDoctor = () => {
         loadSpecialty();
     }, [])
 
+    const loadProfileDoctor = async () => {
+        try {
+            let res = await Apis.get(endpoints['load-profile-doctor-by-userId'](current_user.userId))
+            setProfileDoctor(res.data);
+            console.log(res.data);
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    useEffect(() => {
+        loadProfileDoctor();
+    }, [current_user.userId])
+
+    const viewProfileDoctor = (evt, pd) => {
+        evt.preventDefault();
+        console.log("pp" + pd.profileDoctorId);
+        setSelectedProfile(pd.profileDoctorId);
+        // console.log(selectedProfile);
+
+        const process = async () => {
+            try {
+                setLoading(true);
+                let res = await authApi().get(endpoints['load-profile-doctor-by-Id'](pd.profileDoctorId))
+
+                setProfile(res.data);
+                console.log(res.data);
+                setLoading(false);
+            } catch (error) {
+                console.log(error);
+            }
+        }
+        process();
+    }
+
     const updateClick = () => {
         setCheckProfileInfo(!checkProfileInfo);
     }
@@ -114,9 +161,9 @@ const ProfileDoctor = () => {
                     "phonenumber": phonenumber,
                     "bookingPrice": bookingPrice,
                     "email": email,
-                    "provinceName": provincename,
-                    "districtName": districtname,
-                    "wardName": wardname,
+                    "provinceName": provincename === undefined ? province[0].name : provincename,
+                    "districtName": districtname === undefined ? district[0].name : districtname,
+                    "wardName": wardname === undefined ? ward[0].name : wardname,
                     "workPlace": workPlace,
                     "position": position,
                     "userId": current_user.userId,
@@ -126,13 +173,54 @@ const ProfileDoctor = () => {
                 toast.success(res.data)
                 setLoading(false);
                 setAddProfileInfo(false);
-
             } catch (error) {
                 console.log(error);
                 toast.error("Có lỗi xảy ra!")
             }
         }
 
+        process();
+    }
+
+    const updateProfile = (evt) => {
+        evt.preventDefault();
+
+        const process = async () => {
+            try {
+                setLoading(true);
+                // setUpdateName(profile.name);
+                // setUpdatePhonenumber(profile.phonenumber);
+                // setUpdatePersonalAddress(profile.personalAddress);
+                // setUpdateEmail(profile.email);
+                // setUpdateRelationship(profile.relationship);
+                // setUpdateProvinceName("Hà Nội");
+                // setUpdateDistrictName("Vue.js");
+                // setUpdateWardName("Nue.js");
+
+                console.log(profile.profileDoctorId, updateName, updatePhonenumber, provincename, districtname, wardname, updateWorkPlace, updateBookingPrice, updateEmail, updatePosition, selectedSpecialty)
+                console.log(profile.profileDoctorId, profile.name, profile.phonenumber, province[0].name, district[0].name, ward[0].name, profile.workPlace, profile.bookingPrice, profile.email, profile.position, profile.specialtyId)
+                let res = await authApi().post(endpoints['update-profile-doctor'], {
+                    "profileDoctorId": profile.profileDoctorId,
+                    "name": updateName === undefined ? profile.name : updateName,
+                    "phonenumber": updatePhonenumber === undefined ? profile.phonenumber : updatePhonenumber,
+                    "provinceName": provincename === undefined ? province[0].name : provincename,
+                    "districtName": districtname === undefined ? district[0].name : districtname,
+                    "wardName": wardname === undefined ? ward[0].name : wardname,
+                    "workPlace": updateWorkPlace === undefined ? profile.workPlace : updateWorkPlace,
+                    "bookingPrice": updateBookingPrice === undefined ? profile.bookingPrice : updateBookingPrice,
+                    "email": updateEmail === undefined ? profile.email : updateEmail,
+                    "position": updatePosition === undefined ? profile.position : updatePosition,
+                    "specialtyId": selectedSpecialty === undefined ? profile.specialtyId : selectedSpecialty
+                });
+                console.log(res.data);
+                toast.success(res.data);
+                setLoading(false);
+                setCheckProfileInfo(!checkProfileInfo);
+            } catch (error) {
+                console.log(error);
+                toast.error("Có lỗi xảy ra!")
+            }
+        }
         process();
     }
 
@@ -206,7 +294,7 @@ const ProfileDoctor = () => {
                             <li><a href="/schedule">Đăng ký lịch khám</a></li>
                             <li><a href="/bookingmanagement">Lịch hẹn</a></li>
                             <li><a href="/profiledoctor">Hồ sơ</a></li>
-                            <li><a href="/">Tạo đơn thuốc</a></li>
+                            <li><a href="/prescription">Tạo đơn thuốc</a></li>
                             <li onClick={logout}>Đăng xuất</li>
                         </ul>
                     </div>
@@ -220,10 +308,28 @@ const ProfileDoctor = () => {
                             <div class="Profile_Doctor_Middle_Info">
                                 <input type="text" placeholder="Nhập tên hồ sơ cần tìm..."></input>
                                 <div class="Profile_List">
-
+                                    {profileDoctor.length === 0 ? <>
+                                        <div class="Profile_List_404">
+                                            <img src={printer} alt="404" width={'20%'} />
+                                            <span>Không tìm thấy kết quả</span>
+                                        </div>
+                                    </> : <>
+                                        <div class="Profile_List_Info">
+                                            <ul>
+                                                {Object.values(profileDoctor).map(pd => {
+                                                    return <>
+                                                        <div class="Profile_List_Detail" value={selectedProfile} onClick={(e) => viewProfileDoctor(e, pd)}>
+                                                            <img src={profileicon} alt="profileicon" width={'20%'} />
+                                                            <li key={pd.profileDoctorId} value={pd.profileDoctorId}>{pd.name}</li>
+                                                        </div>
+                                                    </>
+                                                })}
+                                            </ul>
+                                        </div>
+                                    </>}
                                 </div>
                             </div>
-                            <button onClick={addProfileClick}>Thêm hồ sơ</button>
+                            <button class="addProfileButt" onClick={addProfileClick}>Thêm hồ sơ</button>
                         </div>
                     </div>
                 </div>
@@ -233,40 +339,48 @@ const ProfileDoctor = () => {
                             {checkProfileInfo === true ?
                                 <>
                                     <section>
-                                        <div class="Profile_Doctor_Right_Header"><h3 className="text-center text-success">Thông tin cá nhân của bác sĩ {current_user.firstname}</h3></div>
+                                        <div class="Profile_Doctor_Right_Header"><h3 className="text-center text-success">Thông tin cá nhân của bác sĩ</h3></div>
                                         <div class="Profile_Doctor_Right_Content">
-                                            <div class="Profile_Doctor_Name">
-                                                <Form.Label style={{ width: "30%" }}>Tên</Form.Label>
-                                                <Form.Control value={current_user.lastname} type="text" disabled />
-                                            </div>
-                                            <div class="Profile_Doctor_Phonenumber">
-                                                <Form.Label style={{ width: "30%" }}>Số điện thoại</Form.Label>
-                                                <Form.Control value={current_user.firstname} type="text" disabled />
-                                            </div>
-                                            <div class="Profile_Doctor_Price">
-                                                <Form.Label style={{ width: "30%" }}>Giá khám</Form.Label>
-                                                <Form.Control value={current_user.email} type="text" disabled />
-                                            </div>
-                                            <div class="Profile_Doctor_Email">
-                                                <Form.Label style={{ width: "30%" }}>Email</Form.Label>
-                                                <Form.Control value={current_user.gender === true ? "Nam" : "Nữ"} type="email" disabled />
-                                            </div>
-                                            <div class="Profile_Doctor_Address">
-                                                <Form.Label style={{ width: "30%" }}>Địa chỉ công tác</Form.Label>
-                                                <Form.Control value={current_user.gender === true ? "Nam" : "Nữ"} type="text" disabled />
-                                            </div>
-                                            <div class="Profile_Doctor_Specialty">
-                                                <Form.Label style={{ width: "30%" }}>Chuyên khoa</Form.Label>
-                                                <Form.Control value={current_user.gender} type="text" disabled />
-                                            </div>
-                                            <div class="Profile_Doctor_Position">
-                                                <Form.Label style={{ width: "30%" }}>Vị trí</Form.Label>
-                                                <Form.Control value={current_user.gender === true ? "Nam" : "Nữ"} type="text" disabled />
-                                            </div>
-                                            <div class="Change_Button">
-                                                <button type="button">Xóa</button>
-                                                <button type="button" onClick={updateClick}>Thay đổi thông tin</button>
-                                            </div>
+                                            {profile === null ? <>
+                                                <div class="Profile_Null">
+                                                    <h5 className="mb-4">Chọn hồ sơ cần xem</h5>
+                                                    <img src={profile404} alt="Not found" width={'20%'} />
+                                                </div>
+                                            </> :
+                                                <>
+                                                    <div class="Profile_Doctor_Name">
+                                                        <Form.Label style={{ width: "30%" }}>Tên</Form.Label>
+                                                        <Form.Control value={profile.name} type="text" disabled />
+                                                    </div>
+                                                    <div class="Profile_Doctor_Phonenumber">
+                                                        <Form.Label style={{ width: "30%" }}>Số điện thoại</Form.Label>
+                                                        <Form.Control value={profile.phonenumber} type="text" disabled />
+                                                    </div>
+                                                    <div class="Profile_Doctor_Price">
+                                                        <Form.Label style={{ width: "30%" }}>Giá khám</Form.Label>
+                                                        <Form.Control value={profile.bookingPrice} type="text" disabled />
+                                                    </div>
+                                                    <div class="Profile_Doctor_Email">
+                                                        <Form.Label style={{ width: "30%" }}>Email</Form.Label>
+                                                        <Form.Control value={profile.email} type="email" disabled />
+                                                    </div>
+                                                    <div class="Profile_Doctor_Address">
+                                                        <Form.Label style={{ width: "30%" }}>Địa chỉ công tác</Form.Label>
+                                                        <Form.Control value={profile.workAddress} type="text" disabled />
+                                                    </div>
+                                                    <div class="Profile_Doctor_Specialty">
+                                                        <Form.Label style={{ width: "30%" }}>Chuyên khoa</Form.Label>
+                                                        <Form.Control value={profile?.specialtyId?.specialtyName} type="text" disabled />
+                                                    </div>
+                                                    <div class="Profile_Doctor_Position">
+                                                        <Form.Label style={{ width: "30%" }}>Vị trí</Form.Label>
+                                                        <Form.Control value={profile.position} type="text" disabled />
+                                                    </div>
+                                                    <div class="Change_Button">
+                                                        <button type="button">Xóa</button>
+                                                        <button type="button" onClick={updateClick}>Thay đổi thông tin</button>
+                                                    </div>
+                                                </>}
                                         </div>
                                     </section>
                                 </> : <>
@@ -275,19 +389,19 @@ const ProfileDoctor = () => {
                                         <div class="Profile_Doctor_Right_Content">
                                             <div class="Profile_Doctor_Name">
                                                 <Form.Label style={{ width: "30%" }}>Tên</Form.Label>
-                                                <Form.Control defaultValue={name} onChange={(e) => setName(e.target.value)} type="text" placeholder="Họ và tên" required />
+                                                <Form.Control defaultValue={profile.name} onChange={(e) => setUpdateName(e.target.value)} type="text" placeholder="Họ và tên" required />
                                             </div>
                                             <div class="Profile_Doctor_Phonenumber">
                                                 <Form.Label style={{ width: "30%" }}>Số điện thoại</Form.Label>
-                                                <Form.Control defaultValue={phonenumber} onChange={(e) => setPhonenumber(e.target.value)} type="text" placeholder="Số điện thoại" required />
+                                                <Form.Control defaultValue={profile.phonenumber} onChange={(e) => setUpdatePhonenumber(e.target.value)} type="text" placeholder="Số điện thoại" required />
                                             </div>
                                             <div class="Profile_Doctor_Price">
                                                 <Form.Label style={{ width: "30%" }}>Giá khám</Form.Label>
-                                                <Form.Control defaultValue={bookingPrice} type="text" onChange={(e) => setBookingPrice(e.target.value)} placeholder="Giá khám" required />
+                                                <Form.Control defaultValue={profile.bookingPrice} type="text" onChange={(e) => setUpdateBookingPrice(e.target.value)} placeholder="Giá khám" required />
                                             </div>
                                             <div class="Profile_Doctor_Email">
                                                 <Form.Label style={{ width: "30%" }}>Email</Form.Label>
-                                                <Form.Control defaultValue={email} type="email" onChange={(e) => setEmail(e.target.value)} placeholder="Email" required />
+                                                <Form.Control defaultValue={profile.email} type="email" onChange={(e) => setUpdateEmail(e.target.value)} placeholder="Email" required />
                                             </div>
                                             <div class="Profile_Doctor_Address">
                                                 <div>
@@ -309,9 +423,11 @@ const ProfileDoctor = () => {
                                                     </Form.Select>
                                                 </div>
                                             </div>
-                                            <div class="Profile_Doctor_Work_Place">
-                                                <Form.Label style={{ width: "30%" }}>Địa chỉ làm việc</Form.Label>
-                                                <Form.Control type="text" defaultValue={workPlace} placeholder="Địa chỉ làm việc" required onChange={(e) => setWorkPlace(e.target.value)} />
+                                            <div class="Profile_Doctor_Place">
+                                                <div class="Profile_Doctor_Work_Place">
+                                                    <Form.Label style={{ width: "30%" }}>Địa chỉ làm việc</Form.Label>
+                                                    <Form.Control type="text" defaultValue={profile.workPlace} placeholder="Địa chỉ làm việc" required onChange={(e) => setUpdateWorkPlace(e.target.value)} />
+                                                </div>
                                             </div>
                                             <div class="Profile_Doctor_Specialty">
                                                 <Form.Label style={{ width: "30%" }}>Chuyên khoa</Form.Label>
@@ -321,11 +437,11 @@ const ProfileDoctor = () => {
                                             </div>
                                             <div class="Profile_Doctor_Position">
                                                 <Form.Label style={{ width: "30%" }}>Vị trí</Form.Label>
-                                                <Form.Control defaultValue={position} type="text" onChange={(e) => setPosition(e.target.value)} placeholder="Vị trí công việc" required />
+                                                <Form.Control defaultValue={profile.position} type="text" onChange={(e) => setUpdatePosition(e.target.value)} placeholder="Vị trí công việc" required />
                                             </div>
                                             <div class="Update_Button">
                                                 <button type="button" onClick={updateClick}>Hủy</button>
-                                                <button type="button">Cập nhật thông tin</button>
+                                                <button type="button" onClick={updateProfile}>Cập nhật thông tin</button>
                                             </div>
                                         </div>
                                     </section>

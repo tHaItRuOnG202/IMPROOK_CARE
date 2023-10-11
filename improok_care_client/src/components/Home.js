@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
 import Apis, { endpoints } from "../configs/Apis";
-import PageNavigation from "../utils/PageNavigation";
 
 const Home = () => {
-
     const [bla, setBla] = useState();
     useEffect(() => {
         const loadBlaBla = async () => {
@@ -20,10 +18,8 @@ const Home = () => {
         loadBlaBla();
     }, [])
 
-
-
     return <>
-        <PageNavigation totalPages={5} />
+        <h3>Trang chủ IMPROOK_CARE</h3>
     </>
 }
 

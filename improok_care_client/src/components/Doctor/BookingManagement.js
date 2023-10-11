@@ -107,6 +107,7 @@ const BookingManagement = () => {
                         'Content-Type': 'text/plain'
                     }
                 })
+                console.log(requestBody)
                 if (res.data === "Xác nhận thành công lịch đặt khám!") {
                     toast.success(res.data);
                     loadWaitingBooking();
@@ -245,6 +246,7 @@ const BookingManagement = () => {
                                         <th>Ngày</th>
                                         <th>Khung giờ</th>
                                         <th>Tình trạng</th>
+                                        <th>Thao tác</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -259,6 +261,7 @@ const BookingManagement = () => {
                                                     <td>{bl[2]}</td>
                                                     <td>{timeBegin} - {timeEnd}</td>
                                                     <td><Badge bg="success">{bl[5]}</Badge></td>
+                                                    <td><Button variant="primary">Tạo đơn thuốc</Button></td>
                                                 </tr>
                                             </>
                                         }
@@ -323,7 +326,7 @@ const BookingManagement = () => {
                             <li><a href="/schedule">Đăng ký lịch khám</a></li>
                             <li><a href="/bookingmanagement">Lịch hẹn</a></li>
                             <li><a href="/profiledoctor">Hồ sơ</a></li>
-                            <li><a href="/">Tạo đơn thuốc</a></li>
+                            <li><a href="/prescription">Tạo đơn thuốc</a></li>
                             <li onClick={logout}>Đăng xuất</li>
                         </ul>
                     </div>

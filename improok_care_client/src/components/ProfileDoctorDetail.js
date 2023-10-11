@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import "../styles/ProfileDoctorDetail.css"
 import { useParams } from "react-router-dom";
 import Apis, { endpoints } from "../configs/Apis";
@@ -6,11 +6,13 @@ import verified from "../assests/images/verified.svg"
 import MySpinner from "../layout/MySpinner";
 import googleplay from "../assests/images/googleplay.svg"
 import appstore from "../assests/images/appstore.svg"
+import { MyUserContext } from "../App";
 
 const ProfileDoctorDetail = () => {
     const { profileDoctorId } = useParams();
     const [doctorDetail, setDoctorDetail] = useState('');
     const [loading, setLoading] = useState(false);
+    const [current_user, dispatch] = useContext(MyUserContext)
 
     useEffect(() => {
         const loadProfileDoctorById = async () => {
@@ -44,10 +46,10 @@ const ProfileDoctorDetail = () => {
                             {doctorDetail?.specialtyId?.specialtyName &&
                                 (<div class="Profile_Doctor_Info">
                                     <h3>Phó giáo sư, Tiến sĩ, Bác sĩ {doctorDetail.name}</h3>
-                                    <span className="mb-4"><img src={verified} alt="verified" /> Bác sĩ | 10 năm kinh nghiệm</span>
-                                    <span>Chuyên khoa {doctorDetail.specialtyId.specialtyName}</span>
+                                    <span className="mb-4"><img src={verified} alt="verified" /> <span style={{ color: '#1975e3', fontSize: '1.1rem', fontWeight: 'bold' }}>Bác sĩ</span> | <strong>10</strong> năm kinh nghiệm</span>
+                                    <span>Chuyên khoa <span style={{ color: '#1975e3', fontSize: '1.1rem', fontWeight: 'bold' }}>{doctorDetail.specialtyId.specialtyName}</span></span>
                                     <span>Chức vụ {doctorDetail.position}</span>
-                                    <span>Nơi công tác {doctorDetail.workAddress}</span>
+                                    <span>Nơi công tác <span style={{ fontSize: '1.1rem', fontWeight: '500' }}>{doctorDetail.workAddress}</span></span>
                                 </div>)
                             }
                         </>}
@@ -58,7 +60,8 @@ const ProfileDoctorDetail = () => {
                             <span>Hỗ trợ đặt khám</span>
                             <span>2051052125</span>
                         </div>
-                        <button><a href={url}>ĐẶT KHÁM NGAY</a></button>
+                        {current_user === null ? <button><a href='/login'>Đăng nhập để đặt khám</a></button> : <button><a href={url}>ĐẶT KHÁM NGAY</a></button>}
+
                     </div>
                 </div>
                 <div class="Profile_Doctor_Detail_Footer">

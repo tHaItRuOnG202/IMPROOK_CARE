@@ -1,0 +1,35 @@
+div.Prescription {
+    display: flex;
+    max-width: 80rem;
+    flex-wrap: wrap;
+    padding-top: 2rem;
+    gap: 5rem;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+div.Prescription_Left {
+    width: 20%;
+}
+
+div.Prescription_Left_Content>ul {
+    display: grid;
+    list-style: none;
+    background-color: lightblue;
+}
+
+div.Prescription_Left_Content>ul>li {
+    display: flex;
+    height: 3rem;
+    align-items: center;
+    cursor: pointer;
+}
+
+div.Prescription_Left_Content>ul>li a {
+    text-decoration: none;
+    color: black;
+}
+
+div.Prescription_Right {
+    width: 70%;
+}

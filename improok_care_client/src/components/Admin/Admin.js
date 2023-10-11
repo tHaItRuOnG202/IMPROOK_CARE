@@ -5,7 +5,6 @@ import { Button, Form, Table } from "react-bootstrap";
 import { toast } from "react-toastify";
 import MySpinner from "../../layout/MySpinner";
 import "../../styles/Admin.css";
-import ListSubheader from '@mui/material/ListSubheader';
 import List from '@mui/material/List';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
@@ -13,7 +12,7 @@ import ListItemText from '@mui/material/ListItemText';
 import Collapse from '@mui/material/Collapse';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
-import { AddCircle, Analytics, Category, LocalHospital, LocalPharmacy, Medication, MonetizationOn, People, Person, PersonAdd, Speed, Update } from "@mui/icons-material";
+import { AddCircle, Analytics, Category, LocalHospital, LocalPharmacy, Medication, MonetizationOn, People, Person, PersonAdd, Speed } from "@mui/icons-material";
 import { Box, Paper, Typography } from "@mui/material";
 import Apis, { authApi, endpoints } from "../../configs/Apis";
 import moment from 'moment';
@@ -34,12 +33,15 @@ const Admin = () => {
     const [roles, setRoles] = useState();
     const [selectedRole, setSelectedRole] = useState('1');
     const [totalPages, setTotalPages] = useState('1');
-    const [totalMedicinePages, setTotalMedicinePages] = useState('1')
+    const [totalMedicinePages, setTotalMedicinePages] = useState('1');
+    const [totalCategoryMedicinePages, setTotalCategoryMedicinePages] = useState('1');
     const [medicineCategoryName, setMedicineCategoryName] = useState('');
     const [selectedCategoryId, setSelectedCategoryId] = useState('')
     const [editCategoryName, setEditCategoryName] = useState('');
     const [medicineList, setMedicineList] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState('1');
+
+    const [urlUser, setUrlUser] = useState("");
 
     const [editingIndex, setEditingIndex] = useState(-1);
 
@@ -84,6 +86,11 @@ const Admin = () => {
     const [selectedImage, setSelectedImage] = useState('');
 
     const [categories, setCategories] = useState([]);
+
+    const [q] = useSearchParams();
+    const [searchRole, setSearchRole] = useState(null);
+    const [searchFirstname, setSearchFirstname] = useState(null);
+    const [searchLastname, setSearchLastname] = useState(null);
 
     const handleImageChange = (event) => {
         const file = event.target.files[0];
@@ -150,7 +157,7 @@ const Admin = () => {
             setUserList(res.data.content);
             setTotalPages(res.data.totalPages);
             setLoading(false);
-            console.log(res.data);
+            console.log(res.data.content);
         } catch (error) {
             console.log(error);
         }
@@ -159,16 +166,33 @@ const Admin = () => {
     const loadUserPage = async (pageNumber) => {
         try {
             setLoading(true);
-            let e = endpoints['search-users'];
+            // let e = endpoints['search-users'];
+            let e = `${endpoints['search-users']}`;
             // let pageNumber = document.getElementsByClassName("active").id;
             console.log(pageNumber)
-            if (pageNumber !== null) {
-                e = `${e}?pageNumber=${pageNumber - 1}`
+            if (pageNumber !== null && !isNaN(pageNumber)) {
+                e += `?pageNumber=${pageNumber - 1}&`
             }
+            else {
+                e += `?`
+            }
+            let firstname = searchFirstname;
+            let lastname = searchLastname;
+            let roleId = searchRole;
+            if (firstname !== null)
+                e += `firstname=${firstname}&`
+            if (lastname !== null)
+                e += `lastname=${lastname}&`
+            if (roleId !== null && roleId !== "TẤT CẢ ROLE")
+                e += `roleId=${roleId}`
             // let url = `/users/${pageNumber}`
+            console.log(e);
             let res = await Apis.get(e);
             setUserList(res.data.content);
+            // setUrlUser(e);
             setTotalPages(res.data.totalPages);
+            console.log(res.data.totalPages);
+            console.log(e);
             // navigate(url);
             setLoading(false);
             console.log(res.data);
@@ -382,18 +406,65 @@ const Admin = () => {
         console.log(`Chuyển đến trang ${pageNumber}`);
     };
 
+    const categoryMedicinePages = Array.from({ length: totalCategoryMedicinePages }, (_, index) => index + 1);
+    const handleCategoryMedicinePageChange = (pageNumber) => {
+        // TODO: Xử lý sự kiện khi người dùng chuyển trang
+        setSelectedPage(pageNumber);
+        loadMedicineCategoriesPage(pageNumber);
+        console.log(`Chuyển đến trang ${pageNumber}`);
+    };
+
+    // const loadMedicineCategories = async () => {
+    //     try {
+    //         setLoading(true);
+    //         let res = await Apis.get(endpoints['medicine-categories'])
+    //         setCategories(res.data);
+    //         // setTotalPages(res.data.totalPages);
+    //         setLoading(false);
+    //         console.log(res.data);
+    //     } catch (error) {
+    //         console.log(error);
+    //     }
+    // }
+
     const loadMedicineCategories = async () => {
         try {
             setLoading(true);
-            let res = await Apis.get(endpoints['medicine-categories'])
-            setCategories(res.data);
-            // setTotalPages(res.data.totalPages);
+            let res = await Apis.get(endpoints['search-medicine-categories'])
+            setCategories(res.data.content);
+            setTotalCategoryMedicinePages(res.data.totalPages);
             setLoading(false);
             console.log(res.data);
         } catch (error) {
             console.log(error);
         }
     }
+
+    const loadMedicineCategoriesPage = async (pageNumber) => {
+        try {
+            setLoading(true);
+            let e = endpoints['search-medicine-categories'];
+            // let pageNumber = document.getElementsByClassName("active").id;
+            console.log(pageNumber)
+            if (pageNumber !== null) {
+                e = `${e}?pageNumber=${pageNumber - 1}`
+            }
+            // let url = `/admin?=${pageNumber}`
+            let res = await Apis.get(e);
+            setCategories(res.data.content);
+            setTotalCategoryMedicinePages(res.data.totalPages);
+            // navigate(url);
+            setLoading(false);
+            console.log(res.data);
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    useEffect(() => {
+        loadMedicineCategories();
+        loadMedicineCategoriesPage();
+    }, [])
 
     const addMedicineCategory = (evt) => {
         evt.preventDefault();
@@ -534,6 +605,34 @@ const Admin = () => {
         loadMedicinePage();
     }, [])
 
+    // useEffect(() => {
+
+    // }, [q])
+
+    // const loadSearchUser = async () => {
+    //     try {
+    //         let e = `${endpoints['search-users']}?`;
+    //         let firstname = searchFirstname;
+    //         let lastname = searchLastname;
+    //         let roleId = searchRole;
+
+    //         if (firstname !== null)
+    //             e += `firstname=${firstname}&`
+    //         if (lastname !== null)
+    //             e += `lastname=${lastname}&`
+    //         if (roleId !== null)
+    //             e += `roleId=${roleId}`
+
+    //         let res = await Apis.get(e)
+    //         console.log(e);
+    //         setUserList(res.data.content);
+    //         setTotalPages(res.data.totalPages);
+    //         console.log(res.data)
+    //     } catch (ex) {
+    //         console.error(ex)
+    //     }
+    // }
+
     const addMedicine = (evt) => {
         evt.preventDefault();
 
@@ -654,6 +753,17 @@ const Admin = () => {
                         <div>
                             <div class="Add_User">
                                 <button onClick={() => handleOptionClick("adduser")}><HiPlus /> Thêm 1 người dùng mới</button>
+                            </div>
+                            <div class="User_Search_Group">
+                                <div class="User_Search_Input">
+                                    <Form.Control class="User_Search_Lastname" defaultValue={searchLastname} name="searchFirstname" type="Text" onChange={(e) => setSearchLastname(e.target.value)} placeholder="Nhập họ và tên đệm..." />
+                                    <Form.Control class="User_Search_Firstname" defaultValue={searchFirstname} name="searchLastname" type="Text" onChange={(e) => setSearchFirstname(e.target.value)} placeholder="Nhập tên..." />
+                                    <Form.Select class="User_Search_Role" value={searchRole} name="searchRole" onChange={(e) => setSearchRole(e.target.value)}>
+                                        <option value={null}>TẤT CẢ ROLE</option>
+                                        {Object.values(roles).map(r => <option key={r.roleId} value={r.roleId}>{r.roleName}</option>)}
+                                    </Form.Select>
+                                </div>
+                                <button class="User_Search_Butt" onClick={loadUserPage}>Tìm kiếm</button>
                             </div>
                             <Table striped bordered hover>
                                 <thead>
@@ -951,8 +1061,8 @@ const Admin = () => {
                                 </tbody>
                             </Table>
                             <div className="Page_Nav">
-                                {pages.map((page) => (
-                                    <button id={`${page}`} key={page} onClick={() => handlePageChange(page)}
+                                {categoryMedicinePages.map((page) => (
+                                    <button id={`${page}`} key={page} onClick={() => handleCategoryMedicinePageChange(page)}
                                         className={page === selectedPage ? 'active' : ''}>
                                         {page}
                                     </button>

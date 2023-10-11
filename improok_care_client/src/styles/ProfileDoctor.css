@@ -34,6 +34,13 @@ div.Profile_Doctor_Middle {
     width: 22%;
 }
 
+
+div.Profile_Doctor_Middle_Info>input {
+    width: 100%;
+    border-radius: 5rem;
+    height: 2rem;
+}
+
 div.Profile_Doctor_Right {
     width: 45%;
 }
@@ -78,7 +85,8 @@ div.Update_Button {
 }
 
 div.Update_Button button,
-div.Change_Button button {
+div.Change_Button button,
+button.addProfileButt {
     outline: 0;
     grid-gap: 8px;
     align-items: center;
