@@ -1,14 +1,17 @@
-import { useContext, useEffect, useState } from "react";
-import { MyUserContext } from "../../App";
+import { useContext, useEffect, useState, createContext } from "react";
+import { MyUserContext, BookingManagementContext } from "../../App";
 import { useNavigate, Link } from "react-router-dom";
 import "../../styles/BookingManagement.css";
 import Apis, { authApi, endpoints } from "../../configs/Apis";
 import { Badge, Button, Form, Table } from "react-bootstrap";
 import { toast } from "react-toastify";
 import ProfileDoctor from "./ProfileDoctor";
+import Prescription from "./Prescription";
+import { PrescriptionProvider } from '../../reducers/PrescriptionContext';
 
 const BookingManagement = () => {
     const [current_user, dispatch] = useContext(MyUserContext);
+    const [booking, dispatchBooking] = useContext(BookingManagementContext)
     const [profileDoctorByUserId, setProfileDoctorByUserId] = useState([]);
     const [selectedProfileDoctorId, setSelectedProfileDoctorId] = useState('');
     const [bookingList, setBookingList] = useState([]);
@@ -26,6 +29,13 @@ const BookingManagement = () => {
     const [profileDoctor, setProfileDoctor] = useState();
 
     const [loading, setLoading] = useState(false);
+
+    const [bookingInfo, setBookingInfo] = useState({
+        bookingId: null,
+        profilePatientName: null,
+        profileDoctorName: null,
+        bookingPrice: null
+    })
 
     // const [selectedBookingId, setSelectedBookingId] = useState('');
 
@@ -133,7 +143,25 @@ const BookingManagement = () => {
         loadDoctorById();
         console.log(bookingId)
         console.log(profilePatientName)
+        console.log(selectedBookingId);
+        console.log(selectedProfilePatientName);
+        const updatedBookingInfo = {
+            bookingId: bookingId,
+            profilePatientName: profilePatientName,
+            profileDoctorName: profileDoctor.name,
+            bookingPrice: profileDoctor.bookingPrice
+        };
+
+        setBookingInfo(updatedBookingInfo);
+        dispatchBooking({
+            type: "booking",
+            payload: updatedBookingInfo
+        });
+        console.log(bookingInfo);
+        console.log(current_user);
     };
+
+
 
     const loadDoctorById = async () => {
         try {
@@ -336,17 +364,32 @@ const BookingManagement = () => {
                                     {Object.values(bookingList).map((bl, index) => {
                                         const timeBegin = new Date(bl[3]).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
                                         const timeEnd = new Date(bl[4]).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                                        const name = bl[6];
                                         if (bl[5] === "Đã xác nhận") {
                                             return <>
                                                 <tr key={index}>
                                                     <td>{bl[0]}</td>
-                                                    <td>{bl[6]}</td>
+                                                    <td>{name}</td>
                                                     <td>{bl[2]}</td>
                                                     <td>{timeBegin} - {timeEnd}</td>
                                                     <td><Badge bg="success">{bl[5]}</Badge></td>
-                                                    {/* <td><Button variant="primary" onClick={(e) => handleCreatePrescription(e, bl[0], bl[6])}><Link to={`/prescription/?bookingId=${bl[0]}&&profilePatientName=${bl[6]}`}>Tạo đơn thuốc</Link></Button></td> */}
-                                                    <Link to={{ pathname: '/prescription', state: { paramA: "CCCCCCCCCCCCCCC" } }}>CCCC </Link>
+                                                    {/* <td><Button variant="primary" onClick={(e) => handleCreatePrescription(e, bl[0], bl[6])}><Link to={`/prescription/?bookingId=${bl[0]}&&profilePatientName=${bl[6]}&&profileDoctorName=${profileDoctor.name}&&bookingPrice=${profileDoctor.bookingPrice}`}>Tạo đơn thuốc</Link></Button></td> */}
+                                                    <td><Button variant="primary" onClick={(e) => handleCreatePrescription(e, bl[0], bl[6])}><Link to='/prescription'>Tạo đơn thuốc</Link></Button></td>
+                                                    {/* <Link to={{ pathname: '/prescription', state: { paramA: "CCCCCCCCCCCCCCC" } }}>CCCC </Link> */}
                                                 </tr>
+                                                {/* <div class="Hidden">
+                                                    <BookingManagementContext.Consumer>
+                                                            {({ bookingId, profilePatientName, profileDoctorName, bookingPrice }) => (
+                                                                <Prescription
+                                                                    bookingId={bookingId}
+                                                                    profilePatientName={profilePatientName}
+                                                                    profileDoctorName={profileDoctorName}
+                                                                    bookingPrice={bookingPrice}
+                                                                />
+                                                            )}
+                                                        </BookingManagementContext.Consumer>
+                                                    <Prescription />
+                                                </div> */}
                                             </>
                                         }
                                     })}

@@ -63,3 +63,7 @@ div.BookingManagement_Right_Body_1 {
     color: white;
     font-weight: bold;
 }
+
+.Hidden {
+    display: none;
+}
