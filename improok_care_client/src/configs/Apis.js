@@ -59,7 +59,9 @@ export const endpoints = {
     "admin-update-medicine": `${SERVER_CONTEXT}/api/auth/admin/update-medicine/`,
     "search-medicine-categories": `${SERVER_CONTEXT}/api/public/search-medicine-categories/`,
     "add-prescription": `${SERVER_CONTEXT}/api/auth/doctor/add-prescription/`,
-    "search-prescriptions": `${SERVER_CONTEXT}/api/auth/search-prescriptions/`
+    "search-prescriptions": `${SERVER_CONTEXT}/api/auth/search-prescriptions/`,
+    "prescription-detail-by-prescription-id": (prescriptionId) => `${SERVER_CONTEXT}/api/auth/prescription/${prescriptionId}/prescription-detail/`,
+    "vnpay-payment": `http://localhost:2024/IMPROOK_CARE/api/public/pay-return/`
 }
 
 export const authApi = () => {

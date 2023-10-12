@@ -1,9 +1,9 @@
 import { useContext, useEffect, useState } from "react";
-import { Form } from "react-bootstrap";
+import { Button, Form, Table } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import { MyUserContext } from "../App";
 import "../styles/MedicalRecords.css";
-import { authApi, endpoints } from "../configs/Apis";
+import Apis, { authApi, endpoints } from "../configs/Apis";
 import profile404 from "../assests/images/profile.png"
 import printer from "../assests/images/printer.png"
 import profileicon from "../assests/images/profile-icon.png"
@@ -12,6 +12,7 @@ import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { toast } from "react-toastify";
 
 const MedicalRecord = () => {
     const [current_user, dispatch] = useContext(MyUserContext);
@@ -34,7 +35,16 @@ const MedicalRecord = () => {
 
     const [totalPrescriptionPages, setTotalPrescriptionPages] = useState('1');
     const [prescriptionList, setPrescriptionList] = useState([]);
+    const [prescriptionDetail, setPrescriptionDetail] = useState([]);
 
+    const [total, setTotal] = useState(null);
+
+    // const [requestBody, setRequestBody] = useState({
+    //     "amount": "10000",
+    //     "orderInfor": "Tuan Tran rich kid VN pay",
+    //     "returnUrl": "http://localhost:3000/medicalrecord"
+    // })
+    // let tempTotal = 0;
     const loadProfilePatient = async () => {
         try {
             let res = await authApi().get(endpoints['load-profile-patient'](current_user.userId))
@@ -112,6 +122,22 @@ const MedicalRecord = () => {
         }
     }
 
+    const loadPrescriptionDetail = (evt, pl) => {
+        evt.preventDefault();
+        const process = async () => {
+            try {
+                setLoading(true);
+                let res = await authApi().get(endpoints['prescription-detail-by-prescription-id'](pl.prescriptionId))
+                setPrescriptionDetail(res.data)
+                console.log(res.data);
+                setLoading(false);
+            } catch (error) {
+                console.log(error);
+            }
+        }
+        process();
+    }
+
     const viewPrescription = (evt, pp) => {
         evt.preventDefault();
         console.log("pp" + pp.profilePatientId)
@@ -150,6 +176,31 @@ const MedicalRecord = () => {
         loadPrescriptionPage(pageNumber);
         console.log(`Chuyển đến trang ${pageNumber}`);
     };
+
+    const prescriptionPayment = (evt, tempTotal) => {
+        evt.preventDefault();
+
+        const process = async () => {
+            try {
+                setLoading(true);
+                console.log(tempTotal);
+                // console.log(requestBody)
+                let res = await Apis.post(endpoints['vnpay-payment'], {
+                    "amount": tempTotal,
+                    "orderInfor": "Tuan Tran rich kid VN pay",
+                    "returnUrl": "http://localhost:3000/medicalrecord"
+                });
+                window.location.href = res.data;
+                toast.success(res.data);
+                setLoading(false);
+                console.log(res.data);
+            } catch (error) {
+                toast.error(error);
+                console.log(error);
+            }
+        }
+        process();
+    }
 
 
     // useEffect(() => {
@@ -225,6 +276,7 @@ const MedicalRecord = () => {
                                             </> :
                                                 <>
                                                     {Object.values(prescriptionList).map(pl => {
+                                                        let tempTotal = 0;
                                                         return <>
                                                             <Accordion>
                                                                 <AccordionSummary
@@ -232,6 +284,7 @@ const MedicalRecord = () => {
                                                                     aria-controls="panel1a-content"
                                                                     id="panel1a-header"
                                                                     class="Prescription_Item"
+                                                                    onClick={(e) => loadPrescriptionDetail(e, pl)}
                                                                 >
                                                                     <Typography>{pl.prescriptionId}</Typography>
                                                                     <Typography>Triệu chứng: {pl.diagnosis}</Typography>
@@ -239,12 +292,45 @@ const MedicalRecord = () => {
                                                                     <Typography>Tiền khám: {pl.servicePaymentStatusId.servicePaymentStatusValue}</Typography>
                                                                 </AccordionSummary>
                                                                 <AccordionDetails>
-                                                                    <Typography>
-                                                                        Lq ha
-                                                                    </Typography>
-                                                                    <Typography>
-                                                                        QQ ha
-                                                                    </Typography>
+                                                                    <Table striped bordered hover>
+                                                                        <thead>
+                                                                            <tr>
+                                                                                <th>#</th>
+                                                                                <th>Tên thuốc</th>
+                                                                                <th>Hướng dẫn sử dụng</th>
+                                                                                <th>Số lượng</th>
+                                                                                <th>Đơn giá</th>
+                                                                                <th>Thành tiền</th>
+                                                                            </tr>
+                                                                        </thead>
+                                                                        <tbody>
+                                                                            {/* {Object.values(prescriptionDetail).forEach((presd) => {
+                                                                                tempTotal += presd.quantity * presd.unitPrice;
+                                                                            })} */}
+
+                                                                            {Object.values(prescriptionDetail).map(presd => {
+                                                                                tempTotal += presd.quantity * presd.unitPrice
+                                                                                return <>
+                                                                                    <tr key={presd.prescriptionDetailId}>
+                                                                                        <td>{presd.prescriptionDetailId}</td>
+                                                                                        <td>{presd.medicineName}</td>
+                                                                                        <td>{presd.usageInstruction}</td>
+                                                                                        <td>{presd.quantity}</td>
+                                                                                        <td>{presd.unitPrice}</td>
+                                                                                        <td>
+                                                                                            {presd.quantity * presd.unitPrice}
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                </>
+                                                                                // { tempTotal += presd.quantity * presd.unitPrice } {/* Cập nhật giá trị tempTotal */ }
+                                                                            })}
+                                                                            <div>
+                                                                                <span>Tổng tiền</span>
+                                                                                <span>{tempTotal}</span>
+                                                                            </div>
+                                                                        </tbody>
+                                                                    </Table>
+                                                                    <Button variant="warning" onClick={(e) => prescriptionPayment(e, tempTotal)}>Thanh toán</Button>
                                                                 </AccordionDetails>
                                                             </Accordion>
                                                         </>
