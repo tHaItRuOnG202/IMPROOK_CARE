@@ -294,7 +294,6 @@ const ProfileDoctor = () => {
                             <li><Link to="/schedule">Đăng ký lịch khám</Link></li>
                             <li><Link to="/bookingmanagement">Lịch hẹn</Link></li>
                             <li><Link to="/profiledoctor">Hồ sơ</Link></li>
-                            <li><Link to="/prescription">Tạo đơn thuốc</Link></li>
                             <li onClick={logout}>Đăng xuất</li>
                         </ul>
                     </div>

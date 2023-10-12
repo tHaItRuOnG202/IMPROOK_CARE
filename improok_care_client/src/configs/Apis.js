@@ -57,7 +57,9 @@ export const endpoints = {
     "admin-add-medicine": `${SERVER_CONTEXT}/api/auth/admin/add-medicine/`,
     "load-medicine-by-Id": (medicineId) => `${SERVER_CONTEXT}/api/public/medicines/${medicineId}/`,
     "admin-update-medicine": `${SERVER_CONTEXT}/api/auth/admin/update-medicine/`,
-    "search-medicine-categories": `${SERVER_CONTEXT}/api/public/search-medicine-categories/`
+    "search-medicine-categories": `${SERVER_CONTEXT}/api/public/search-medicine-categories/`,
+    "add-prescription": `${SERVER_CONTEXT}/api/auth/doctor/add-prescription/`,
+    "search-prescriptions": `${SERVER_CONTEXT}/api/auth/search-prescriptions/`
 }
 
 export const authApi = () => {

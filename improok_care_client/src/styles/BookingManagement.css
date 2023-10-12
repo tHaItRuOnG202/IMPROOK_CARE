@@ -64,6 +64,7 @@ div.BookingManagement_Right_Body_1 {
     font-weight: bold;
 }
 
-.Hidden {
-    display: none;
+.toPrescription {
+    color: white;
+    text-decoration: none;
 }

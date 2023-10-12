@@ -1,14 +1,43 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { useNavigate, Link, useParams, useSearchParams } from "react-router-dom";
 import { BookingManagementContext, MyUserContext } from "../../App";
 import "../../styles/Prescription.css";
-import { Form } from "react-bootstrap";
+import { Button, Form, Table } from "react-bootstrap";
 import { useLocation } from 'react-router-dom';
+import cookie from "react-cookies"
+import { useState } from "react";
+import Apis, { authApi, endpoints } from "../../configs/Apis";
+import { toast } from "react-toastify";
 
 
 const Prescription = () => {
     const [current_user, dispatch] = useContext(MyUserContext);
     const [booking, dispatchBooking] = useContext(BookingManagementContext);
+
+    const [bookingId, setBookingId] = useState(booking.bookingId);
+    const [profilePatientName, setProfilePatientName] = useState(booking.profilePatientName);
+    const [profileDoctorName, setProfileDoctorName] = useState(booking.profileDoctorName);
+    const [bookingPrice, setBookingPrice] = useState(booking.bookingPrice);
+
+    const [medicineList, setMedicineList] = useState([]);
+    const [totalMedicinePages, setTotalMedicinePages] = useState('1');
+
+    const [medicineCategories, setMedicineCategories] = useState([]);
+
+    const [searchCategory, setSearchCategory] = useState(null);
+    const [searchMedicineName, setSearchMedicineName] = useState(null);
+    const [searchFromPrice, setSearchFromPrice] = useState(null);
+    const [searchToPrice, setSearchToPrice] = useState(null);
+
+    const [diagnosis, setDiagnosis] = useState(null)
+    const [symptom, setSymptom] = useState(null)
+    const [usageInstruction, setUsageInstruction] = useState(null);
+
+    const [pres, setPres] = useState(cookie.load("pres") || null)
+
+    const [loading, setLoading] = useState(false);
+
+    // const pres = cookie.load("pres") || null
 
     // const { bookingId, profilePatientName, profileDoctorName, bookingPrice } = useContext(BookingManagementContext)
     const nav = useNavigate();
@@ -27,6 +56,29 @@ const Prescription = () => {
     // const paramC = q.get('profileDoctorName');
     // const paramD = q.get('bookingPrice')
 
+    // useEffect(() => {
+    //     if (bookingId === null)
+    //         setBookingId(booking.bookingId);
+    //     if (profilePatientName === null)
+    //         setProfilePatientName(booking.profilePatientName);
+    //     if (profileDoctorName === null)
+    //         setProfileDoctorName(booking.profileDoctorName);
+    //     if (bookingPrice === null)
+    //         setBookingPrice(booking.bookingPrice);
+    // }, [])
+
+    useEffect(() => {
+        const loadMedicineCategories = async () => {
+            try {
+                let res = await Apis.get(endpoints['medicine-categories'])
+                setMedicineCategories(res.data);
+                console.log(res.data);
+            } catch (error) {
+                console.log(error);
+            }
+        }
+        loadMedicineCategories();
+    }, [])
 
     const logout = () => {
         dispatch({
@@ -35,18 +87,171 @@ const Prescription = () => {
         nav("/")
     }
 
+    const loadMedicine = async () => {
+        try {
+            setLoading(true);
+
+            let res = await Apis.get(endpoints['search-medicines'])
+            setMedicineList(res.data.content);
+            setTotalMedicinePages(res.data.totalPages);
+            setLoading(false);
+            console.log(res.data.content);
+        } catch (error) {
+            console.log(error);
+        }
+        console.log(booking.bookingId, bookingId)
+    }
+
+    const loadMedicinePage = async (pageNumber) => {
+        try {
+            setLoading(true);
+            // let e = endpoints['search-users'];
+            let e = `${endpoints['search-medicines']}`;
+            // let pageNumber = document.getElementsByClassName("active").id;
+            console.log(pageNumber)
+            if (pageNumber !== null && !isNaN(pageNumber)) {
+                e += `?pageNumber=${pageNumber - 1}&`
+            }
+            else {
+                e += `?`
+            }
+            let medicineName = searchMedicineName;
+            let fromPrice = searchFromPrice;
+            let toPrice = searchMedicineName;
+            let categoryId = searchCategory;
+            if (medicineName !== null)
+                e += `medicineName=${medicineName}&`
+            if (fromPrice !== null)
+                e += `fromPrice=${fromPrice}&`
+            if (toPrice !== null)
+                e += `toPrice=${toPrice}&`
+            if (categoryId !== null && categoryId !== "TẤT CẢ DANH MỤC")
+                e += `categoryId=${categoryId}`
+            // let url = `/users/${pageNumber}`
+            console.log(e);
+            let res = await Apis.get(e);
+            setMedicineList(res.data.content);
+            // setUrlUser(e);
+            setTotalMedicinePages(res.data.totalPages);
+            console.log(res.data.totalPages);
+            console.log(e);
+            // navigate(url);
+            setLoading(false);
+            console.log(res.data);
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    useEffect(() => {
+        loadMedicinePage();
+        loadMedicine();
+    }, [])
+
+
+    const addMedicine = (medicineList) => {
+        let pres = cookie.load("pres") || null
+        if (pres === null)
+            pres = {}
+
+        if (medicineList.medicineId in pres) {
+            pres[medicineList.medicineId]["quantity"] += 1
+        }
+        else {
+            pres[medicineList.medicineId] = {
+                "medicineId": medicineList.medicineId,
+                "medicineName": medicineList.medicineName,
+                "quantity": 1,
+                "unitPrice": medicineList.unitPrice,
+                "usageInstruction": medicineList.usageInstruction
+            }
+        }
+
+        cookie.save("pres", pres)
+        console.log(pres);
+        setPres(pres);
+    }
+
+    useEffect(() => {
+        setPres(cookie.load("pres") || null);
+    }, []);
+
+    const deleteMedicine = (medicine) => {
+        let pres = cookie.load("pres") || null;
+
+        if (pres !== null) {
+            if (medicine.medicineId in pres) {
+                delete pres[medicine.medicineId];
+                cookie.save("pres", pres);
+                setPres(pres)
+            }
+        }
+    }
+
+    const removePres = () => {
+        cookie.remove("pres");
+    }
+
+    // useEffect(() => {
+    //     const handlePageShow = (event) => {
+    //         if (event.persisted) {
+    //             console.log('Người dùng đã nhấn nút "Go Back"');
+    //             cookie.remove("pres");
+    //             // Xóa dữ liệu của trang hiện tại
+    //             // Xử lý logic tại đây khi người dùng nhấn nút "Go Back"
+    //         }
+    //     };
+
+    //     window.addEventListener('pageshow', handlePageShow);
+
+    //     return () => {
+    //         window.removeEventListener('pageshow', handlePageShow);
+    //     };
+    // }, []);
+
+    const addPrescription = (evt) => {
+        evt.preventDefault();
+
+        const process = async () => {
+            try {
+                setLoading(true);
+                const request = {
+                    addPrescriptionDTO: {
+                        "diagnosis": diagnosis,
+                        "symptom": symptom,
+                        "servicePrice": bookingPrice,
+                        "bookingId": bookingId
+                    },
+                    prescriptionDetailDTO: pres
+                };
+                let res = await authApi().post(endpoints['add-prescription'], request);
+                console.log(res.data);
+                toast.success(res.data);
+                setLoading(false);
+                cookie.remove("pres");
+                setPres([]);
+            } catch (error) {
+                console.log(error);
+                toast.error("Có lỗi xảy ra!")
+            }
+        }
+        process();
+    }
+
+    if (bookingId === null)
+        nav('/bookingmanagement');
+
     return <>
         <div class="Prescription_Wrapper">
             <div class="Prescription">
                 <div class="Prescription_Left">
                     <div class="Prescription_Left_Content">
                         <ul>
-                            <li><Link to="/doctor">Thông tin cá nhân</Link></li>
-                            <li><Link to="/changepassword">Đổi mật khẩu</Link></li>
-                            <li><Link to="/schedule">Đăng ký lịch khám</Link></li>
-                            <li><Link to="/bookingmanagement">Lịch hẹn</Link></li>
-                            <li><Link to="/profiledoctor">Hồ sơ</Link></li>
-                            <li><Link to="/prescription">Tạo đơn thuốc</Link></li>
+                            <li><Link to="/doctor" onClick={() => removePres()}>Thông tin cá nhân</Link></li>
+                            <li><Link to="/changepassword" onClick={() => removePres()}>Đổi mật khẩu</Link></li>
+                            <li><Link to="/schedule" onClick={() => removePres()}>Đăng ký lịch khám</Link></li>
+                            <li><Link to="/bookingmanagement" onClick={() => removePres()}>Lịch hẹn</Link></li>
+                            <li><Link to="/profiledoctor" onClick={() => removePres()}>Hồ sơ</Link></li>
                             <li onClick={logout}>Đăng xuất</li>
                         </ul>
                     </div>
@@ -58,11 +263,11 @@ const Prescription = () => {
                     <div class="Prescription_Right_Body_1">
                         <div class="Patient_Name">
                             <Form.Label style={{ width: "30%" }}>Bệnh nhân</Form.Label>
-                            <Form.Control type="text" value={booking.bookingId} disabled />
+                            <Form.Control type="text" value={profilePatientName} disabled />
                         </div>
                         <div class="Doctor_Name">
                             <Form.Label style={{ width: "30%" }}>Bác sĩ</Form.Label>
-                            <Form.Control type="text" value={booking.profileDoctorName} disabled />
+                            <Form.Control type="text" value={profileDoctorName} disabled />
                         </div>
                         <div class="Create_Date">
                             <Form.Label style={{ width: "30%" }}>Ngày lập</Form.Label>
@@ -70,20 +275,113 @@ const Prescription = () => {
                         </div>
                         <div class="Booking_Price">
                             <Form.Label style={{ width: "30%" }}>Phí khám</Form.Label>
-                            <Form.Control type="Text" value={booking.bookingPrice} disabled />
+                            <Form.Control type="Text" value={bookingPrice} disabled />
                         </div>
                         <div class="Symptom">
                             <Form.Label style={{ width: "40%" }}>Triệu chứng</Form.Label>
-                            <Form.Control type="Text" placeholder="Nhập triệu chứng..." />
+                            <Form.Control type="Text" defaultValue={diagnosis} onChange={(e) => setDiagnosis(e.target.value)} placeholder="Nhập triệu chứng..." required />
                         </div>
                         <div class="Diagnosis">
                             <Form.Label style={{ width: "40%" }}>Chuẩn đoán</Form.Label>
-                            <Form.Control type="Text" placeholder="Nhập chuẩn đoán..." />
+                            <Form.Control type="Text" defaultValue={symptom} onChange={(e) => setSymptom(e.target.value)} placeholder="Nhập chuẩn đoán..." required />
                         </div>
                     </div>
                     <div class="Prescription_Right_Body_2">
                         <div>
-
+                            <div class="Prescription_Detail_Header">
+                                <h5>Chi tiết đơn thuốc</h5>
+                            </div>
+                            <div class="Medicine_Search_Group">
+                                <div class="Medicine_Search_Input">
+                                    <Form.Control class="Medicine_Search_MedicineName" defaultValue={searchMedicineName} name="searchMedicineName" type="Text" onChange={(e) => setSearchMedicineName(e.target.value)} placeholder="Nhập tên thuốc..." />
+                                    <Form.Control class="Medicine_Search_FromPrice" defaultValue={searchFromPrice} name="searchFromPrice" type="Text" onChange={(e) => setSearchFromPrice(e.target.value)} placeholder="Nhập giá bắt đầu..." />
+                                    <Form.Control class="Medicine_Search_ToPrice" defaultValue={searchToPrice} name="searchToPrice" type="Text" onChange={(e) => setSearchToPrice(e.target.value)} placeholder="Nhập giá kết thúc..." />
+                                    <Form.Select class="Medicine_Search_Category" value={searchCategory} name="searchCategory" onChange={(e) => setSearchCategory(e.target.value)}>
+                                        <option value={null}>TẤT CẢ DANH MỤC</option>
+                                        {Object.values(medicineCategories).map(mc => <option key={mc.categoryId} value={mc.categoryId}>{mc.categoryName}</option>)}
+                                    </Form.Select>
+                                </div>
+                                <button class="Medicine_Search_Butt" onClick={loadMedicinePage}>Tìm kiếm</button>
+                            </div>
+                            <div class="Prescription_Detail_Search_Medicine">
+                                <Table striped bordered hover>
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Tên thuốc</th>
+                                            <th>Thao tác</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {Object.values(medicineList).map(ml => {
+                                            return <>
+                                                <tr key={ml.medicineId}>
+                                                    <td>{ml.medicineId}</td>
+                                                    <td>{ml.medicineName}</td>
+                                                    <td>
+                                                        <Button variant="success" onClick={() => addMedicine(ml)}>Thêm</Button>
+                                                    </td>
+                                                </tr>
+                                            </>
+                                        })}
+                                    </tbody>
+                                </Table>
+                            </div>
+                            <div class="Prescription_Detail_Medicine_Choice">
+                                <Table striped bordered hover>
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Tên thuốc</th>
+                                            <th>Số lượng</th>
+                                            <th>Đơn giá</th>
+                                            <th>Cách dùng</th>
+                                            <th>Thao tác</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {pres === null ? <>
+                                            <span>Chưa có thuốc nào được chọn</span>
+                                        </> : <>
+                                            {Object.values(pres).map(p => {
+                                                return <>
+                                                    <tr key={p.medicineId}>
+                                                        <td>{p.medicineId}</td>
+                                                        <td>{p.medicineName}</td>
+                                                        <td>
+                                                            <Form.Control type="number" value={pres[p.medicineId]["quantity"]}
+                                                                onChange={e => setPres({ ...pres, [p.medicineId]: { ...pres[p.medicineId], "quantity": e.target.value } })} min="0" max="50" />
+                                                        </td>
+                                                        <td>{p.unitPrice} VNĐ</td>
+                                                        <td>
+                                                            {/* <Form.Control type="text" defaultValue={usageInstructions} onChange={(e) => setUsageInstructions(e.target.value)} required /> */}
+                                                            <Form.Control
+                                                                type="text"
+                                                                defaultValue={pres[p.medicineId]["usageInstruction"]}
+                                                                onChange={e => {
+                                                                    const newPres = {
+                                                                        ...pres,
+                                                                        [p.medicineId]: {
+                                                                            ...pres[p.medicineId],
+                                                                            usageInstruction: e.target.value
+                                                                        }
+                                                                    };
+                                                                    setPres(newPres);
+                                                                }}
+                                                                required
+                                                            />
+                                                        </td>
+                                                        <td>
+                                                            <Button variant="danger" onClick={() => deleteMedicine(p)}>Xóa</Button>
+                                                        </td>
+                                                    </tr>
+                                                </>
+                                            })}
+                                        </>}
+                                    </tbody>
+                                </Table>
+                            </div>
+                            <Button variant="info" onClick={(e) => addPrescription(e)}>Lưu đơn thuốc</Button>
                         </div>
                     </div>
                 </div>

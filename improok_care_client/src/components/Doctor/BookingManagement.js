@@ -8,6 +8,7 @@ import { toast } from "react-toastify";
 import ProfileDoctor from "./ProfileDoctor";
 import Prescription from "./Prescription";
 import { PrescriptionProvider } from '../../reducers/PrescriptionContext';
+import cookie from "react-cookies"
 
 const BookingManagement = () => {
     const [current_user, dispatch] = useContext(MyUserContext);
@@ -157,6 +158,7 @@ const BookingManagement = () => {
             type: "booking",
             payload: updatedBookingInfo
         });
+        cookie.save("bookingInfo", updatedBookingInfo);
         console.log(bookingInfo);
         console.log(current_user);
     };
@@ -303,6 +305,10 @@ const BookingManagement = () => {
     //     process();
     // }
 
+    const removePres = () => {
+        cookie.remove("pres");
+    }
+
     const renderContent = () => {
         switch (selectedOption) {
             case "new":
@@ -373,23 +379,10 @@ const BookingManagement = () => {
                                                     <td>{bl[2]}</td>
                                                     <td>{timeBegin} - {timeEnd}</td>
                                                     <td><Badge bg="success">{bl[5]}</Badge></td>
-                                                    {/* <td><Button variant="primary" onClick={(e) => handleCreatePrescription(e, bl[0], bl[6])}><Link to={`/prescription/?bookingId=${bl[0]}&&profilePatientName=${bl[6]}&&profileDoctorName=${profileDoctor.name}&&bookingPrice=${profileDoctor.bookingPrice}`}>Tạo đơn thuốc</Link></Button></td> */}
-                                                    <td><Button variant="primary" onClick={(e) => handleCreatePrescription(e, bl[0], bl[6])}><Link to='/prescription'>Tạo đơn thuốc</Link></Button></td>
-                                                    {/* <Link to={{ pathname: '/prescription', state: { paramA: "CCCCCCCCCCCCCCC" } }}>CCCC </Link> */}
+                                                    {/* <td><Button variant="primary" onClick={(e) => handleCreatePrescription(e, bl[0], bl[6])}>
+                                                    <Link to={`/prescription/?bookingId=${bl[0]}&&profilePatientName=${bl[6]}&&profileDoctorName=${profileDoctor.name}&&bookingPrice=${profileDoctor.bookingPrice}`}>Tạo đơn thuốc</Link></Button></td> */}
+                                                    <td><Button variant="primary" onClick={(e) => handleCreatePrescription(e, bl[0], bl[6])}><Link to='/prescription' class="toPrescription" onClick={() => removePres()}>Tạo đơn thuốc</Link></Button></td>
                                                 </tr>
-                                                {/* <div class="Hidden">
-                                                    <BookingManagementContext.Consumer>
-                                                            {({ bookingId, profilePatientName, profileDoctorName, bookingPrice }) => (
-                                                                <Prescription
-                                                                    bookingId={bookingId}
-                                                                    profilePatientName={profilePatientName}
-                                                                    profileDoctorName={profileDoctorName}
-                                                                    bookingPrice={bookingPrice}
-                                                                />
-                                                            )}
-                                                        </BookingManagementContext.Consumer>
-                                                    <Prescription />
-                                                </div> */}
                                             </>
                                         }
                                     })}
@@ -453,7 +446,6 @@ const BookingManagement = () => {
                             <li><Link to="/schedule">Đăng ký lịch khám</Link></li>
                             <li><Link to="/bookingmanagement">Lịch hẹn</Link></li>
                             <li><Link to="/profiledoctor">Hồ sơ</Link></li>
-                            <li><Link to="/prescription">Tạo đơn thuốc</Link></li>
                             <li onClick={logout}>Đăng xuất</li>
                         </ul>
                     </div>
