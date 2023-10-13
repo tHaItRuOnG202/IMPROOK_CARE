@@ -7,6 +7,7 @@ import MySpinner from "../layout/MySpinner";
 import googleplay from "../assests/images/googleplay.svg"
 import appstore from "../assests/images/appstore.svg"
 import { MyUserContext } from "../App";
+import GoogleMapAPI from "../utils/GoogleMapAPI";
 
 const ProfileDoctorDetail = () => {
     const { profileDoctorId } = useParams();
@@ -62,6 +63,10 @@ const ProfileDoctorDetail = () => {
                         </div>
                         {current_user === null ? <button><Link to='/login'>Đăng nhập để đặt khám</Link></button> : <button><Link to={url}>ĐẶT KHÁM NGAY</Link></button>}
 
+                    </div>
+                    
+                    <div className="googleMapAPI">
+                            <GoogleMapAPI address={doctorDetail.workAddress} />
                     </div>
                 </div>
                 <div class="Profile_Doctor_Detail_Footer">

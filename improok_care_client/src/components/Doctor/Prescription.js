@@ -117,7 +117,7 @@ const Prescription = () => {
             }
             let medicineName = searchMedicineName;
             let fromPrice = searchFromPrice;
-            let toPrice = searchMedicineName;
+            let toPrice = searchToPrice;
             let categoryId = searchCategory;
             if (medicineName !== null)
                 e += `medicineName=${medicineName}&`

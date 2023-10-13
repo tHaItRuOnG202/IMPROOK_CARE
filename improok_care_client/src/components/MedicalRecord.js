@@ -188,7 +188,7 @@ const MedicalRecord = () => {
                 let res = await Apis.post(endpoints['vnpay-payment'], {
                     "amount": tempTotal,
                     "orderInfor": "Tuan Tran rich kid VN pay",
-                    "returnUrl": "http://localhost:3000/medicalrecord"
+                    "returnUrl": "http://localhost:3000/paymentResult"
                 });
                 window.location.href = res.data;
                 toast.success(res.data);

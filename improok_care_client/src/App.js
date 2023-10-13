@@ -29,6 +29,8 @@ import Appointment from "./components/Appointment";
 import Prescription from "./components/Doctor/Prescription";
 import MyPrescriptionReducer from "./reducers/MyPrescriptionReducer";
 import MyPrescriptionCounterReducer from "./reducers/MyPrescriptionCounterReducer";
+import GoogleMapAPI from "./utils/GoogleMapAPI";
+import PaymentResult from "./components/PaymentResult";
 // import { BookingManagementContext } from "./components/Doctor/BookingManagement";
 
 export const MyUserContext = createContext();
@@ -70,6 +72,8 @@ const App = () => {
               <Route path='/bookingmanagement' element={<BookingManagement />} />
               <Route path='/appointment' element={<Appointment />} />
               <Route path='/prescription' element={<Prescription />} />
+              <Route path='/GoogleMapAPI' element={<GoogleMapAPI />} />
+              <Route path='/paymentResult' element={<PaymentResult />} />
             </Routes>
             <Footer />
             <ToastContainer />

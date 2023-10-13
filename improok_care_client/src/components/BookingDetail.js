@@ -205,7 +205,7 @@ const BookingDetail = () => {
                                                 const currentDate = new Date();
                                                 const bookingDate = new Date(db);
 
-                                                if (bookingDate > currentDate) {
+                                                if (bookingDate.getDate >= currentDate.getDate) {
                                                     const dateObj = new Date(db);
                                                     const dayOfWeek = dateObj.toLocaleString('vi-VN', { weekday: 'long' });
                                                     const day = dateObj.getDate();
@@ -213,8 +213,8 @@ const BookingDetail = () => {
                                                     const year = dateObj.getFullYear();
                                                     const formattedDate = `${day}/${month}/${year}`;
                                                     return (
-                                                        <div className="Booking_Date_Item" key={db} onClick={(evt) => dateBookingChoice(evt, formattedDate)}>
-                                                            <span style={{ marginRight: ".25rem" }}>{dayOfWeek},</span>
+                                                        <div class="Booking_Date_Item" key={db} onClick={(evt) => dateBookingChoice(evt, formattedDate)}>
+                                                            <span style={{ marginRight: ".25rem" }}>{dayOfWeek}</span>
                                                             <span id="dateInput">{formattedDate}</span>
                                                         </div>
                                                     );
@@ -333,6 +333,9 @@ const BookingDetail = () => {
                                                     <img src={printer} alt="404" width={'20%'} />
                                                     <span>Không tìm thấy kết quả</span>
                                                 </div>
+                                                <div>
+                                                    Đăng ký Profile tại <Link to={`/profile?next=/booking/doctor/${profileDoctorId}`}>đây</Link>
+                                                </div>
                                             </>
                                         ) : (
                                             Object.values(profilePatient).map(pp => {
@@ -379,7 +382,15 @@ const BookingDetail = () => {
                                             </div>
                                         </div>
                                     </div>
-                                    <button onClick={(e) => saveBooking(e)}>Đặt lịch</button>
+                                    {profilePatient.length === 0 ? <>
+                                        <button style={{ backgroundColor: "gray", cursor: "not-allowed" }}>Đặt lịch</button>
+                                        {/* <button onClick={(e) => saveBooking(e)}>Đặt hàng</button> */}
+                                    </> : <>
+                                        {profilePatientId === '' ? <><button style={{ backgroundColor: "gray", cursor: "not-allowed" }}>Đặt lịch</button></> : <>
+                                            <button onClick={(e) => saveBooking(e)}>Đặt lịch</button> </>}
+                                        {/* <button style={{ backgroundColor: "gray" }}>Đặt lịch</button> */}
+                                        {/* <button onClick={(e) => saveBooking(e)}>Đặt lịch</button> */}
+                                    </>}
                                     <span>Bằng cách nhấn nút xác nhận, bạn đã đồng ý với các điều khoản và điều kiện đặt khám</span>
                                 </div>
                             </div>

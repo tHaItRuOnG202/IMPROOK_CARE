@@ -59,3 +59,8 @@ div.Phonenumber>button>a {
 div.Profile_Doctor_Detail_Body {
     margin-top: 2rem;
 }
+
+div.googleMapAPI {
+    width: 100%;
+    margin-top: 5rem;
+}

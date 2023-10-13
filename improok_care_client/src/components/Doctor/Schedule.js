@@ -66,6 +66,7 @@ const Schedule = () => {
     }, [selectedTimeDistanceId, current_user.userId])
 
 
+
     useEffect(() => {
         const loadProfileDoctorByUserId = async () => {
             try {

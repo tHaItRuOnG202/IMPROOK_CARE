@@ -28,7 +28,7 @@ div.Booking_Step {
 div.Booking_Date {
     margin-top: 1rem;
     margin-bottom: 1rem;
-    max-width: 100%;
+    width: 650px;
     overflow-x: scroll;
     gap: 1rem;
     padding-top: 2rem;
@@ -43,6 +43,9 @@ div.Booking_Date_Item {
     padding-left: 0.75rem;
     padding-right: 0.75rem;
     cursor: pointer;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
 }
 
 div.Booking_Detail_Body {
@@ -104,7 +107,7 @@ div.Booking_Time_Slot_List {
     width: 100%;
     overflow-y: scroll;
     gap: 1rem;
-    padding-top: 2rem;
+    /* padding-top: 2rem; */
     padding-bottom: 2rem;
 }
 
@@ -115,6 +118,8 @@ div.Booking_Time_Slot_List>button {
     padding-left: 0.5rem;
     padding-right: 0.5rem;
     border-radius: 0.5rem;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
 }
 
 div.Booking_Time_Slot_List>button:hover {
