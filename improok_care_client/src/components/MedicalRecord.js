@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { Button, Form, Table } from "react-bootstrap";
+import { Badge, Button, Form, Table } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import { MyUserContext } from "../App";
 import "../styles/MedicalRecords.css";
@@ -177,7 +177,7 @@ const MedicalRecord = () => {
         console.log(`Chuyển đến trang ${pageNumber}`);
     };
 
-    const prescriptionPayment = (evt, tempTotal) => {
+    const prescriptionPayment = (evt, tempTotal, profilePatientName, prescriptionId) => {
         evt.preventDefault();
 
         const process = async () => {
@@ -187,7 +187,32 @@ const MedicalRecord = () => {
                 // console.log(requestBody)
                 let res = await Apis.post(endpoints['vnpay-payment'], {
                     "amount": tempTotal,
-                    "orderInfor": "Tuan Tran rich kid VN pay",
+                    "orderInfor": "2:-" + prescriptionId + "-Medicine Payment: " + profilePatientName + " đã thanh toán tiền thuốc cho đơn thuốc " + prescriptionId + " - ",
+                    "returnUrl": "http://localhost:3000/paymentResult"
+                });
+                window.location.href = res.data;
+                toast.success(res.data);
+                setLoading(false);
+                console.log(res.data);
+            } catch (error) {
+                toast.error(error);
+                console.log(error);
+            }
+        }
+        process();
+    }
+
+    const servicePayment = (evt, servicePrice, profilePatientName, prescriptionId) => {
+        evt.preventDefault();
+
+        const process = async () => {
+            try {
+                setLoading(true);
+                console.log(servicePrice);
+                // console.log(requestBody)
+                let res = await Apis.post(endpoints['vnpay-payment'], {
+                    "amount": servicePrice,
+                    "orderInfor": "1:-" + prescriptionId + "-Service Payment: " + profilePatientName + " đã thanh toán tiền khám cho đơn thuốc " + prescriptionId + " - ",
                     "returnUrl": "http://localhost:3000/paymentResult"
                 });
                 window.location.href = res.data;
@@ -286,51 +311,96 @@ const MedicalRecord = () => {
                                                                     class="Prescription_Item"
                                                                     onClick={(e) => loadPrescriptionDetail(e, pl)}
                                                                 >
-                                                                    <Typography>{pl.prescriptionId}</Typography>
-                                                                    <Typography>Triệu chứng: {pl.diagnosis}</Typography>
-                                                                    <Typography>Tiền thuốc: {pl.medicinePaymentStatusId.medicinePaymentStatusValue}</Typography>
-                                                                    <Typography>Tiền khám: {pl.servicePaymentStatusId.servicePaymentStatusValue}</Typography>
+                                                                    <Typography>Đơn thuốc: {pl.prescriptionId}</Typography>
+                                                                    <Typography>Chuẩn đoán: {pl.diagnosis}</Typography>
+                                                                    {(pl.medicinePaymentStatusId.medicinePaymentStatusId === 2 && pl.servicePaymentStatusId.servicePaymentStatusId === 2) ?
+                                                                        <>
+                                                                            <Typography><Badge bg="success">Đã thanh toán</Badge></Typography>
+                                                                        </> : <>
+                                                                            <Typography><Badge bg="danger">Chưa thanh toán</Badge></Typography>
+                                                                        </>}
+
                                                                 </AccordionSummary>
-                                                                <AccordionDetails>
-                                                                    <Table striped bordered hover>
-                                                                        <thead>
-                                                                            <tr>
-                                                                                <th>#</th>
-                                                                                <th>Tên thuốc</th>
-                                                                                <th>Hướng dẫn sử dụng</th>
-                                                                                <th>Số lượng</th>
-                                                                                <th>Đơn giá</th>
-                                                                                <th>Thành tiền</th>
-                                                                            </tr>
-                                                                        </thead>
-                                                                        <tbody>
-                                                                            {/* {Object.values(prescriptionDetail).forEach((presd) => {
+                                                                <AccordionDetails class="Prescription_Detail">
+                                                                    <div class="Prescription_Detail_Inner">
+                                                                        <h4 className="text-center mb-3 mt-3">ĐƠN THUỐC {pl.prescriptionId}</h4>
+                                                                        <div class="Prescription_Infomation">
+                                                                            <div class="Diagonsis_Symptoms">
+                                                                                <div>
+                                                                                    <span><strong>Bác sĩ: </strong></span>
+                                                                                    <span>{pl.bookingId.scheduleId.profileDoctorId.name}</span>
+                                                                                </div>
+                                                                                <div>
+                                                                                    <span><strong>Triệu chứng: </strong></span>
+                                                                                    <span>{pl.symptoms}</span>
+                                                                                </div>
+                                                                                <div>
+                                                                                    <span><strong>Tiền khám: </strong></span>
+                                                                                    <span>{pl.servicePrice} VNĐ</span>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="Service_Price">
+                                                                                <div>
+                                                                                    <span><strong>Bệnh nhân: </strong></span>
+                                                                                    <span>{pl.bookingId.profilePatientId.name}</span>
+                                                                                </div>
+                                                                                <div>
+                                                                                    <span><strong>Chuẩn đoán: </strong></span>
+                                                                                    <span>{pl.diagnosis}</span>
+                                                                                </div>
+                                                                                <div>
+                                                                                    <span><strong>Ngày khám: </strong></span>
+                                                                                    <span>{pl.prescriptionDate}</span>
+                                                                                </div>
+                                                                                <div>
+                                                                                    {pl.medicinePaymentStatusId.medicinePaymentStatusId === 1 ? <span><strong>Tiền thuốc: </strong><Badge bg="danger"> Chưa thanh toán</Badge></span> : <span><strong>Tiền thuốc: </strong><Badge bg="success"> Đã thanh toán</Badge></span>}
+                                                                                    {pl.servicePaymentStatusId.servicePaymentStatusId === 1 ? <span><strong>Tiền khám: </strong><Badge bg="danger"> Chưa thanh toán</Badge></span> : <span><strong>Tiền khám: </strong><Badge bg="success"> Đã thanh toán</Badge></span>}
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <Table striped bordered hover>
+                                                                            <thead>
+                                                                                <tr>
+                                                                                    <th>#</th>
+                                                                                    <th>Tên thuốc</th>
+                                                                                    <th>Hướng dẫn sử dụng</th>
+                                                                                    <th>Số lượng</th>
+                                                                                    <th>Đơn giá</th>
+                                                                                    <th>Thành tiền</th>
+                                                                                </tr>
+                                                                            </thead>
+                                                                            <tbody>
+                                                                                {/* {Object.values(prescriptionDetail).forEach((presd) => {
                                                                                 tempTotal += presd.quantity * presd.unitPrice;
                                                                             })} */}
 
-                                                                            {Object.values(prescriptionDetail).map(presd => {
-                                                                                tempTotal += presd.quantity * presd.unitPrice
-                                                                                return <>
-                                                                                    <tr key={presd.prescriptionDetailId}>
-                                                                                        <td>{presd.prescriptionDetailId}</td>
-                                                                                        <td>{presd.medicineName}</td>
-                                                                                        <td>{presd.usageInstruction}</td>
-                                                                                        <td>{presd.quantity}</td>
-                                                                                        <td>{presd.unitPrice}</td>
-                                                                                        <td>
-                                                                                            {presd.quantity * presd.unitPrice}
-                                                                                        </td>
-                                                                                    </tr>
-                                                                                </>
-                                                                                // { tempTotal += presd.quantity * presd.unitPrice } {/* Cập nhật giá trị tempTotal */ }
-                                                                            })}
-                                                                            <div>
-                                                                                <span>Tổng tiền</span>
-                                                                                <span>{tempTotal}</span>
-                                                                            </div>
-                                                                        </tbody>
-                                                                    </Table>
-                                                                    <Button variant="warning" onClick={(e) => prescriptionPayment(e, tempTotal)}>Thanh toán</Button>
+                                                                                {Object.values(prescriptionDetail).map(presd => {
+                                                                                    tempTotal += presd.quantity * presd.unitPrice
+                                                                                    return <>
+                                                                                        <tr key={presd.prescriptionDetailId}>
+                                                                                            <td>{presd.prescriptionDetailId}</td>
+                                                                                            <td>{presd.medicineName}</td>
+                                                                                            <td>{presd.usageInstruction}</td>
+                                                                                            <td>{presd.quantity}</td>
+                                                                                            <td>{presd.unitPrice}</td>
+                                                                                            <td>
+                                                                                                {presd.quantity * presd.unitPrice}
+                                                                                            </td>
+                                                                                        </tr>
+                                                                                    </>
+                                                                                    // { tempTotal += presd.quantity * presd.unitPrice } {/* Cập nhật giá trị tempTotal */ }
+                                                                                })}
+                                                                            </tbody>
+                                                                        </Table>
+                                                                        <div class="Total_Prescription">
+                                                                            <span><strong>Tổng tiền: </strong></span>
+                                                                            <span>{tempTotal} VNĐ</span>
+                                                                        </div>
+                                                                        <div class="Payment_Button">
+                                                                            {pl.servicePaymentStatusId.servicePaymentStatusId === 1 ? <Button variant="primary" onClick={(e) => servicePayment(e, pl.servicePrice, pl.bookingId.profilePatientId.name, pl.prescriptionId)}>Thanh toán tiền khám</Button> : <Button variant="secondary" style={{ cursor: "not-allowed" }}>Thanh toán tiền khám</Button>}
+                                                                            {pl.medicinePaymentStatusId.medicinePaymentStatusId === 1 ? <Button variant="warning" onClick={(e) => prescriptionPayment(e, tempTotal, pl.bookingId.profilePatientId.name, pl.prescriptionId)}>Thanh toán tiền thuốc</Button> : <Button variant="secondary" style={{ cursor: "not-allowed" }}>Thanh toán tiền thuốc</Button>}
+                                                                        </div>
+                                                                    </div>
                                                                 </AccordionDetails>
                                                             </Accordion>
                                                         </>

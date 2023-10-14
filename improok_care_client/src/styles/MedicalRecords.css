@@ -88,3 +88,69 @@ div.MedicalRecords_List_Detail {
 div.MedicalRecords_Right {
     width: 45%;
 }
+
+div.Total_Prescription {
+    display: flex;
+    justify-content: right;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+div.Prescription_Infomation {
+    display: flex;
+    justify-content: space-between;
+    margin: 1rem;
+}
+
+div.Payment_Button {
+    display: flex;
+    justify-content: right;
+    gap: 0.5rem;
+}
+
+/* .MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation1.MuiAccordion-root.MuiAccordion-rounded.MuiAccordion-gutters.css-1elwnq4-MuiPaper-root-MuiAccordion-root {
+    background-color: red;
+} */
+
+/* Đóng lại */
+.MuiButtonBase-root.MuiAccordionSummary-root.MuiAccordionSummary-gutters.css-sh22l5-MuiButtonBase-root-MuiAccordionSummary-root {
+    height: 5rem;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 1);
+    transition-duration: 0.5s;
+    display: flex;
+    align-items: center;
+    padding: 0 1rem;
+}
+
+/* Mở ra */
+/* .MuiButtonBase-root.MuiAccordionSummary-root.Mui-expanded.MuiAccordionSummary-gutters.css-sh22l5-MuiButtonBase-root-MuiAccordionSummary-root {
+    height: 5rem;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 1);
+    transition-duration: 0.5s;
+    display: flex;
+    align-items: center;
+} */
+
+.MuiAccordionSummary-content.MuiAccordionSummary-contentGutters.css-o4b71y-MuiAccordionSummary-content {
+    justify-content: space-between;
+}
+
+.Prescription_Item {
+    height: 5rem;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 1);
+    transition-duration: 0.5s;
+    display: flex;
+    align-items: center;
+    padding: 0 1rem;
+}
+
+.Prescription_Detail {
+    padding: 2rem;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 1);
+    transition-duration: 0.5s;
+}
+
+/* .Prescription_Detail>div.Prescription_Detail_Inner {
+    margin: 0 2rem 2rem 2rem;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 1);
+} */
