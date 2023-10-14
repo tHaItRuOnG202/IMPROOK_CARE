@@ -190,7 +190,7 @@ const PersonalPage = () => {
                                         {current_avatar === null ? <>
                                             <div><Image class="user_Avatar" src={avatar_user} style={{ width: "30%" }} alt="Not Found" rounded /></div>
                                         </> : <>
-                                            <div><Image class="user_Avatar" src={current_user.avatar} style={{ width: "35%" }} alt="Not Found" rounded /></div>
+                                            <div><Image class="user_Avatar" src={current_user.avatar} style={{ width: "20%" }} alt="Not Found" rounded /></div>
                                         </>}
                                         <Form.Control className="avatar_input" accept=".jpg, .jpeg, .png, .gif, .bmp" style={{ width: "10%", marginLeft: 'auto', marginRight: 'auto' }} onChange={(e) => updateAvatar(e.target.files)} type="file" ref={avatar} />
                                     </div>

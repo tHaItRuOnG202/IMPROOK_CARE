@@ -786,7 +786,7 @@ const Admin = () => {
                                         const formattedDate = moment(dateTimeString).format('DD-MM-YYYY');
                                         return <>
                                             <tr key={u.userId}>
-                                                <td style={{ width: '11%' }}><img src={u.avatar} alt="avatar" width={'100%'} /></td>
+                                                <td style={{ width: '8rem', height: '8rem' }}><img src={u.avatar} alt="avatar" width={'100%'} /></td>
                                                 <td>{u.userId}</td>
                                                 <td>{u.lastname}</td>
                                                 <td>{u.firstname}</td>
@@ -912,7 +912,7 @@ const Admin = () => {
                                     <Form.Label style={{ width: "16%" }}>Ảnh đại diện</Form.Label>
                                     <div class="Update_Avatar_Choice">
                                         <div>
-                                            {selectedImage ? <img src={selectedImage} alt="Selected" width={"100%"} /> : <img src={userUpdate.avatar} alt="Selected" width="100%" />}
+                                            {selectedImage ? <img src={selectedImage} alt="Selected" width={"60%"} /> : <img src={userUpdate.avatar} alt="Selected" width="60%" />}
                                         </div>
                                         <Form.Control type="File" ref={avatar} onChange={handleImageChange} width={'50%'} />
                                     </div>
@@ -1172,9 +1172,8 @@ const Admin = () => {
                                                 <img src={selectedImage} alt="Selected" width="100%" />
                                             </div>
                                         ) : (
-                                            <div class="Avatar_Null">
-                                                <span>Vui lòng chọn ảnh</span>
-                                                <img src={medicine_image} alt="medicine avatar" />
+                                            <div>
+                                                <img src={newMedicine.avatar} alt="Selected" width="100%" />
                                             </div>
                                         )}
                                         <Form.Control type="File" ref={avatar} onChange={handleImageChange} width={'50%'} />

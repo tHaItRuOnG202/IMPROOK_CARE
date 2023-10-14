@@ -3,8 +3,8 @@ import "../styles/CollabDoctor.css"
 import Apis, { endpoints } from "../configs/Apis";
 import googleplay from "../assests/images/googleplay.svg"
 import appstore from "../assests/images/appstore.svg"
-import mona from "../assests/images/mona.png"
-import eula from "../assests/images/eula.png"
+import maledoctor from "../assests/images/male-doctor.png"
+import femaledoctor from "../assests/images/female-doctor.png"
 import { TiTickOutline } from "react-icons/ti";
 import { FcSearch } from "react-icons/fc";
 import { Link } from "react-router-dom";
@@ -58,7 +58,7 @@ const CollabDoctor = () => {
                     </div>
                     <div class="CollabDoctor_Content_4_Content">
                         <div class="CollabDoctor_Content_4_LeftContent">
-                            {imageClick === true ? <img src={mona} alt="mona" style={{ width: '50%' }} /> : <img src={eula} alt="eula" style={{ width: '51%' }} />}
+                            {imageClick === true ? <img src={femaledoctor} alt="doctor" style={{ width: '100%' }} /> : <img src={maledoctor} alt="doctor" style={{ width: '100%' }} />}
                         </div>
                         <div class="CollabDoctor_Content_4_RightContent">
                             <div >

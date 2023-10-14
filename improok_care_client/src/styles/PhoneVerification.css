@@ -1,7 +1,7 @@
 div.PhoneVerification_Wrapper {
-    background-color: lightpink;
+    background-color: #abe3ef;
     margin-top: 1rem;
-    min-height: 580px;
+    min-height: 630px;
 }
 
 div.PhoneVerification_Content {
@@ -10,10 +10,9 @@ div.PhoneVerification_Content {
 }
 
 div.PhoneVerification_Form {
-    padding-top: 40px;
-    padding-left: 100px;
+    padding-top: 60px;
     display: flex;
-    justify-content: space-between;
+    justify-content: space-around;
     gap: 5rem;
     max-width: 1040px;
     align-items: center;
@@ -24,14 +23,13 @@ div.PhoneVerification_Left {
     width: 40%;
 }
 
-div.PhoneVerification_Left>div {
+div.PhoneVerification_Left {
     text-align: center;
-    background-color: #ff424f;
-    max-width: 600px;
+    width: 800px;
 }
 
 div.PhoneVerification_Left>img {
-    max-height: 500px;
+    max-height: 800px;
     padding-top: 0.3rem;
 }
 
@@ -42,8 +40,9 @@ div.PhoneVerification_Right {
 div.PhoneVerification_Detail {
     width: 450px;
     min-height: 482px;
-    background-color: #fff;
+    background-color: transparent;
     border-radius: 4px;
+    box-shadow: 8px 8px 20px rgba(0, 0, 0, 1);
 }
 
 div.PhoneVerification_Header {
@@ -136,7 +135,7 @@ div.Separate {
 Button.PhoneVerification_Butt {
     width: 100%;
     color: #fff;
-    background-color: #ee4d2d;
+    background-color: #183e9f;
     box-shadow: 0 1px 1px rgba(0, 0, 0, .09);
     text-transform: uppercase;
     height: 2.5rem;
@@ -197,7 +196,7 @@ div.PhoneVerification_Policy>div {
 }
 
 div.PhoneVerification_Policy>div a {
-    color: #ee4d2d;
+    color: #183e9f;
     cursor: pointer;
     user-select: none;
     text-decoration: none;
@@ -219,7 +218,7 @@ div.To_Login>div {
 }
 
 div.To_Login>div>a {
-    color: #ee4d2d;
+    color: #183e9f;
     font-weight: 500;
     text-decoration: none;
     cursor: pointer;

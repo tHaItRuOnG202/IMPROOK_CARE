@@ -289,8 +289,9 @@ const Profile = () => {
     // }
 
     if (profilePatient !== null && profilePatient.length !== 0) {
-        let next = q.get("next") || "/"
-        return <Navigate to={next} />
+        let next = q.get("next")
+        if (next !== null)
+            return <Navigate to={next} />
     }
 
     return <>

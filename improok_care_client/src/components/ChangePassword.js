@@ -4,7 +4,7 @@ import { Form } from "react-bootstrap";
 import { useContext, useState } from "react";
 import { MyUserContext } from "../App";
 import "../styles/ChangePassword.css";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { authApi, endpoints } from "../configs/Apis";
 import { toast } from "react-toastify";
 import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
@@ -96,16 +96,30 @@ const ChangePassword = () => {
         setShowConfirmPassword(!showConfirmPassword);
     };
 
+    const logout = () => {
+        dispatch({
+            "type": "logout"
+        })
+        nav("/")
+    }
+
     return <>
         <div class="ChangePassword_Wrapper">
             <div class="ChangePassword_Content">
                 <div class="ChangePassword_Form">
                     <div class="ChangePassword_Left">
-                        <img src={yaemiko} alt="Yae Miko" />
+                        <ul>
+                            <li><Link to="/personalpage">Thông tin cá nhân</Link></li>
+                            <li><Link to="/changepassword">Đổi mật khẩu</Link></li>
+                            <li><Link to="/appointment">Lịch khám</Link></li>
+                            <li><Link to="/medicalrecord">Lịch sử khám</Link></li>
+                            <li><Link to="/profile">Hồ sơ</Link></li>
+                            <li onClick={logout}>Đăng xuất</li>
+                        </ul>
                     </div>
                     <div class="ChangePassword_Right">
-                        <Form class="ChangePassword_Form">
-                            <div class="ChangePassword_Form">
+                        <Form>
+                            <div class="ChangePassword_Right_Form">
                                 <div class="ChangePassword_Detail">
                                     <div class="ChangePassword_Header">
                                         <div>

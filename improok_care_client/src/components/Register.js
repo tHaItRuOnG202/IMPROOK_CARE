@@ -1,11 +1,10 @@
 import "../styles/Register.css"
 import { FaFacebook, FaGoogle, FaRegTimesCircle } from "react-icons/fa";
-import yaemiko from "../assests/images/yaemiko.png"
+import logo from "../assests/images/tech-health-care.png";
 import { useContext, useState } from "react";
 import { Form } from "react-bootstrap"
 import Apis, { endpoints } from "../configs/Apis";
 import { Navigate, useNavigate, Link } from "react-router-dom"
-import { Spinner } from "react-bootstrap";
 import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import { MyUserContext } from "../App";
 import cookie from "react-cookies"
@@ -108,7 +107,7 @@ const Register = (props) => {
             <div class="Register_Content">
                 <div class="Register_Form">
                     <div class="Register_Left">
-                        <img src={yaemiko} alt="Yae Miko" />
+                        <img src={logo} alt="IMPROOKCARE" />
                     </div>
                     <div class="Register_Right">
                         <Form class="Register_Form">

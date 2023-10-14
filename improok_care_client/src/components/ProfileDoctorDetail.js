@@ -41,7 +41,7 @@ const ProfileDoctorDetail = () => {
                         <>
                             {doctorDetail?.userId?.avatar && (
                                 <div className="Profile_Doctor_Avatar">
-                                    <img src={doctorDetail.userId.avatar} width={"50%"} alt="Doctor Avatar" />
+                                    <img src={doctorDetail.userId.avatar} alt="Doctor Avatar" />
                                 </div>
                             )}
                             {doctorDetail?.specialtyId?.specialtyName &&
@@ -64,9 +64,9 @@ const ProfileDoctorDetail = () => {
                         {current_user === null ? <button><Link to='/login'>Đăng nhập để đặt khám</Link></button> : <button><Link to={url}>ĐẶT KHÁM NGAY</Link></button>}
 
                     </div>
-                    
+
                     <div className="googleMapAPI">
-                            <GoogleMapAPI address={doctorDetail.workAddress} />
+                        <GoogleMapAPI address={doctorDetail.workAddress} />
                     </div>
                 </div>
                 <div class="Profile_Doctor_Detail_Footer">

@@ -1,6 +1,7 @@
 import "../styles/PhoneVerification.css"
 import { FaFacebook, FaGoogle } from "react-icons/fa";
-import yaemiko from "../assests/images/yaemiko.png"
+// import logo from "../assests/images/improokcare-logo.png"
+import logo from "../assests/images/tech-health-care.png"
 import { useContext, useState } from "react";
 import { Form } from "react-bootstrap"
 import Apis, { endpoints } from "../configs/Apis";
@@ -96,13 +97,13 @@ const PhoneVerification = () => {
         process();
     }
 
-    const toRegister = () => {
-        // const phonenumber1 = "01236547896";
-        // <Register username={phonenumber1} />
-        setPhonenumber(phonenumber);
-        cookie.save("phonenumber", phonenumber)
-        nav('/register')
-    }
+    // const toRegister = () => {
+    //     // const phonenumber1 = "01236547896";
+    //     // <Register username={phonenumber1} />
+    //     setPhonenumber(phonenumber);
+    //     cookie.save("phonenumber", phonenumber)
+    //     nav('/register')
+    // }
 
     const validatePhoneNumber = (evt) => {
         evt.preventDefault();
@@ -137,7 +138,7 @@ const PhoneVerification = () => {
             <div class="PhoneVerification_Content">
                 <div class="PhoneVerification_Form">
                     <div class="PhoneVerification_Left">
-                        <img src={yaemiko} alt="Yae Miko" />
+                        <img src={logo} alt="IMPROOKCARE" />
                     </div>
                     <div class="PhoneVerification_Right">
                         <Form class="PhoneVerification_Form">
@@ -174,7 +175,7 @@ const PhoneVerification = () => {
                                             </div>
                                             <div class="Separate"></div>
                                         </div>
-                                        <button type="button" class="PhoneVerification_Butt" onClick={toRegister}>Register</button>
+                                        {/* <button type="button" class="PhoneVerification_Butt" onClick={toRegister}>Register</button> */}
                                         {/* <button class="PhoneVerification_Butt">Đăng ký</button> */}
                                         {loading === true ? <MySpinner /> : <button type="button" class="PhoneVerification_Butt" onClick={verification}>Xác thực</button>}
                                         <div class="PhoneVerification_Option">

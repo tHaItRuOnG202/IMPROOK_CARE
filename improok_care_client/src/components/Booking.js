@@ -3,8 +3,8 @@ import "../styles/Booking.css"
 import Apis, { endpoints } from "../configs/Apis";
 import googleplay from "../assests/images/googleplay.svg"
 import appstore from "../assests/images/appstore.svg"
-import mona from "../assests/images/mona.png"
-import eula from "../assests/images/eula.png"
+import maledoctor from "../assests/images/male-doctor.png"
+import femaledoctor from "../assests/images/female-doctor.png"
 import profileicon from "../assests/images/profile-icon.png"
 import { TiTickOutline } from "react-icons/ti";
 import { FcSearch } from "react-icons/fc";
@@ -119,7 +119,7 @@ const Booking = () => {
                     </div>
                     <div class="Booking_Content_4_Content">
                         <div class="Booking_Content_4_LeftContent">
-                            {imageClick === true ? <img src={mona} alt="mona" style={{ width: '50%' }} /> : <img src={eula} alt="eula" style={{ width: '51%' }} />}
+                            {imageClick === true ? <img src={femaledoctor} alt="doctor" style={{ width: '100%' }} /> : <img src={maledoctor} alt="doctor" style={{ width: '100%' }} />}
                         </div>
                         <div class="Booking_Content_4_RightContent">
                             <div >

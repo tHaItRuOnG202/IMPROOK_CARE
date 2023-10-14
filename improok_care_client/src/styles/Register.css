@@ -1,7 +1,7 @@
 div.Register_Wrapper {
-    background-color: lightpink;
+    background-color: #abe3ef;
     margin-top: 1rem;
-    min-height: 680px;
+    min-height: 730px;
 }
 
 div.Register_Content {
@@ -10,10 +10,10 @@ div.Register_Content {
 }
 
 div.Register_Form {
-    padding-top: 90px;
-    padding-left: 100px;
+    padding-top: 110px;
+    /* padding-left: 100px; */
     display: flex;
-    justify-content: space-between;
+    justify-content: space-around;
     gap: 5rem;
     max-width: 1040px;
     align-items: center;
@@ -43,8 +43,9 @@ div.Register_Right {
 div.Register_Detail {
     width: 450px;
     min-height: 482px;
-    background-color: #fff;
+    background-color: transparent;
     border-radius: 4px;
+    box-shadow: 8px 8px 20px rgba(0, 0, 0, 1);
 }
 
 div.Register_Header {
@@ -171,7 +172,7 @@ div.Separate {
 Button.Register_Butt {
     width: 100%;
     color: #fff;
-    background-color: #ee4d2d;
+    background-color: #183e9f;
     box-shadow: 0 1px 1px rgba(0, 0, 0, .09);
     text-transform: uppercase;
     height: 2.5rem;
@@ -240,7 +241,7 @@ div.Register_Policy>div {
 }
 
 div.Register_Policy>div a {
-    color: #ee4d2d;
+    color: #183e9f;
     cursor: pointer;
     user-select: none;
     text-decoration: none;

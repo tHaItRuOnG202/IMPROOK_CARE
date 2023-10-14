@@ -1,5 +1,5 @@
 import { Form } from "react-bootstrap";
-import yaemiko from "../assests/images/yaemiko.png"
+import logo from "../assests/images/tech-health-care.png"
 import MySpinner from "../layout/MySpinner";
 import Apis, { endpoints } from "../configs/Apis";
 import { toast } from "react-toastify";
@@ -164,7 +164,7 @@ const ForgetPassword = () => {
                     <div class="ForgetPassword_Content">
                         <div class="ForgetPassword_Form">
                             <div class="ForgetPassword_Left">
-                                <img src={yaemiko} alt="Yae Miko" />
+                                <img src={logo} alt="IMPROOKCARE" />
                             </div>
                             <div class="ForgetPassword_Right">
                                 <Form class="ForgetPassword_Form">
@@ -209,7 +209,7 @@ const ForgetPassword = () => {
                     <div class="ForgetPassword_Content">
                         <div class="ForgetPassword_Form">
                             <div class="ForgetPassword_Left">
-                                <img src={yaemiko} alt="Yae Miko" />
+                                <img src={logo} alt="IMPROOKCARE" />
                             </div>
                             <div class="ForgetPassword_Right">
                                 <Form class="ForgetPassword_Form">

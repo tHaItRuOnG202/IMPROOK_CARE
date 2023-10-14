@@ -1,7 +1,7 @@
 import { FaFacebook, FaGoogle } from "react-icons/fa";
 import { AiFillEyeInvisible, AiFillEye } from "react-icons/ai";
 import "../styles/Login.css"
-import yaemiko from "../assests/images/yaemiko.png"
+import logo from "../assests/images/improokcare-logo.png"
 import { useState } from "react";
 import cookie from "react-cookies"
 import { useContext } from "react";
@@ -27,7 +27,7 @@ const Login = () => {
             try {
                 setLoading(true);
                 let res = await Apis.post(endpoints['login'], {
-                    "username": username,
+                    "username": username.trim(),
                     "password": password
                 });
 
@@ -48,8 +48,10 @@ const Login = () => {
                 if (res.status === 200)
                     toast.success("Đăng nhập thành công!");
             } catch (err) {
-                toast.error(err.request.responseText)
-                console.log(err.request.responseText);
+                // toast.error(err.request.responseText)
+                // console.log(err.request.responseText);
+                setLoading(false);
+                toast.error("Sai tài khoản hoặc mật khẩu!");
             }
         }
         process();
@@ -67,7 +69,7 @@ const Login = () => {
             <div class="Login_Content">
                 <div class="Login_Form">
                     <div class="Login_Left">
-                        <img src={yaemiko} alt="Yae Miko" />
+                        <img src={logo} alt="IMPROOKCARE" />
                     </div>
                     <div class="Login_Right">
                         <Form class="Login_Form">
