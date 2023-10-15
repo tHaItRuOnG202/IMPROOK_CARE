@@ -217,7 +217,6 @@ const Schedule = () => {
                 toast.error("Có lỗi xảy ra!")
             }
         }
-
         process();
     }
 

@@ -226,8 +226,8 @@ const BookingManagement = () => {
                     loadWaitingBooking();
                     let mes = await Apis.post(endpoints['send-custom-email'], {
                         "mailTo": "2051050549tuan@ou.edu.vn",
-                        "mailSubject": "Hello quý khách đã tin tưởng dịch vụ bên em",
-                        "mailContent": "Giờ không thích khám nè làm gì nhau"
+                        "mailSubject": "Xác nhận lịch khám",
+                        "mailContent": "Lịch khám của quý khách đã được xác nhận! Vui lòng đến trước giờ khám bệnh 15’"
                     })
                     console.log(mes.data);
                 }
@@ -258,8 +258,8 @@ const BookingManagement = () => {
                     loadWaitingBooking();
                     let mes = await Apis.post(endpoints['send-custom-email'], {
                         "mailTo": "2051050549tuan@ou.edu.vn",
-                        "mailSubject": "Hello quý khách đã tin tưởng dịch vụ bên em",
-                        "mailContent": "Chào em, em đã bị cho vào danh sách đen của bên công ty anh"
+                        "mailSubject": "Từ chối lịch khám",
+                        "mailContent": "Lịch khám của quý khách đã bị từ chối do chưa phù hợp. Mong quý khách thông cảm!"
                     })
                     console.log(mes.data);
                 }

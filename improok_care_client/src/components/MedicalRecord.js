@@ -352,7 +352,7 @@ const MedicalRecord = () => {
                                                                                     <span><strong>Ngày khám: </strong></span>
                                                                                     <span>{pl.prescriptionDate}</span>
                                                                                 </div>
-                                                                                <div>
+                                                                                <div style={{ display: 'flex', flexDirection: 'column' }}>
                                                                                     {pl.medicinePaymentStatusId.medicinePaymentStatusId === 1 ? <span><strong>Tiền thuốc: </strong><Badge bg="danger"> Chưa thanh toán</Badge></span> : <span><strong>Tiền thuốc: </strong><Badge bg="success"> Đã thanh toán</Badge></span>}
                                                                                     {pl.servicePaymentStatusId.servicePaymentStatusId === 1 ? <span><strong>Tiền khám: </strong><Badge bg="danger"> Chưa thanh toán</Badge></span> : <span><strong>Tiền khám: </strong><Badge bg="success"> Đã thanh toán</Badge></span>}
                                                                                 </div>

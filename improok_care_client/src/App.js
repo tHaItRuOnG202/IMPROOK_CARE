@@ -59,7 +59,6 @@ const App = () => {
               <Route path='/doctor' element={<Doctor />} />
               <Route path='/profile' element={<Profile />} />
               <Route path='/phoneverification' element={<PhoneVerification />} />
-              <Route path='/register' element={<Register />} />
               <Route path='/personalpage' element={<PersonalPage />} />
               <Route path='/collabdoctor' element={<CollabDoctor />} />
               <Route path='/medicalrecord' element={<MedicalRecord />} />
