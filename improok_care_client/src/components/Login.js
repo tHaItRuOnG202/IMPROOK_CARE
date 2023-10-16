@@ -6,7 +6,7 @@ import { useState } from "react";
 import cookie from "react-cookies"
 import { useContext } from "react";
 import { MyUserContext } from "../App";
-import { Navigate, useNavigate, Link } from "react-router-dom"
+import { Navigate, useNavigate, Link, useSearchParams } from "react-router-dom"
 import { Form } from "react-bootstrap"
 import Apis, { authApi, endpoints } from "../configs/Apis";
 import { toast } from "react-toastify";
@@ -19,6 +19,7 @@ const Login = () => {
     const nav = useNavigate();
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+    const [q] = useSearchParams();
 
     const login = (evt) => {
         evt.preventDefault();
@@ -61,8 +62,10 @@ const Login = () => {
         setShowPassword(!showPassword);
     };
 
-    if (user !== null)
-        return <Navigate to="/" />
+    if (user !== null) {
+        let next = q.get("next") || "/";
+        return <Navigate to={next} />
+    }
 
     return (<>
         <div class="Login_Wrapper">

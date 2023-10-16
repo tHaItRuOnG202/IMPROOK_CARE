@@ -1,5 +1,4 @@
 import MySpinner from "../layout/MySpinner";
-import yaemiko from "../assests/images/yaemiko.png";
 import { Form } from "react-bootstrap";
 import { useContext, useState } from "react";
 import { MyUserContext } from "../App";

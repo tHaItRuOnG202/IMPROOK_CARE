@@ -125,8 +125,8 @@ const BookingDetail = () => {
                     toast.success(res.data);
                     // let mes = await Apis.post(endpoints['send-custom-email'], {
                     //     "mailTo": "2051050549tuan@ou.edu.vn",
-                    //     "mailSubject": "Chào bạn!",
-                    //     "mailContent": "Mời bạn đến TOD quẩy cùng mấy DJ, Rapper nhé!"
+                    //     "mailSubject": "Xác nhận đặt khám",
+                    //     "mailContent": "Bạn đã đặt khám thành công tại hệ thống IMPROOKCARE"
                     // })
                     // console.log(mes.data);
                     nav('/');

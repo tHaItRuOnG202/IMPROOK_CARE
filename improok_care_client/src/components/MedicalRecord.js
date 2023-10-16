@@ -191,7 +191,7 @@ const MedicalRecord = () => {
                     "returnUrl": "http://localhost:3000/paymentResult"
                 });
                 window.location.href = res.data;
-                toast.success(res.data);
+                // toast.success(res.data);
                 setLoading(false);
                 console.log(res.data);
             } catch (error) {
@@ -216,7 +216,7 @@ const MedicalRecord = () => {
                     "returnUrl": "http://localhost:3000/paymentResult"
                 });
                 window.location.href = res.data;
-                toast.success(res.data);
+                // toast.success(res.data);
                 setLoading(false);
                 console.log(res.data);
             } catch (error) {
@@ -226,7 +226,6 @@ const MedicalRecord = () => {
         }
         process();
     }
-
 
     // useEffect(() => {
     //     loadPrescription();
@@ -382,9 +381,9 @@ const MedicalRecord = () => {
                                                                                             <td>{presd.medicineName}</td>
                                                                                             <td>{presd.usageInstruction}</td>
                                                                                             <td>{presd.quantity}</td>
-                                                                                            <td>{presd.unitPrice}</td>
+                                                                                            <td>{presd.unitPrice} VNĐ</td>
                                                                                             <td>
-                                                                                                {presd.quantity * presd.unitPrice}
+                                                                                                {presd.quantity * presd.unitPrice} VNĐ
                                                                                             </td>
                                                                                         </tr>
                                                                                     </>

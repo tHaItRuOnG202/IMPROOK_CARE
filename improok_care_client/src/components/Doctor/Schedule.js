@@ -144,7 +144,7 @@ const Schedule = () => {
                     } else {
                         setSelectedTimeSlots([...selectedTimeSlots, timeSlotId]);
                     }
-                    toast(res.data)
+                    // toast(res.data)
                 }
                 else {
                     toast(res.data)

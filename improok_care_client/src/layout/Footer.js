@@ -12,7 +12,7 @@ const Footer = () => {
                     <p style={{ fontWeight: 600 }}>CÔNG TY TNHH IMPROOK VIỆT NAM</p>
                     <p><strong>VPĐD:</strong> 371 Nguyễn Kiệm, P.3, Q.Gò Vấp, Tp. HCM</p>
                     <p>Số ĐKKD 0315268642 do Sở Kế hoạch và Đầu tư TP. Hồ Chí Minh cấp lần đầu ngày 28/08/2023</p>
-                    <p>Chịu trách nhiệm nội dung: <Link to="https://www.youtube.com/@tuantran0168">PGS. TS. Tuấn Trần</Link></p>
+                    <p>Chịu trách nhiệm nội dung: <Link to="/" style={{ textDecoration: 'none', fontSize: '1rem', fontWeight: 'bold' }}>PGS. TS. Tuấn Trần</Link></p>
                 </div>
                 <div class="Footer1_2">
                     <label style={{ fontWeight: 600 }}>Về Spring Care</label>

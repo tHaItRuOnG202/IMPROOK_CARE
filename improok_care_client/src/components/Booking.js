@@ -83,10 +83,10 @@ const Booking = () => {
                                 let url = `/doctor/${ld.profileDoctorId}`
                                 return <>
                                     <div class="Doctor_Item">
-                                        <img src={profileicon} style={{ width: '25%' }} alt="404" />
-                                        <span>{ld.name}</span>
+                                        <img src={ld.userId.avatar} style={{ width: '30%' }} alt="404" />
+                                        <span style={{ fontSize: '1.2rem' }}><strong>{ld.name}</strong></span>
                                         <span>{ld.specialtyId.specialtyName}</span>
-                                        <button><Link to={url}>Đặt khám ngay</Link></button>
+                                        <button class="Booking_Now"><Link to={url} style={{ color: 'white' }}>Đặt khám ngay</Link></button>
                                     </div>
                                 </>
                             })}

@@ -155,7 +155,7 @@ function PaymentResult() {
       </div>
       <p>&nbsp;</p>
       <footer className="footer">
-        <p>&copy; VNPAY 2020</p>
+        <p>&copy; IMPROOK_CARE 2023</p>
       </footer>
     </div>
   );
