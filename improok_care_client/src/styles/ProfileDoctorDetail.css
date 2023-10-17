@@ -127,7 +127,7 @@ button.Comment_Sort_Butt {
 
 div.Comment_Area {
     height: 1200px;
-    background-color: red;
+    /* background-color: red; */
 }
 
 div.list-group>div.list-group-item {

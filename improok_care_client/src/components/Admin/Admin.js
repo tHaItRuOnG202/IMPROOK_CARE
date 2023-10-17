@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { MyUserContext } from "../../App";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button, Form, Table } from "react-bootstrap";
@@ -19,6 +19,12 @@ import moment from 'moment';
 import { HiPlus } from "react-icons/hi";
 import avatar_user from "../../assests/images/avatar-user.png"
 import medicine_image from "../../assests/images/medicine.png"
+import BarChart from "../../utils/Chart/BarChart";
+import LineChart from "../../utils/Chart/LineChart";
+import PolarChart from "../../utils/Chart/PolarChart";
+import RadarChart from "../../utils/Chart/RadarChart";
+import PieChart from "../../utils/Chart/PieChart";
+import DoughnutChart from "../../utils/Chart/DoughnutChart";
 
 
 const Admin = () => {
@@ -44,6 +50,27 @@ const Admin = () => {
     const [urlUser, setUrlUser] = useState("");
 
     const [editingIndex, setEditingIndex] = useState(-1);
+
+    const [statsDataUserByBooking, setStatsDataUserByBooking] = useState([]);
+    const [statsLabelsUserByBooking, setStatsLabelsUserByBooking] = useState([]);
+
+    const [statsDataServicePriceAllPaid, setStatsDataServicePriceAllPaid] = useState([]);
+    const [statsLabelsServicePriceAllPaid, setStatsLabelsServicePriceAllPaid] = useState([]);
+
+    const [statsDataMedicinePrescriptionAllPaid, setStatsDataMedicinePrescriptionAllPaid] = useState([]);
+    const [statsLabelsMedicinePrescriptionAllPaid, setStatsLabelsMedicinePrescriptionAllPaid] = useState([]);
+
+    const [statsDataMedicinePrescriptionPaid, setStatsDataMedicinePrescriptionPaid] = useState([]);
+    const [statsLabelsMedicinePrescriptionPaid, setStatsLabelsMedicinePrescriptionPaid] = useState([]);
+
+    const [statsDataMedicinePrescriptionUnpaid, setStatsDataMedicinePrescriptionUnpaid] = useState([]);
+    const [statsLabelsMedicinePrescriptionUnpaid, setStatsLabelsMedicinePrescriptionUnpaid] = useState([]);
+
+    const [statsDataServicePricePaid, setStatsDataServicePricePaid] = useState([]);
+    const [statsLabelsServicePricePaid, setStatsLabelsServicePricePaid] = useState([]);
+
+    const [statsDataServicePriceUnpaid, setStatsDataServicePriceUnpaid] = useState([]);
+    const [statsLabelsServicePriceUnpaid, setStatsLabelsServicePriceUnpaid] = useState([]);
 
     const [user, setUser] = useState({
         "username": "",
@@ -98,6 +125,28 @@ const Admin = () => {
     const [searchToPrice, setSearchToPrice] = useState(null);
 
     const [medicineCategories, setMedicineCategories] = useState([]);
+
+    const tempStatsDataUserByBooking = [];
+    const tempStatsLabelsUserByBooking = [];
+
+    const tempStatsDataServicePriceAllPaid = [];
+    const tempStatsLabelsServicePriceAllPaid = [];
+
+    const tempStatsDataMedicinePrescriptionAllPaid = [];
+    const tempStatsLabelsMedicinePrescriptionAllPaid = [];
+
+    const tempStatsDataMedicinePrescriptionPaid = [];
+    const tempStatsLabelsMedicinePrescriptionPaid = [];
+
+    const tempStatsDataMedicinePrescriptionUnpaid = [];
+    const tempStatsLabelsMedicinePrescriptionUnpaid = [];
+
+    const tempStatsDataServicePricePaid = [];
+    const tempStatsLabelsServicePricePaid = [];
+
+    const tempStatsDataServicePriceUnpaid = [];
+    const tempStatsLabelsServicePriceUnpaid = [];
+
 
     const handleImageChange = (event) => {
         const file = event.target.files[0];
@@ -780,11 +829,172 @@ const Admin = () => {
         })
     }
 
+    const statsBookingByUser = async () => {
+        try {
+            let res = await Apis.get(endpoints['stats-booking-by-user']);
+            console.log(res.data)
+            res.data.map(item => {
+                tempStatsDataUserByBooking.push(item[2]);
+                tempStatsLabelsUserByBooking.push(item[1]);
+                console.log(item[1]);
+            })
+            setStatsDataUserByBooking(tempStatsDataUserByBooking);
+            setStatsLabelsUserByBooking(tempStatsLabelsUserByBooking);
+            // for (let item in res.data) {
+            //     setStatsDataUserByBooking(item[2]);
+            //     setStatsLabelsUserByBooking(item[1]);
+            //     console.log(item[1]);
+            // }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const statsServicePriceAllpaid = async () => {
+        try {
+            let res = await Apis.get(endpoints['stats-service-price-allpaid']);
+            console.log(res.data)
+            res.data.map(item => {
+                tempStatsDataServicePriceAllPaid.push(item[2]);
+                tempStatsLabelsServicePriceAllPaid.push(item[1]);
+                console.log(item[1]);
+            })
+            setStatsDataServicePriceAllPaid(tempStatsDataServicePriceAllPaid);
+            setStatsLabelsServicePriceAllPaid(tempStatsLabelsServicePriceAllPaid);
+            // for (let item in res.data) {
+            //     setStatsDataUserByBooking(item[2]);
+            //     setStatsLabelsUserByBooking(item[1]);
+            //     console.log(item[1]);
+            // }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const statsMedicinePrescriptionAllpaid = async () => {
+        try {
+            let res = await Apis.get(endpoints['stats-medicine-prescription-allpaid']);
+            console.log(res.data)
+            res.data.map(item => {
+                tempStatsDataMedicinePrescriptionAllPaid.push(item[1]);
+                tempStatsLabelsMedicinePrescriptionAllPaid.push(item[0]);
+                console.log(item[1]);
+            })
+            setStatsDataMedicinePrescriptionAllPaid(tempStatsDataMedicinePrescriptionAllPaid);
+            setStatsLabelsMedicinePrescriptionAllPaid(tempStatsLabelsMedicinePrescriptionAllPaid);
+            // for (let item in res.data) {
+            //     setStatsDataUserByBooking(item[2]);
+            //     setStatsLabelsUserByBooking(item[1]);
+            //     console.log(item[1]);
+            // }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const statsMedicinePrescriptionPaid = async () => {
+        try {
+            let res = await Apis.get(endpoints['stats-medicine-prescription-paid']);
+            console.log(res.data)
+            res.data.map(item => {
+                tempStatsDataMedicinePrescriptionPaid.push(item[1]);
+                tempStatsLabelsMedicinePrescriptionPaid.push(item[0]);
+                console.log("Đây là statsMedicinePrescriptionPaid")
+                console.log(item[1]);
+            })
+            setStatsDataMedicinePrescriptionPaid(tempStatsDataMedicinePrescriptionPaid);
+            setStatsLabelsMedicinePrescriptionPaid(tempStatsLabelsMedicinePrescriptionPaid);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const statsMedicinePrescriptionUnpaid = async () => {
+        try {
+            let res = await Apis.get(endpoints['stats-medicine-prescription-unpaid']);
+            console.log(res.data)
+            res.data.map(item => {
+                tempStatsDataMedicinePrescriptionUnpaid.push(item[1]);
+                tempStatsLabelsMedicinePrescriptionUnpaid.push(item[0]);
+                console.log(item[1]);
+            })
+            setStatsDataMedicinePrescriptionUnpaid(tempStatsDataMedicinePrescriptionUnpaid);
+            setStatsLabelsMedicinePrescriptionUnpaid(tempStatsLabelsMedicinePrescriptionUnpaid);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const statsServicePricePaid = async () => {
+        try {
+            let res = await Apis.get(endpoints['stats-service-price-paid']);
+            console.log(res.data)
+            res.data.map(item => {
+                tempStatsDataServicePricePaid.push(item[2]);
+                tempStatsLabelsServicePricePaid.push(item[1]);
+                console.log(item[1]);
+            })
+            setStatsDataServicePricePaid(tempStatsDataServicePricePaid);
+            setStatsLabelsServicePricePaid(tempStatsLabelsServicePricePaid);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const statsServicePriceUnpaid = async () => {
+        try {
+            let res = await Apis.get(endpoints['stats-service-price-unpaid']);
+            console.log(res.data)
+            res.data.map(item => {
+                tempStatsDataServicePriceUnpaid.push(item[2]);
+                tempStatsLabelsServicePriceUnpaid.push(item[1]);
+                console.log(item[1]);
+            })
+            setStatsDataServicePriceUnpaid(tempStatsDataServicePriceUnpaid);
+            setStatsLabelsServicePriceUnpaid(tempStatsLabelsServicePriceUnpaid);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+
+    let isLoad = 0;
+
+    useEffect(() => {
+        if (isLoad === 0) {
+            statsBookingByUser();
+            statsServicePriceAllpaid();
+            statsMedicinePrescriptionAllpaid();
+            statsMedicinePrescriptionPaid();
+            statsMedicinePrescriptionUnpaid();
+            statsServicePricePaid();
+            statsServicePriceUnpaid();
+            isLoad = 1;
+        }
+    }, [])
+
     const renderContent = () => {
         switch (selectedOption) {
             case "overview":
                 return <>
-                    <div></div>
+                    <div class="Overview_Stats">
+                        <div class="Stats_Booking">
+                            <div>
+                                <BarChart labels={statsLabelsUserByBooking} titleLabel="Biểu đồ thống kê lượt Booking" data={statsDataUserByBooking} />
+                            </div>
+                        </div>
+                        <div class="Stats_Revenue">
+                            {/* <div>
+                                <PolarChart labels={statsLabelsServicePriceAllPaid} titleLabel="Biểu đồ thống kê số tiền khám của bác sĩ" data={statsDataServicePriceAllPaid} />
+                            </div> */}
+                            <div>
+                                <PieChart labels={statsLabelsMedicinePrescriptionAllPaid} titleLabel="Biểu đồ thống kê số tiền thuốc của bác sĩ" data={statsDataMedicinePrescriptionAllPaid} />
+                            </div>
+                        </div>
+                    </div>
+                    {/* <div>
+                        <DoughnutChart labels={statsLabelsUserByBooking} titleLabel="Biểu đồ thống kê lượt Booking" data={statsDataUserByBooking} />
+                    </div> */}
                 </>
             case "alluser":
                 return <>
@@ -1240,8 +1450,26 @@ const Admin = () => {
                 </>
             case "revenue":
                 return <>
-                    <div>Nội dung thống kê doanh thu</div>
+                    <div class="Stats_Revenue_Detail">
+                        <div class="Stats_Service_Price">
+                            <div class="Stats_Service_Price_Paid">
+                                <BarChart labels={statsLabelsServicePricePaid} titleLabel="Biểu đồ thống kê số tiền khám đã trả" data={statsDataServicePricePaid} />
+                            </div>
+                            <div class="Stats_Service_Price_Unpaid">
+                                <BarChart labels={statsLabelsServicePriceUnpaid} titleLabel="Biểu đồ thống kê số tiền khám chưa trả" data={statsDataServicePriceUnpaid} />
+                            </div>
+                        </div>
+                        <div class="Stats_Medicine_Prescription">
+                            <div class="Stats_Medicine_Prescription_Paid">
+                                <BarChart labels={statsLabelsMedicinePrescriptionPaid} titleLabel="Biểu đồ thống kê số tiền thuốc đã trả" data={statsDataMedicinePrescriptionPaid} />
+                            </div>
+                            <div class="Stats_Medicine_Prescription_Unpaid">
+                                <BarChart labels={statsLabelsMedicinePrescriptionUnpaid} titleLabel="Biểu đồ thống kê số tiền thuốc chưa trả" data={statsDataMedicinePrescriptionUnpaid} />
+                            </div>
+                        </div>
+                    </div>
                 </>
+            //Thái
             case "patient":
                 return <>
                     <div>Nội dung thống kê bệnh nhân</div>
@@ -1264,7 +1492,7 @@ const Admin = () => {
                     <div class="Admin_Wrapper">
                         <div class="Admin_Content">
                             <div class="Admin_Content_Left">
-                                <Paper style={{ maxHeight: '50rem', height: '37rem', overflow: 'auto' }}>
+                                <Paper style={{ maxHeight: '50rem', height: '42rem', overflow: 'auto' }}>
                                     <Box sx={{ p: 2 }}>
                                         <List
                                             sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}

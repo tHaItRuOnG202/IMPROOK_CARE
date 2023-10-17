@@ -522,3 +522,72 @@ button.User_Search_Butt {
     transition: all 150ms ease-in-out 0s;
     margin-bottom: 0.5rem;
 }
+
+div.Stats_Revenue {
+    display: flex;
+    flex-direction: column;
+    width: 40%;
+    align-items: center;
+    height: 650px;
+    /* background-color: aqua; */
+}
+
+div.Stats_Revenue>div {
+    width: 85%;
+    /* background-color: red; */
+    margin-top: 4rem;
+}
+
+/* div.Stats_Revenue>div:last-child {
+    width: 100%;
+    background-color: yellow;
+} */
+
+
+div.Overview_Stats {
+    display: flex;
+    width: 100%;
+}
+
+div.Stats_Booking {
+    width: 60%;
+    /* background-color: lightblue; */
+    height: 650px;
+}
+
+div.Stats_Booking>div {
+    margin-top: 7rem;
+}
+
+div.Stats_Revenue_Detail {
+    overflow: auto;
+    height: 42rem;
+}
+
+div.Stats_Service_Price {
+    display: flex;
+    /* justify-content: space-around; */
+    align-items: center;
+}
+
+div.Stats_Service_Price>div {
+    width: 50%;
+}
+
+div.Stats_Service_Price>div:first-child {
+    width: 50%;
+}
+
+div.Stats_Service_Price>div:last-child {
+    width: 50%;
+}
+
+div.Stats_Medicine_Prescription {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 5rem;
+}
+
+div.Stats_Medicine_Prescription>div {
+    width: 50%;
+}

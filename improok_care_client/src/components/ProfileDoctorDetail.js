@@ -273,28 +273,28 @@ const ProfileDoctorDetail = () => {
                             </Form>
                         </>}
                         <hr />
-                        <div class="Comment_Area">
-                            {/* <div class="Comment_Sort_Group">
-                                <div class="Comment_Sort_Select">
-                                    <div class="Comment_Sort_Date">
-                                        <Form.Label style={{ width: '100%' }}>Sắp xếp theo ngày</Form.Label>
-                                        <Form.Select style={{ width: '100%' }} value={dateSort} name="sortDate" onChange={(e) => setDateSort(e.target.value)}>
-                                            <option value={null}>No Sort</option>
-                                            <option value="asc">Tăng dần</option>
-                                            <option value="des">Giảm dần</option>
-                                        </Form.Select>
-                                    </div>
-                                    <div class="Comment_Sort_Rating">
-                                        <Form.Label style={{ width: '100%' }}>Sắp xếp theo đánh giá</Form.Label>
-                                        <Form.Select style={{ width: '100%' }} value={ratingSort} name="sortRating" onChange={(e) => setRatingSort(e.target.value)}>
-                                            <option value={null}>No Sort</option>
-                                            <option value="asc">Tăng dần</option>
-                                            <option value="des">Giảm dần</option>
-                                        </Form.Select>
-                                    </div>
+                        <div class="Comment_Sort_Group">
+                            <div class="Comment_Sort_Select">
+                                <div class="Comment_Sort_Date">
+                                    <Form.Label style={{ width: '100%' }}>Sắp xếp theo ngày</Form.Label>
+                                    <Form.Select style={{ width: '100%' }} value={dateSort} name="sortDate" onChange={(e) => setDateSort(e.target.value)}>
+                                        <option value={null}>No Sort</option>
+                                        <option value="asc">Cũ nhất</option>
+                                        <option value="des">Mới dần</option>
+                                    </Form.Select>
                                 </div>
-                                <button class="Comment_Sort_Butt" onClick={loadCommentPage}>Sắp xếp</button>
-                            </div> */}
+                                <div class="Comment_Sort_Rating">
+                                    <Form.Label style={{ width: '100%' }}>Sắp xếp theo đánh giá</Form.Label>
+                                    <Form.Select style={{ width: '100%' }} value={ratingSort} name="sortRating" onChange={(e) => setRatingSort(e.target.value)}>
+                                        <option value={null}>No Sort</option>
+                                        <option value="asc">Tệ nhất</option>
+                                        <option value="des">Tốt nhất</option>
+                                    </Form.Select>
+                                </div>
+                            </div>
+                            <button class="Comment_Sort_Butt" onClick={loadCommentPage}>Sắp xếp</button>
+                        </div>
+                        <div class="Comment_Area">
                             <div class="Comment_List">
                                 <ListGroup>
                                     {Object.values(comment).map((c, index) => <ListGroup.Item key={c.commentId}>
@@ -332,7 +332,7 @@ const ProfileDoctorDetail = () => {
                                                                 <Form.Control as="textarea" aria-label="With textarea" defaultValue={c.content} onChange={(e) => setContent(e.target.value)} placeholder="Sửa nội dung bình luận" required />
                                                             </>
                                                         ) : (<>
-                                                            {c.updatedDate === null ? (<>{c.content} - <Moment locale="vi" fromNow>{c.createdDate}</Moment></>) : (<>{c.content} - đã chỉnh sửa <Moment locale="vi" fromNow>{c.updatedDate}</Moment></>)}
+                                                            {c.updatedDate === null ? (<>{c.content} - <Moment locale="vi" fromNow>{c.createdDate}</Moment></>) : (<>{c.content} - <Moment locale="vi" fromNow>{c.createdDate}</Moment> - đã chỉnh sửa</>)}
                                                         </>)}
                                                     </div>
                                                     {editingIndex === index ? (

@@ -163,8 +163,6 @@ const BookingManagement = () => {
         console.log(current_user);
     };
 
-
-
     const loadDoctorById = async () => {
         try {
             setLoading(true);
