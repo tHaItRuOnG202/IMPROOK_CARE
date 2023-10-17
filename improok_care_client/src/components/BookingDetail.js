@@ -205,7 +205,7 @@ const BookingDetail = () => {
                                                 const currentDate = new Date();
                                                 const bookingDate = new Date(db);
 
-                                                if (bookingDate.getDate >= currentDate.getDate) {
+                                                if (bookingDate.getDate() >= currentDate.getDate()) {
                                                     const dateObj = new Date(db);
                                                     const dayOfWeek = dateObj.toLocaleString('vi-VN', { weekday: 'long' });
                                                     const day = dateObj.getDate();

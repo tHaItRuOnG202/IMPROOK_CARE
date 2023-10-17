@@ -8,6 +8,7 @@ import cookie from "react-cookies"
 import { useState } from "react";
 import Apis, { authApi, endpoints } from "../../configs/Apis";
 import { toast } from "react-toastify";
+import { parse } from "date-fns";
 
 
 const Prescription = () => {
@@ -36,6 +37,8 @@ const Prescription = () => {
     const [pres, setPres] = useState(cookie.load("pres") || null)
 
     const [loading, setLoading] = useState(false);
+
+    const [selectedPage, setSelectedPage] = useState('1');
 
     // const pres = cookie.load("pres") || null
 
@@ -166,7 +169,6 @@ const Prescription = () => {
                 "usageInstruction": medicineList.usageInstruction
             }
         }
-
         cookie.save("pres", pres)
         console.log(pres);
         setPres(pres);
@@ -186,11 +188,27 @@ const Prescription = () => {
                 setPres(pres)
             }
         }
+
+        // if (medicine.medicineId in pres) {
+        //     setPres(current => {
+        //         delete current[medicine.medicineId];
+        //         cookie.save("pres", current);
+        //         return current;
+        //     })
+        // }
     }
 
     const removePres = () => {
         cookie.remove("pres");
     }
+
+    const medicinePages = Array.from({ length: totalMedicinePages }, (_, index) => index + 1);
+    const handleMedicinePageChange = (pageNumber) => {
+        // TODO: Xử lý sự kiện khi người dùng chuyển trang
+        setSelectedPage(pageNumber);
+        loadMedicinePage(pageNumber);
+        console.log(`Chuyển đến trang ${pageNumber}`);
+    };
 
     // useEffect(() => {
     //     const handlePageShow = (event) => {
@@ -310,6 +328,9 @@ const Prescription = () => {
                                             <th>#</th>
                                             <th>Tên thuốc</th>
                                             <th>Thao tác</th>
+                                            <th>Mô tả</th>
+                                            <th>Đơn giá</th>
+                                            <th>Loại</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -318,6 +339,9 @@ const Prescription = () => {
                                                 <tr key={ml.medicineId}>
                                                     <td>{ml.medicineId}</td>
                                                     <td>{ml.medicineName}</td>
+                                                    <td>{ml.description}</td>
+                                                    <td>{ml.unitPrice}</td>
+                                                    <td>{ml.categoryId.categoryName}</td>
                                                     <td>
                                                         <Button variant="success" onClick={() => addMedicine(ml)}>Thêm</Button>
                                                     </td>
@@ -326,6 +350,14 @@ const Prescription = () => {
                                         })}
                                     </tbody>
                                 </Table>
+                                <div className="Page_Nav">
+                                    {medicinePages.map((page) => (
+                                        <button id={`${page}`} key={page} onClick={() => handleMedicinePageChange(page)}
+                                            className={page === selectedPage ? 'active' : ''}>
+                                            {page}
+                                        </button>
+                                    ))}
+                                </div>
                             </div>
                             <div class="Prescription_Detail_Medicine_Choice">
                                 <Table striped bordered hover>
@@ -340,7 +372,7 @@ const Prescription = () => {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {pres === null ? <>
+                                        {(pres === null || pres.length === 10) ? <>
                                             <span>Chưa có thuốc nào được chọn</span>
                                         </> : <>
                                             {Object.values(pres).map(p => {
@@ -350,7 +382,8 @@ const Prescription = () => {
                                                         <td>{p.medicineName}</td>
                                                         <td>
                                                             <Form.Control type="number" value={pres[p.medicineId]["quantity"]}
-                                                                onChange={e => setPres({ ...pres, [p.medicineId]: { ...pres[p.medicineId], "quantity": e.target.value } })} min="0" max="50" />
+                                                                onChange={e => setPres({ ...pres, [p.medicineId]: { ...pres[p.medicineId], "quantity": parseInt(e.target.value) } })}
+                                                                min="0" max="50" />
                                                         </td>
                                                         <td>{p.unitPrice} VNĐ</td>
                                                         <td>
@@ -381,7 +414,7 @@ const Prescription = () => {
                                     </tbody>
                                 </Table>
                             </div>
-                            <Button variant="info" onClick={(e) => addPrescription(e)}>Lưu đơn thuốc</Button>
+                            {pres === null ? <Button variant="secondary">Lưu đơn thuốc</Button> : <Button variant="info" onClick={(e) => addPrescription(e)}>Lưu đơn thuốc</Button>}
                         </div>
                     </div>
                 </div>

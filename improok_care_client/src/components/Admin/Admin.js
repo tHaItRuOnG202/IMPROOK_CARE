@@ -92,6 +92,13 @@ const Admin = () => {
     const [searchFirstname, setSearchFirstname] = useState(null);
     const [searchLastname, setSearchLastname] = useState(null);
 
+    const [searchCategory, setSearchCategory] = useState(null);
+    const [searchMedicineName, setSearchMedicineName] = useState(null);
+    const [searchFromPrice, setSearchFromPrice] = useState(null);
+    const [searchToPrice, setSearchToPrice] = useState(null);
+
+    const [medicineCategories, setMedicineCategories] = useState([]);
+
     const handleImageChange = (event) => {
         const file = event.target.files[0];
         const reader = new FileReader();
@@ -387,8 +394,20 @@ const Admin = () => {
     const handleCategoryChange = (e) => {
         const selectedCategoryId = e.target.value;
         setSelectedCategory(selectedCategoryId);
-
     }
+
+    useEffect(() => {
+        const loadMedicineCategories = async () => {
+            try {
+                let res = await Apis.get(endpoints['medicine-categories'])
+                setMedicineCategories(res.data);
+                console.log(res.data);
+            } catch (error) {
+                console.log(error);
+            }
+        }
+        loadMedicineCategories();
+    }, [])
 
     const pages = Array.from({ length: totalPages }, (_, index) => index + 1);
     const handlePageChange = (pageNumber) => {
@@ -582,16 +601,36 @@ const Admin = () => {
     const loadMedicinePage = async (pageNumber) => {
         try {
             setLoading(true);
-            let e = endpoints['search-medicines'];
+            // let e = endpoints['search-users'];
+            let e = `${endpoints['search-medicines']}`;
             // let pageNumber = document.getElementsByClassName("active").id;
             console.log(pageNumber)
-            if (pageNumber !== null) {
-                e = `${e}?pageNumber=${pageNumber - 1}`
+            if (pageNumber !== null && !isNaN(pageNumber)) {
+                e += `?pageNumber=${pageNumber - 1}&`
             }
+            else {
+                e += `?`
+            }
+            let medicineName = searchMedicineName;
+            let fromPrice = searchFromPrice;
+            let toPrice = searchToPrice;
+            let categoryId = searchCategory;
+            if (medicineName !== null)
+                e += `medicineName=${medicineName}&`
+            if (fromPrice !== null)
+                e += `fromPrice=${fromPrice}&`
+            if (toPrice !== null)
+                e += `toPrice=${toPrice}&`
+            if (categoryId !== null && categoryId !== "TẤT CẢ DANH MỤC")
+                e += `categoryId=${categoryId}`
             // let url = `/users/${pageNumber}`
+            console.log(e);
             let res = await Apis.get(e);
             setMedicineList(res.data.content);
+            // setUrlUser(e);
             setTotalMedicinePages(res.data.totalPages);
+            console.log(res.data.totalPages);
+            console.log(e);
             // navigate(url);
             setLoading(false);
             console.log(res.data);
@@ -950,6 +989,18 @@ const Admin = () => {
                         <div>
                             <div class="Medicine">
                                 <button onClick={() => handleOptionClick("addmedicine")}><HiPlus /> Thêm 1 thuốc mới</button>
+                            </div>
+                            <div class="Medicine_Search_Group">
+                                <div class="Medicine_Search_Input">
+                                    <Form.Control class="Medicine_Search_MedicineName" defaultValue={searchMedicineName} name="searchMedicineName" type="Text" onChange={(e) => setSearchMedicineName(e.target.value)} placeholder="Nhập tên thuốc..." />
+                                    <Form.Control class="Medicine_Search_FromPrice" defaultValue={searchFromPrice} name="searchFromPrice" type="Text" onChange={(e) => setSearchFromPrice(e.target.value)} placeholder="Nhập giá bắt đầu..." />
+                                    <Form.Control class="Medicine_Search_ToPrice" defaultValue={searchToPrice} name="searchToPrice" type="Text" onChange={(e) => setSearchToPrice(e.target.value)} placeholder="Nhập giá kết thúc..." />
+                                    <Form.Select class="Medicine_Search_Category" value={searchCategory} name="searchCategory" onChange={(e) => setSearchCategory(e.target.value)}>
+                                        <option value={null}>TẤT CẢ DANH MỤC</option>
+                                        {Object.values(medicineCategories).map(mc => <option key={mc.categoryId} value={mc.categoryId}>{mc.categoryName}</option>)}
+                                    </Form.Select>
+                                </div>
+                                <button class="Medicine_Search_Butt" onClick={loadMedicinePage}>Tìm kiếm</button>
                             </div>
                             <Table striped bordered hover>
                                 <thead>

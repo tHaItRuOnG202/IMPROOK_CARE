@@ -12,7 +12,6 @@ import { Button, Form, Image, ListGroup } from "react-bootstrap";
 import Moment from "react-moment";
 import { Rating, Typography } from "@mui/material";
 import { toast } from "react-toastify";
-import { ElectricScooterTwoTone } from "@mui/icons-material";
 
 const ProfileDoctorDetail = () => {
     const { profileDoctorId } = useParams();
@@ -21,9 +20,27 @@ const ProfileDoctorDetail = () => {
     const [current_user, dispatch] = useContext(MyUserContext)
     const [comment, setComment] = useState([]);
     const [content, setContent] = useState(null);
-    const [rating, setRating] = useState(0);
+    const [rating, setRating] = useState('1');
+
+    const [updateRating, setUpdateRating] = useState(null)
+    const [updateContent, setUpdateContent] = useState(null)
+
+    const [selectedPage, setSelectedPage] = useState('1');
+    const [totalCommentPages, setTotalCommentPages] = useState('1');
+
+    const [editingIndex, setEditingIndex] = useState(-1);
+    const [selectedCommentId, setSelectedCommentId] = useState('');
+
+    // const [commentUpdate, setCommentUpdate] = useState(null);
+
+    // const [selectedSortDate, setSelectedDate] = useState('1');
+    // const [selectedSortRating, selectedSorRating] = useState('1');
+
+    const [dateSort, setDateSort] = useState(null);
+    const [ratingSort, setRatingSort] = useState(null);
 
     const avatar = useRef();
+    const updateAvatar = useRef();
 
     useEffect(() => {
         const loadProfileDoctorById = async () => {
@@ -41,17 +58,127 @@ const ProfileDoctorDetail = () => {
         loadProfileDoctorById();
     }, [profileDoctorId])
 
-    const loadComment = async () => {
-        let e = `${endpoints['search-comments']}?profileDoctorId=${profileDoctorId}`;
-        let res = await Apis.get(e);
+    // const loadComment = async () => {
+    //     let e = `${endpoints['search-comments']}?profileDoctorId=${profileDoctorId}`;
+    //     let res = await Apis.get(e);
 
-        setComment(res.data.content);
-        console.log(res.data.content);
+    //     setComment(res.data.content);
+    //     console.log(res.data.content);
+    // }
+
+    const updateComment = async (evt, c) => {
+        evt.preventDefault();
+
+        const process = async () => {
+            try {
+                console.log(c.commentId, current_user.userId, content, rating)
+                let form = new FormData();
+                form.append("commentId", c.commentId)
+                form.append("userId", current_user.userId);
+                form.append("content", content);
+                form.append("rating", rating);
+
+                if (avatar.current.files[0] !== undefined)
+                    form.append("avatar", avatar.current.files[0]);
+                else
+                    form.append("avatar", new Blob());
+
+                // console.log(c.commentId, c.userId.userId, current_user.userId, content, rating)
+                console.log("userId đang đăng nhập", current_user.userId);
+                console.log("user của comment", c.userId.userId);
+
+                setLoading(true);
+
+                let res = await authApi().post(endpoints['update-comment'], form, {
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                    },
+                });
+                if (res.data === "Cập nhật bình luận thành công!") {
+                    toast.success(res.data)
+                    loadComment();
+                    handleCancel();
+                }
+                setLoading(false);
+            } catch (error) {
+                // if (error.request.responseText === "Không tìm thấy bình luận để cập nhật!")
+                //     toast.error(error.request.responseText);
+                // else if (error.request.responseText === "Bình luận này bạn không được phép sửa!")
+                //     toast.error(error.request.responseText);
+                console.log(error);
+            }
+        }
+        process();
+    }
+
+    const handleEdit = (index, commentId) => {
+        setEditingIndex(index);
+        setSelectedCommentId(commentId)
+    };
+
+    const handleCancel = () => {
+        setEditingIndex(-1);
+    };
+
+
+    const loadComment = async () => {
+        try {
+            setLoading(true);
+            let res = await Apis.get(endpoints['load-comments-page'](profileDoctorId))
+            setComment(res.data.content);
+            setTotalCommentPages(res.data.totalPages);
+            console.log(res.data.content);
+            setLoading(false);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const loadCommentPage = async (pageNumber) => {
+        try {
+            setLoading(true);
+            let e = `${endpoints['load-comments-page'](profileDoctorId)}`;
+            // let pageNumber = document.getElementsByClassName("active").id;
+            console.log(pageNumber)
+            if (pageNumber !== null && !isNaN(pageNumber) && pageNumber !== undefined) {
+                e += `?pageNumber=${pageNumber - 1}&`
+            }
+            else {
+                e += `?`
+            }
+            let sortDate = dateSort;
+            let sortRating = ratingSort;
+            if (sortDate !== null && sortDate !== "No Sort")
+                e += `sortDate=${sortDate}&`
+            if (sortRating !== null && sortRating !== "No Sort")
+                e += `sortRating=${sortRating}`
+            console.log(e);
+            let res = await Apis.get(e);
+            setComment(res.data.content);
+            // setUrlUser(e);
+            setTotalCommentPages(res.data.totalPages);
+            console.log(res.data.totalPages);
+            console.log(e);
+            // navigate(url);
+            setLoading(false);
+            console.log(res.data);
+        } catch (error) {
+            console.log(error)
+        }
     }
 
     useEffect(() => {
+        loadCommentPage();
         loadComment();
     }, [profileDoctorId]);
+
+    const commentPages = Array.from({ length: totalCommentPages }, (_, index) => index + 1);
+    const handleCommentPageChange = (pageNumber) => {
+        // TODO: Xử lý sự kiện khi người dùng chuyển trang
+        setSelectedPage(pageNumber);
+        loadCommentPage(pageNumber);
+        console.log(`Chuyển đến trang ${pageNumber}`);
+    };
 
     const addComment = async () => {
         setLoading(true);
@@ -61,12 +188,12 @@ const ProfileDoctorDetail = () => {
         form.append("userId", current_user.userId);
         form.append("content", content);
         form.append("rating", rating)
+        console.log(avatar.current.files[0]);
         if (avatar.current.files[0] !== undefined) {
             form.append("avatar", avatar.current.files[0]);
         } else {
             form.append("avatar", new Blob());
         }
-
         try {
             let res = await authApi().post(endpoints['add-comment'], form, {
                 headers: {
@@ -85,6 +212,16 @@ const ProfileDoctorDetail = () => {
             console.log(error);
         }
     };
+
+    // const handleSortDateChange = (e) => {
+    //     const selectedSortDate = e.target.value;
+    //     set(selectedRoleId);
+    // }
+
+    // const handleSortRating = (e) => {
+    //     const selectedRoleId = e.target.value;
+    //     setSelectedRole(selectedRoleId);
+    // }
 
     let url = `/booking/doctor/${doctorDetail.profileDoctorId}`
 
@@ -124,35 +261,110 @@ const ProfileDoctorDetail = () => {
                     </div>
                     <div class="Profile_Doctor_Comment">
                         {current_user === null ? <p>Vui lòng <Link to={`/login?next=/doctor/${profileDoctorId}`}>đăng nhập</Link> để bình luận! </p> : <>
-                            <Form.Label style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>Để lại ý kiến của bạn</Form.Label>
-                            <Form.Control as="textarea" aria-label="With textarea" value={content} onChange={(e) => setContent(e.target.value)} placeholder="Nhập nội dung bình luận" />
-                            <div class="Profile_Doctor_Rating">
-                                <Typography component="legend">Đánh giá của bạn</Typography>
-                                <Rating name="simple-controlled" value={rating} onChange={(event, newValue) => { setRating(newValue) }}
-                                />
-                            </div>
-                            <Form.Control className="mt-2" accept=".jpg, .jpeg, .png, .gif, .bmp" type="file" ref={avatar} />
-                            <Button className="mt-2" variant="info" onClick={addComment}>Bình luận</Button>
+                            <Form onSubmit={addComment}>
+                                <Form.Label style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>Để lại ý kiến của bạn</Form.Label>
+                                <Form.Control as="textarea" aria-label="With textarea" value={content} onChange={(e) => setContent(e.target.value)} placeholder="Nhập nội dung bình luận" required />
+                                <div class="Profile_Doctor_Rating">
+                                    <Typography component="legend">Đánh giá của bạn</Typography>
+                                    <Rating name="simple-controlled" value={rating} onChange={(event, newValue) => { setRating(newValue) }} />
+                                </div>
+                                <Form.Control className="mt-2" accept=".jpg, .jpeg, .png, .gif, .bmp" type="file" ref={avatar} />
+                                <Button className="mt-2" variant="info" type="submit">Bình luận</Button>
+                            </Form>
                         </>}
                         <hr />
-                        <ListGroup>
+                        <div class="Comment_Area">
+                            {/* <div class="Comment_Sort_Group">
+                                <div class="Comment_Sort_Select">
+                                    <div class="Comment_Sort_Date">
+                                        <Form.Label style={{ width: '100%' }}>Sắp xếp theo ngày</Form.Label>
+                                        <Form.Select style={{ width: '100%' }} value={dateSort} name="sortDate" onChange={(e) => setDateSort(e.target.value)}>
+                                            <option value={null}>No Sort</option>
+                                            <option value="asc">Tăng dần</option>
+                                            <option value="des">Giảm dần</option>
+                                        </Form.Select>
+                                    </div>
+                                    <div class="Comment_Sort_Rating">
+                                        <Form.Label style={{ width: '100%' }}>Sắp xếp theo đánh giá</Form.Label>
+                                        <Form.Select style={{ width: '100%' }} value={ratingSort} name="sortRating" onChange={(e) => setRatingSort(e.target.value)}>
+                                            <option value={null}>No Sort</option>
+                                            <option value="asc">Tăng dần</option>
+                                            <option value="des">Giảm dần</option>
+                                        </Form.Select>
+                                    </div>
+                                </div>
+                                <button class="Comment_Sort_Butt" onClick={loadCommentPage}>Sắp xếp</button>
+                            </div> */}
                             <div class="Comment_List">
-                                {Object.values(comment).map(c => <ListGroup.Item key={c.commentId}>
-                                    <div class="User_Comment">
-                                        <Image src={c.userId.avatar} style={{ width: "6%" }} fluid roundedCircle />
-                                        <span>{c.userId.lastname} {c.userId.firstname} đã đánh giá</span>
-                                        <Rating name="read-only" value={c.rating} readOnly />
-                                    </div>
-                                    <div class="Avatar_Comment">
-                                        <Image src={c.avatar} style={{ width: "10%" }} />
-                                    </div>
-                                    <div>
-                                        {c.content} - <Moment locale="vi" fromNow>{c.createdDate}</Moment>
-                                    </div>
-                                </ListGroup.Item>)}
-                            </div>
-                        </ListGroup>
+                                <ListGroup>
+                                    {Object.values(comment).map((c, index) => <ListGroup.Item key={c.commentId}>
+                                        <div class="User_Comment_Info">
+                                            <div class="User_Comment_Avatar">
+                                                <Image src={c.userId.avatar} style={{ width: "50%" }} fluid roundedCircle />
+                                            </div>
+                                            <div class="User_Comment_Content">
+                                                <Form onSubmit={(e) => updateComment(e, c)}>
+                                                    <div class="User_Comment">
+                                                        {editingIndex === index ? (
+                                                            <>
+                                                                <span>Đánh giá</span>
+                                                                <Rating name="simple-controlled" value={rating} onChange={(event, newValue) => { setRating(newValue) }} />
+                                                            </>
+                                                        ) :
+                                                            (<>
+                                                                <span>{c.userId.lastname} {c.userId.firstname} đã đánh giá</span>
+                                                                <Rating name="read-only" value={c.rating} readOnly />
+                                                            </>)}
 
+                                                    </div>
+                                                    <div class="Avatar_Comment">
+                                                        {editingIndex === index ? (
+                                                            <>
+                                                                <Form.Control className="mt-2" accept=".jpg, .jpeg, .png, .gif, .bmp" type="file" ref={avatar} />
+                                                            </>
+                                                        ) : (<>
+                                                            <Image src={c.avatar} style={{ width: "10%" }} />
+                                                        </>)}
+                                                    </div>
+                                                    <div class="Comment_Content">
+                                                        {editingIndex === index ? (
+                                                            <>
+                                                                <Form.Control as="textarea" aria-label="With textarea" defaultValue={c.content} onChange={(e) => setContent(e.target.value)} placeholder="Sửa nội dung bình luận" required />
+                                                            </>
+                                                        ) : (<>
+                                                            {c.updatedDate === null ? (<>{c.content} - <Moment locale="vi" fromNow>{c.createdDate}</Moment></>) : (<>{c.content} - đã chỉnh sửa <Moment locale="vi" fromNow>{c.updatedDate}</Moment></>)}
+                                                        </>)}
+                                                    </div>
+                                                    {editingIndex === index ? (
+                                                        <>
+                                                            <Button className="Update_Comment_Butt" style={{ marginRight: '0.5rem' }} variant="success" type="submit">
+                                                                Cập nhật
+                                                            </Button>
+                                                            <button class="Cancel_Comment_Butt" type="button" style={{ marginRight: '0.5rem' }} onClick={handleCancel}>
+                                                                Hủy
+                                                            </button>
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            {current_user.userId !== c.userId.userId ? "" : <button class="Edit_Comment_Butt" type="button" onClick={() => handleEdit(index, c.commentId)}>Sửa bình luận</button>}
+                                                        </>
+                                                    )}
+                                                </Form>
+                                                {/* {current_user.userId !== c.userId.userId ? "" : <Button variant="info" onClick={() => handleEdit(index, c.commentId)}>Sửa bình luận</Button>} */}
+                                            </div>
+                                        </div>
+                                    </ListGroup.Item>)}
+                                </ListGroup>
+                            </div>
+                        </div>
+                        <div className="Page_Nav">
+                            {commentPages.map((page) => (
+                                <button id={`${page}`} key={page} onClick={() => handleCommentPageChange(page)}
+                                    className={page === selectedPage ? 'active' : ''}>
+                                    {page}
+                                </button>
+                            ))}
+                        </div>
                     </div>
                 </div>
                 <div class="Profile_Doctor_Detail_Footer">
