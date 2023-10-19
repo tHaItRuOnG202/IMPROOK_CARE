@@ -9,6 +9,7 @@ import { useState } from "react";
 import Apis, { authApi, endpoints } from "../../configs/Apis";
 import { toast } from "react-toastify";
 import { parse } from "date-fns";
+import { Autocomplete, Stack, TextField } from "@mui/material";
 
 
 const Prescription = () => {
@@ -90,19 +91,31 @@ const Prescription = () => {
         nav("/")
     }
 
+    // const loadMedicine = async () => {
+    //     try {
+    //         setLoading(true);
+
+    //         let res = await Apis.get(endpoints['search-medicines'])
+    //         setMedicineList(res.data.content);
+    //         setTotalMedicinePages(res.data.totalPages);
+    //         setLoading(false);
+    //         console.log(res.data.content);
+    //     } catch (error) {
+    //         console.log(error);
+    //     }
+    // }
+
     const loadMedicine = async () => {
         try {
             setLoading(true);
 
-            let res = await Apis.get(endpoints['search-medicines'])
-            setMedicineList(res.data.content);
-            setTotalMedicinePages(res.data.totalPages);
+            let res = await Apis.get(endpoints['medicines'])
+            setMedicineList(res.data);
             setLoading(false);
-            console.log(res.data.content);
+            console.log(res.data);
         } catch (error) {
             console.log(error);
         }
-        console.log(booking.bookingId, bookingId)
     }
 
     const loadMedicinePage = async (pageNumber) => {
@@ -174,6 +187,15 @@ const Prescription = () => {
         setPres(pres);
     }
 
+    const handleMedicineSelect = (value) => {
+        console.log(value);
+        const selectedMedicine = Object.values(medicineList).find((ml) => ml === value);
+        if (selectedMedicine) {
+            addMedicine(selectedMedicine);
+        }
+        console.log(pres);
+    };
+
     useEffect(() => {
         setPres(cookie.load("pres") || null);
     }, []);
@@ -202,13 +224,13 @@ const Prescription = () => {
         cookie.remove("pres");
     }
 
-    const medicinePages = Array.from({ length: totalMedicinePages }, (_, index) => index + 1);
-    const handleMedicinePageChange = (pageNumber) => {
-        // TODO: Xử lý sự kiện khi người dùng chuyển trang
-        setSelectedPage(pageNumber);
-        loadMedicinePage(pageNumber);
-        console.log(`Chuyển đến trang ${pageNumber}`);
-    };
+    // const medicinePages = Array.from({ length: totalMedicinePages }, (_, index) => index + 1);
+    // const handleMedicinePageChange = (pageNumber) => {
+    //     // TODO: Xử lý sự kiện khi người dùng chuyển trang
+    //     setSelectedPage(pageNumber);
+    //     loadMedicinePage(pageNumber);
+    //     console.log(`Chuyển đến trang ${pageNumber}`);
+    // };
 
     // useEffect(() => {
     //     const handlePageShow = (event) => {
@@ -270,6 +292,7 @@ const Prescription = () => {
                             <li><Link to="/schedule" onClick={() => removePres()}>Đăng ký lịch khám</Link></li>
                             <li><Link to="/bookingmanagement" onClick={() => removePres()}>Lịch hẹn</Link></li>
                             <li><Link to="/profiledoctor" onClick={() => removePres()}>Hồ sơ</Link></li>
+                            <li><Link to="/doctormessage" onClick={() => removePres()}>Tin nhắn</Link></li>
                             <li onClick={logout}>Đăng xuất</li>
                         </ul>
                     </div>
@@ -307,9 +330,9 @@ const Prescription = () => {
                     <div class="Prescription_Right_Body_2">
                         <div>
                             <div class="Prescription_Detail_Header">
-                                <h5>Chi tiết đơn thuốc</h5>
+                                <h4 className="mt-4">Chi tiết đơn thuốc</h4>
                             </div>
-                            <div class="Medicine_Search_Group">
+                            {/* <div class="Medicine_Search_Group">
                                 <div class="Medicine_Search_Input">
                                     <Form.Control class="Medicine_Search_MedicineName" defaultValue={searchMedicineName} name="searchMedicineName" type="Text" onChange={(e) => setSearchMedicineName(e.target.value)} placeholder="Nhập tên thuốc..." />
                                     <Form.Control class="Medicine_Search_FromPrice" defaultValue={searchFromPrice} name="searchFromPrice" type="Text" onChange={(e) => setSearchFromPrice(e.target.value)} placeholder="Nhập giá bắt đầu..." />
@@ -358,6 +381,53 @@ const Prescription = () => {
                                         </button>
                                     ))}
                                 </div>
+                            </div> */}
+                            {/* <div class="Prescription_Detail_Search_Medicine">
+                                <Stack spacing={2} sx={{ width: 300 }}>
+                                    <Autocomplete
+                                        freeSolo
+                                        id="free-solo-2-demo"
+                                        disableClearable
+                                        options={Object.values(medicineList).map(ml => ml.medicineName)}
+                                        renderInput={(params) => (
+                                            <TextField
+                                                {...params}
+                                                label="Tìm thuốc"
+                                                InputProps={{
+                                                    ...params.InputProps,
+                                                    type: 'search',
+                                                }}
+                                            />
+                                        )}
+                                    />
+                                </Stack>
+                            </div> */}
+                            <div class="Prescription_Detail_Search_Medicine">
+                                <Stack spacing={2} sx={{ width: 300 }}>
+                                    <Autocomplete
+                                        freeSolo
+                                        id="free-solo-2-demo"
+                                        disableClearable
+                                        options={Object.values(medicineList)}
+                                        getOptionLabel={(ml) => ml.medicineName}
+                                        getOptionSelected={(ml, value) => ml.medicineName === value}
+                                        renderInput={(params) => (
+                                            <TextField
+                                                {...params}
+                                                label="Tìm thuốc"
+                                                InputProps={{
+                                                    ...params.InputProps,
+                                                    type: 'search',
+                                                }}
+                                            />
+                                        )}
+                                        onChange={(event, value) => {
+                                            if (value !== null) {
+                                                handleMedicineSelect(value);
+                                            }
+                                        }}
+                                    />
+                                </Stack>
                             </div>
                             <div class="Prescription_Detail_Medicine_Choice">
                                 <Table striped bordered hover>
@@ -372,7 +442,7 @@ const Prescription = () => {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {(pres === null || pres.length === 10) ? <>
+                                        {(pres === null || Object.keys(pres).length === 0) ? <>
                                             <span>Chưa có thuốc nào được chọn</span>
                                         </> : <>
                                             {Object.values(pres).map(p => {
@@ -414,12 +484,12 @@ const Prescription = () => {
                                     </tbody>
                                 </Table>
                             </div>
-                            {pres === null ? <Button variant="secondary">Lưu đơn thuốc</Button> : <Button variant="info" onClick={(e) => addPrescription(e)}>Lưu đơn thuốc</Button>}
+                            {(pres === null || Object.keys(pres).length === 0) ? <Button variant="secondary">Lưu đơn thuốc</Button> : <Button variant="info" onClick={(e) => addPrescription(e)}>Lưu đơn thuốc</Button>}
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     </>
 }
 

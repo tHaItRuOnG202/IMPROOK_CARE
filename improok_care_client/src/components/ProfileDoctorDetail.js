@@ -11,7 +11,12 @@ import GoogleMapAPI from "../utils/GoogleMapAPI";
 import { Button, Form, Image, ListGroup } from "react-bootstrap";
 import Moment from "react-moment";
 import { Rating, Typography } from "@mui/material";
+import { Chat, CloseOutlined } from "@mui/icons-material";
 import { toast } from "react-toastify";
+import ChatRoom from "../utils/ChatRoom";
+import Message from "./Message";
+import { MessageBox } from "react-chat-elements";
+import 'react-chat-elements/dist/main.css'
 
 const ProfileDoctorDetail = () => {
     const { profileDoctorId } = useParams();
@@ -31,6 +36,12 @@ const ProfileDoctorDetail = () => {
     const [editingIndex, setEditingIndex] = useState(-1);
     const [selectedCommentId, setSelectedCommentId] = useState('');
 
+    const [showChatRoom, setShowChatRoom] = useState(false);
+
+    const [disconnected, setDisconnected] = useState(false);
+
+    const [listMessage, setListMessage] = useState([]);
+
     // const [commentUpdate, setCommentUpdate] = useState(null);
 
     // const [selectedSortDate, setSelectedDate] = useState('1');
@@ -39,8 +50,21 @@ const ProfileDoctorDetail = () => {
     const [dateSort, setDateSort] = useState(null);
     const [ratingSort, setRatingSort] = useState(null);
 
+    const [messageContent, setMessageContent] = useState(null);
+
     const avatar = useRef();
     const updateAvatar = useRef();
+
+    const handleClick = (e) => {
+        setShowChatRoom(true);
+        viewUserMessage(e);
+    };
+
+    const handleClose = () => {
+        setShowChatRoom(false);
+        if (disconnected === false)
+            setDisconnected(true);
+    }
 
     useEffect(() => {
         const loadProfileDoctorById = async () => {
@@ -75,7 +99,7 @@ const ProfileDoctorDetail = () => {
                 let form = new FormData();
                 form.append("commentId", c.commentId)
                 form.append("userId", current_user.userId);
-                form.append("content", content);
+                form.append("content", updateContent);
                 form.append("rating", rating);
 
                 if (avatar.current.files[0] !== undefined)
@@ -180,7 +204,8 @@ const ProfileDoctorDetail = () => {
         console.log(`Chuyển đến trang ${pageNumber}`);
     };
 
-    const addComment = async () => {
+    const addComment = async (evt) => {
+        evt.preventDefault();
         setLoading(true);
 
         let form = new FormData();
@@ -188,8 +213,8 @@ const ProfileDoctorDetail = () => {
         form.append("userId", current_user.userId);
         form.append("content", content);
         form.append("rating", rating)
-        console.log(avatar.current.files[0]);
-        if (avatar.current.files[0] !== undefined) {
+        // console.log(avatar.current.files[0]);
+        if (avatar.current.files[0] !== undefined && avatar !== null) {
             form.append("avatar", avatar.current.files[0]);
         } else {
             form.append("avatar", new Blob());
@@ -209,6 +234,53 @@ const ProfileDoctorDetail = () => {
                 toast.error(error.response.data)
             else
                 toast.error(error.response.data)
+            console.log(error);
+        }
+    };
+
+    const viewUserMessage = () => {
+        const process = async () => {
+            try {
+                setLoading(true);
+                const res = await authApi().get(endpoints['get-message-for-all-view'](doctorDetail.profileDoctorId, current_user.userId));
+                setListMessage(res.data);
+                console.log(res.data);
+                console.log(listMessage);
+                setLoading(false);
+            } catch (error) {
+                console.log(error);
+            }
+        }
+        process();
+    }
+
+    const addMessage = async (evt) => {
+        evt.preventDefault();
+        setLoading(true);
+
+        let form = new FormData();
+        form.append("profileDoctorId", doctorDetail.profileDoctorId);
+        form.append("userId", current_user.userId);
+        form.append("senderId", current_user.userId);
+        form.append("messageContent", messageContent);
+
+        if (avatar.current.files[0] !== undefined && avatar !== null) {
+            form.append("avatar", avatar.current.files[0]);
+        } else {
+            form.append("avatar", new Blob());
+        }
+        try {
+            let res = await authApi().post(endpoints['add-message'], form, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            });
+            console.log(res.data);
+            setMessageContent('');
+            viewUserMessage();
+            setLoading(false);
+        } catch (error) {
+            setLoading(false);
             console.log(error);
         }
     };
@@ -238,8 +310,22 @@ const ProfileDoctorDetail = () => {
                             )}
                             {doctorDetail?.specialtyId?.specialtyName &&
                                 (<div class="Profile_Doctor_Info">
-                                    <h3>Phó giáo sư, Tiến sĩ, Bác sĩ {doctorDetail.name}</h3>
-                                    <span className="mb-4"><img src={verified} alt="verified" /> <span style={{ color: '#1975e3', fontSize: '1.1rem', fontWeight: 'bold' }}>Bác sĩ</span> | <strong>10</strong> năm kinh nghiệm</span>
+                                    <h3>{doctorDetail.name}</h3>
+                                    <span className="mb-2"><img src={verified} alt="verified" /> <span style={{ color: '#1975e3', fontSize: '1.1rem', fontWeight: 'bold' }}>Bác sĩ</span> | <strong>10</strong> năm kinh nghiệm</span>
+                                    {doctorDetail.totalRating === null ?
+                                        <>
+                                            <div class="Profile_Doctor_Total_Rating">
+                                                <Rating className="mb-4" name="half-rating-read" defaultValue={0} precision={0.1} readOnly />
+                                                <span>Bác sĩ này hiện chưa có đánh giá</span>
+                                            </div>
+                                        </> :
+                                        <>
+                                            <div class="Profile_Doctor_Total_Rating">
+                                                <Rating className="mb-4" name="half-rating-read" defaultValue={(doctorDetail.totalRating / doctorDetail.countRating).toFixed(1)} precision={0.1} readOnly />
+                                                <span>{(doctorDetail.totalRating / doctorDetail.countRating).toFixed(1)} trên 5</span>
+                                            </div>
+                                        </>
+                                    }
                                     <span>Chuyên khoa <span style={{ color: '#1975e3', fontSize: '1.1rem', fontWeight: 'bold' }}>{doctorDetail.specialtyId.specialtyName}</span></span>
                                     <span>Chức vụ {doctorDetail.position}</span>
                                     <span>Nơi công tác <span style={{ fontSize: '1.1rem', fontWeight: '500' }}>{doctorDetail.workAddress}</span></span>
@@ -254,19 +340,63 @@ const ProfileDoctorDetail = () => {
                             <span>2051052125</span>
                         </div>
                         {current_user === null ? <button><Link to={`/login?next=/doctor/${profileDoctorId}`}>Đăng nhập để đặt khám</Link></button> : <button><Link to={url}>ĐẶT KHÁM NGAY</Link></button>}
-
+                        {current_user === null ? <button><Link to={`/login?next=/doctor/${profileDoctorId}`}>Đăng nhập để nhắn tin cho bác sĩ</Link></button> : <button onClick={handleClick}><Chat /></button>}
                     </div>
+                    {showChatRoom && (
+                        <div>
+                            <div class="User_Message_Detail_Inner">
+                                <div class="User_Message_Detail_Header">
+                                    <h4 className="text-center mb-3 mt-3">{doctorDetail.name}</h4>
+                                    <button onClick={handleClose}><CloseOutlined /></button>
+                                </div>
+                                <div class="User_Message_Content">
+                                    {Object.values(listMessage).map((mes) => {
+                                        if (!mes) return null;
+                                        return <>
+                                            {current_user.userId === mes.senderId ?
+                                                <MessageBox
+                                                    key={mes.messageId}
+                                                    position={'right'}
+                                                    type={'text'}
+                                                    avatar={null}
+                                                    status={null}
+                                                    text={mes.messageContent}
+                                                    date={mes.createdDate}
+                                                /> :
+                                                <MessageBox
+                                                    key={mes.messageId}
+                                                    position={'left'}
+                                                    type={'text'}
+                                                    avatar={null}
+                                                    status={null}
+                                                    text={mes.messageContent}
+                                                    date={mes.createdDate}
+                                                />
+                                            }
+                                        </>
+                                    })}
+                                </div>
+                                <div class="User_Send_Message">
+                                    <Form.Control className="mt-2" accept=".jpg, .jpeg, .png, .gif, .bmp" type="file" ref={avatar} />
+                                    <div>
+                                        <input type="text" value={messageContent} onChange={(e) => setMessageContent(e.target.value)} placeholder="Nhập nội dung tin nhắn..." />
+                                        <button type="button" onClick={(e) => addMessage(e)}>Gửi</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                     <div className="googleMapAPI">
                         <GoogleMapAPI address={doctorDetail.workAddress} />
                     </div>
                     <div class="Profile_Doctor_Comment">
                         {current_user === null ? <p>Vui lòng <Link to={`/login?next=/doctor/${profileDoctorId}`}>đăng nhập</Link> để bình luận! </p> : <>
-                            <Form onSubmit={addComment}>
+                            <Form onSubmit={(e) => addComment(e)}>
                                 <Form.Label style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>Để lại ý kiến của bạn</Form.Label>
                                 <Form.Control as="textarea" aria-label="With textarea" value={content} onChange={(e) => setContent(e.target.value)} placeholder="Nhập nội dung bình luận" required />
                                 <div class="Profile_Doctor_Rating">
                                     <Typography component="legend">Đánh giá của bạn</Typography>
-                                    <Rating name="simple-controlled" value={rating} onChange={(event, newValue) => { setRating(newValue) }} />
+                                    <Rating value={rating} onChange={(event, newValue) => { setRating(newValue) }} />
                                 </div>
                                 <Form.Control className="mt-2" accept=".jpg, .jpeg, .png, .gif, .bmp" type="file" ref={avatar} />
                                 <Button className="mt-2" variant="info" type="submit">Bình luận</Button>
@@ -280,7 +410,7 @@ const ProfileDoctorDetail = () => {
                                     <Form.Select style={{ width: '100%' }} value={dateSort} name="sortDate" onChange={(e) => setDateSort(e.target.value)}>
                                         <option value={null}>No Sort</option>
                                         <option value="asc">Cũ nhất</option>
-                                        <option value="des">Mới dần</option>
+                                        <option value="des">Mới nhất</option>
                                     </Form.Select>
                                 </div>
                                 <div class="Comment_Sort_Rating">
@@ -308,7 +438,7 @@ const ProfileDoctorDetail = () => {
                                                         {editingIndex === index ? (
                                                             <>
                                                                 <span>Đánh giá</span>
-                                                                <Rating name="simple-controlled" value={rating} onChange={(event, newValue) => { setRating(newValue) }} />
+                                                                <Rating value={rating} onChange={(event, newValue) => { setRating(newValue) }} />
                                                             </>
                                                         ) :
                                                             (<>
@@ -329,7 +459,7 @@ const ProfileDoctorDetail = () => {
                                                     <div class="Comment_Content">
                                                         {editingIndex === index ? (
                                                             <>
-                                                                <Form.Control as="textarea" aria-label="With textarea" defaultValue={c.content} onChange={(e) => setContent(e.target.value)} placeholder="Sửa nội dung bình luận" required />
+                                                                <Form.Control as="textarea" aria-label="With textarea" defaultValue={c.content} onChange={(e) => setUpdateContent(e.target.value)} placeholder="Sửa nội dung bình luận" required />
                                                             </>
                                                         ) : (<>
                                                             {c.updatedDate === null ? (<>{c.content} - <Moment locale="vi" fromNow>{c.createdDate}</Moment></>) : (<>{c.content} - <Moment locale="vi" fromNow>{c.createdDate}</Moment> - đã chỉnh sửa</>)}
@@ -346,7 +476,7 @@ const ProfileDoctorDetail = () => {
                                                         </>
                                                     ) : (
                                                         <>
-                                                            {current_user.userId !== c.userId.userId ? "" : <button class="Edit_Comment_Butt" type="button" onClick={() => handleEdit(index, c.commentId)}>Sửa bình luận</button>}
+                                                            {current_user === null ? "" : current_user.userId !== c?.userId?.userId ? "" : <button class="Edit_Comment_Butt" type="button" onClick={() => handleEdit(index, c.commentId)}>Sửa bình luận</button>}
                                                         </>
                                                     )}
                                                 </Form>
@@ -378,7 +508,7 @@ const ProfileDoctorDetail = () => {
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     </>
 }
 

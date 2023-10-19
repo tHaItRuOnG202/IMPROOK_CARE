@@ -106,7 +106,7 @@ const ChangePassword = () => {
         <div class="ChangePassword_Wrapper">
             <div class="ChangePassword_Content">
                 <div class="ChangePassword_Form">
-                    <div class="ChangePassword_Left">
+                    {/* <div class="ChangePassword_Left">
                         <ul>
                             <li><Link to="/personalpage">Thông tin cá nhân</Link></li>
                             <li><Link to="/changepassword">Đổi mật khẩu</Link></li>
@@ -115,7 +115,7 @@ const ChangePassword = () => {
                             <li><Link to="/profile">Hồ sơ</Link></li>
                             <li onClick={logout}>Đăng xuất</li>
                         </ul>
-                    </div>
+                    </div> */}
                     <div class="ChangePassword_Right">
                         <Form>
                             <div class="ChangePassword_Right_Form">

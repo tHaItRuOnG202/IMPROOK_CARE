@@ -32,6 +32,8 @@ import MyPrescriptionCounterReducer from "./reducers/MyPrescriptionCounterReduce
 import GoogleMapAPI from "./utils/GoogleMapAPI";
 import PaymentResult from "./components/PaymentResult";
 import ChatRoom from "./utils/ChatRoom";
+import Message from "./components/Message";
+import DoctorMessage from "./components/Doctor/DoctorMessage";
 // import { BookingManagementContext } from "./components/Doctor/BookingManagement";
 
 export const MyUserContext = createContext();
@@ -75,6 +77,8 @@ const App = () => {
               <Route path='/GoogleMapAPI' element={<GoogleMapAPI />} />
               <Route path='/paymentResult' element={<PaymentResult />} />
               <Route path='/chatroomDemo' element={<ChatRoom />} />
+              <Route path='/message' element={<Message />} />
+              <Route path='/doctormessage' element={<DoctorMessage />} />
             </Routes>
             <Footer />
             <ToastContainer />

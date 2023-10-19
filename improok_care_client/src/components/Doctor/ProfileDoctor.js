@@ -290,10 +290,11 @@ const ProfileDoctor = () => {
                     <div class="Profile_Doctor_Left_Content">
                         <ul>
                             <li><Link to="/doctor">Thông tin cá nhân</Link></li>
-                            <li><Link to="/changepassword">Đổi mật khẩu</Link></li>
+                            {/* <li><Link to="/changepassword">Đổi mật khẩu</Link></li> */}
                             <li><Link to="/schedule">Đăng ký lịch khám</Link></li>
                             <li><Link to="/bookingmanagement">Lịch hẹn</Link></li>
                             <li><Link to="/profiledoctor">Hồ sơ</Link></li>
+                            <li><Link to="/doctormessage">Tin nhắn</Link></li>
                             <li onClick={logout}>Đăng xuất</li>
                         </ul>
                     </div>
@@ -451,7 +452,7 @@ const ProfileDoctor = () => {
                                 <div class="Profile_Doctor_Right_Content">
                                     <div class="Profile_Doctor_Name">
                                         <Form.Label style={{ width: "30%" }}>Tên</Form.Label>
-                                        <Form.Control defaultValue={name} onChange={(e) => setName(e.target.value)} type="text" placeholder="Họ và tên" required />
+                                        <Form.Control defaultValue={name} onChange={(e) => setName(e.target.value)} type="text" placeholder="Nhập chức vụ, họ và tên. Ví dụ: Bác sĩ Nguyễn Văn A" required />
                                     </div>
                                     <div class="Profile_Doctor_Phonenumber">
                                         <Form.Label style={{ width: "30%" }}>Số điện thoại</Form.Label>

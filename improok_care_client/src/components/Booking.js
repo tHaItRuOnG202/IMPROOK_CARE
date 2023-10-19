@@ -9,6 +9,7 @@ import profileicon from "../assests/images/profile-icon.png"
 import { TiTickOutline } from "react-icons/ti";
 import { FcSearch } from "react-icons/fc";
 import { Link } from "react-router-dom";
+import doctorprofile from "../assests/images/doctor-profile-icon.png"
 
 const Booking = () => {
     const [specialty, setSpecialty] = useState([]);
@@ -83,7 +84,7 @@ const Booking = () => {
                                 let url = `/doctor/${ld.profileDoctorId}`
                                 return <>
                                     <div class="Doctor_Item">
-                                        <img src={ld.userId.avatar} style={{ width: '30%' }} alt="404" />
+                                        <img src={ld.userId?.avatar === null ? doctorprofile : ld.userId?.avatar} style={{ width: '30%' }} alt="404" />
                                         <span style={{ fontSize: '1.2rem' }}><strong>{ld.name}</strong></span>
                                         <span>{ld.specialtyId.specialtyName}</span>
                                         <button class="Booking_Now"><Link to={url} style={{ color: 'white' }}>Đặt khám ngay</Link></button>

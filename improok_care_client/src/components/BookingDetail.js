@@ -359,7 +359,7 @@ const BookingDetail = () => {
                                         <div>
                                             {doctorDetail?.userId?.avatar && (
                                                 <div className="Booking_Detail_Doctor_Avatar">
-                                                    <img src={doctorDetail.userId.avatar} width={"80%"} alt="Doctor Avatar" />
+                                                    <img src={doctorDetail?.userId?.avatar} width={"80%"} alt="Doctor Avatar" />
                                                 </div>
                                             )}
                                             <div>
@@ -387,7 +387,7 @@ const BookingDetail = () => {
                                         {/* <button onClick={(e) => saveBooking(e)}>Đặt hàng</button> */}
                                     </> : <>
                                         {profilePatientId === '' ? <><button style={{ backgroundColor: "gray", cursor: "not-allowed" }}>Đặt lịch</button></> : <>
-                                            <button onClick={(e) => saveBooking(e)}>Đặt lịch</button> </>}
+                                            <button onClick={(e) => saveBooking(e)}>Đặt lịch</button></>}
                                         {/* <button style={{ backgroundColor: "gray" }}>Đặt lịch</button> */}
                                         {/* <button onClick={(e) => saveBooking(e)}>Đặt lịch</button> */}
                                     </>}

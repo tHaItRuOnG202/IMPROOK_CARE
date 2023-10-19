@@ -68,3 +68,7 @@ button.Medicine_Search_Butt {
     height: 36px;
     transition: all 150ms ease-in-out 0s;
 }
+
+div.Prescription_Detail_Search_Medicine {
+    margin-bottom: 1rem;
+}

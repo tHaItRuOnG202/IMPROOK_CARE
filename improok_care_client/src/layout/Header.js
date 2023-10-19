@@ -85,6 +85,7 @@ const Header = () => {
                                 <NavDropdown.Item href="/" >Về trang chủ</NavDropdown.Item>
                                 <NavDropdown.Item href="/personalpage" >Thông tin cá nhân</NavDropdown.Item>
                                 <NavDropdown.Item href="/medicalrecord" >Lịch sử khám bệnh</NavDropdown.Item>
+                                <NavDropdown.Item href="/changepassword" >Thay đổi mật khẩu</NavDropdown.Item>
                                 <NavDropdown.Item onClick={logout} >Đăng xuất</NavDropdown.Item>
                             </NavDropdown>
                         </Dropdown>

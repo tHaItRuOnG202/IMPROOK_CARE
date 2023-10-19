@@ -85,10 +85,11 @@ const Appointment = () => {
                     <div class="Appointment_Left_Content">
                         <ul>
                             <li><Link to="/personalpage">Thông tin cá nhân</Link></li>
-                            <li><Link to="/changepassword">Đổi mật khẩu</Link></li>
+                            {/* <li><Link to="/changepassword">Đổi mật khẩu</Link></li> */}
                             <li><Link to="/appointment">Lịch khám</Link></li>
                             <li><Link to="/medicalrecord">Lịch sử khám</Link></li>
                             <li><Link to="/profile">Hồ sơ</Link></li>
+                            <li><Link to="/message">Tin nhắn</Link></li>
                             <li onClick={logout}>Đăng xuất</li>
                         </ul>
                     </div>

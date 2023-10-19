@@ -189,10 +189,11 @@ const Doctor = () => {
                     <div class="Doctor_Left_Content">
                         <ul>
                             <li><Link to="/doctor">Thông tin cá nhân</Link></li>
-                            <li><Link to="/changepassword">Đổi mật khẩu</Link></li>
+                            {/* <li><Link to="/changepassword">Đổi mật khẩu</Link></li> */}
                             <li><Link to="/schedule">Đăng ký lịch khám</Link></li>
                             <li><Link to="/bookingmanagement">Lịch hẹn</Link></li>
                             <li><Link to="/profiledoctor">Hồ sơ</Link></li>
+                            <li><Link to="/doctormessage">Tin nhắn</Link></li>
                             <li onClick={logout}>Đăng xuất</li>
                         </ul>
                     </div>

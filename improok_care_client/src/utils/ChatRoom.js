@@ -1,14 +1,16 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { over } from 'stompjs';
 import SockJS from 'sockjs-client';
 import "../styles/ChatRoom.css"
+import { MyUserContext } from '../App';
 var stompClient = null;
 const ChatRoom = () => {
     const [privateChats, setPrivateChats] = useState(new Map());
     const [publicChats, setPublicChats] = useState([]);
+    const [current_user, dispatch] = useContext(MyUserContext)
     const [tab, setTab] = useState("CHATROOM");
     const [userData, setUserData] = useState({
-        username: '',
+        username: current_user.username,
         receivername: '',
         connected: false,
         message: ''
@@ -23,10 +25,20 @@ const ChatRoom = () => {
         stompClient.connect({}, onConnected, onError);
     }
 
+
     const onConnected = () => {
         setUserData({ ...userData, "connected": true });
         stompClient.subscribe('/chatroom/public', onMessageReceived);
         stompClient.subscribe('/user/' + userData.username + '/private', onPrivateMessage);
+        // stompClient.subscribe('/user/' + userData.username + "1" + '/private', onPrivateMessage);
+        userJoin();
+    }
+
+    const onConnected_1 = () => {
+        setUserData({ ...userData, "connected": true });
+        stompClient.subscribe('/chatroom/public', onMessageReceived);
+        stompClient.subscribe('/user/' + userData.username + "1" + '/private', onPrivateMessage);
+        // stompClient.subscribe('/user/' + userData.username + "1" + '/private', onPrivateMessage);
         userJoin();
     }
 
@@ -113,6 +125,15 @@ const ChatRoom = () => {
         setUserData({ ...userData, "username": value });
     }
 
+    const disconnect = () => {
+        if (stompClient) {
+            stompClient.disconnect(() => {
+                setUserData({ ...userData, "connected": false });
+                console.log("Disconnected");
+            });
+        }
+    };
+
     const registerUser = () => {
         connect();
     }
@@ -128,6 +149,11 @@ const ChatRoom = () => {
                             ))}
                         </ul>
                     </div>
+
+                    {/* <input type="text" className="input-message" placeholder="enter the message" value={userData.message} onChange={handleMessage} /> */}
+
+                    <button type="button" className="send-button" onClick={disconnect}>disconnect</button>
+
                     {tab === "CHATROOM" && <div className="chat-content">
                         <ul className="chat-messages">
                             {publicChats.map((chat, index) => (
@@ -159,7 +185,9 @@ const ChatRoom = () => {
                             <input type="text" className="input-message" placeholder="enter the message" value={userData.message} onChange={handleMessage} />
                             <button type="button" className="send-button" onClick={sendPrivateValue}>send</button>
                         </div>
+
                     </div>}
+
                 </div>
                 :
                 <div className="register_chatroom">
@@ -179,4 +207,4 @@ const ChatRoom = () => {
     )
 }
 
-export default ChatRoom
+export default ChatRoom;
