@@ -1,7 +1,7 @@
-import { useCallback, useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { MyUserContext } from "../../App";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Button, Form, Table } from "react-bootstrap";
+import { Badge, Button, Form, Table } from "react-bootstrap";
 import { toast } from "react-toastify";
 import MySpinner from "../../layout/MySpinner";
 import "../../styles/Admin.css";
@@ -12,7 +12,7 @@ import ListItemText from '@mui/material/ListItemText';
 import Collapse from '@mui/material/Collapse';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
-import { AddCircle, Analytics, Category, LocalHospital, LocalPharmacy, Medication, MonetizationOn, People, Person, PersonAdd, Speed } from "@mui/icons-material";
+import { AddCircle, Analytics, Category, Info, LocalHospital, LocalPharmacy, Medication, MonetizationOn, People, Person, PersonAdd, Speed, Group } from "@mui/icons-material";
 import { Box, Paper, Typography } from "@mui/material";
 import Apis, { authApi, endpoints } from "../../configs/Apis";
 import moment from 'moment';
@@ -20,11 +20,7 @@ import { HiPlus } from "react-icons/hi";
 import avatar_user from "../../assests/images/avatar-user.png"
 import medicine_image from "../../assests/images/medicine.png"
 import BarChart from "../../utils/Chart/BarChart";
-import LineChart from "../../utils/Chart/LineChart";
-import PolarChart from "../../utils/Chart/PolarChart";
-import RadarChart from "../../utils/Chart/RadarChart";
 import PieChart from "../../utils/Chart/PieChart";
-import DoughnutChart from "../../utils/Chart/DoughnutChart";
 
 
 const Admin = () => {
@@ -41,13 +37,14 @@ const Admin = () => {
     const [totalPages, setTotalPages] = useState('1');
     const [totalMedicinePages, setTotalMedicinePages] = useState('1');
     const [totalCategoryMedicinePages, setTotalCategoryMedicinePages] = useState('1');
+    const [totalCollabDoctorPages, setTotalCollabDoctorPages] = useState('1')
     const [medicineCategoryName, setMedicineCategoryName] = useState('');
     const [selectedCategoryId, setSelectedCategoryId] = useState('')
     const [editCategoryName, setEditCategoryName] = useState('');
     const [medicineList, setMedicineList] = useState([]);
+    const [collabDoctorList, setCollabDoctorList] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState('1');
-
-    const [urlUser, setUrlUser] = useState("");
+    const [selectedCollabOption, setSelectedCollabOption] = useState('new');
 
     const [editingIndex, setEditingIndex] = useState(-1);
 
@@ -191,6 +188,7 @@ const Admin = () => {
 
     const [open, setOpen] = useState(false);
     const [medicineOpen, setMedicineOpen] = useState(false);
+    const [collabOpen, setCollabOpen] = useState(false);
     const [statisticalTick, setStatisticalTick] = useState(false);
 
     const handleClick = () => {
@@ -199,6 +197,10 @@ const Admin = () => {
 
     const handleMedicineClick = () => {
         setMedicineOpen(!medicineOpen);
+    }
+
+    const handleCollabClick = () => {
+        setCollabOpen(!collabOpen);
     }
 
     const handleStatisticalTick = () => {
@@ -482,6 +484,14 @@ const Admin = () => {
         console.log(`Chuyển đến trang ${pageNumber}`);
     };
 
+    const collabDoctorPages = Array.from({ length: totalCollabDoctorPages }, (_, index) => index + 1);
+    const handleCollabDoctorPageChange = (pageNumber) => {
+        // TODO: Xử lý sự kiện khi người dùng chuyển trang
+        setSelectedPage(pageNumber);
+        loadCollabDoctorPage(pageNumber);
+        console.log(`Chuyển đến trang ${pageNumber}`);
+    };
+
     // const loadMedicineCategories = async () => {
     //     try {
     //         setLoading(true);
@@ -691,6 +701,113 @@ const Admin = () => {
     useEffect(() => {
         loadMedicine();
         loadMedicinePage();
+    }, [])
+
+    const loadCollabDoctor = async () => {
+        try {
+            setLoading(true);
+            let res = await Apis.get(endpoints['search-collab-doctor'])
+            setCollabDoctorList(res.data.content);
+            setTotalCollabDoctorPages(res.data.totalPages);
+            setLoading(false);
+            console.log(res.data);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const loadCollabDoctorPage = async (pageNumber) => {
+        try {
+            setLoading(true);
+            // let e = endpoints['search-users'];
+            let e = `${endpoints['search-collab-doctor']}`;
+            // let pageNumber = document.getElementsByClassName("active").id;
+            console.log(pageNumber)
+            if (pageNumber !== null && !isNaN(pageNumber)) {
+                e += `?pageNumber=${pageNumber - 1}`
+            }
+            console.log(e);
+            let res = await Apis.get(e);
+            setCollabDoctorList(res.data.content);
+            setTotalCollabDoctorPages(res.data.totalPages);
+            console.log(res.data.totalPages);
+            console.log(e);
+            setLoading(false);
+            console.log(res.data);
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    const acceptCollabDoctor = (evt, collabId) => {
+        evt.preventDefault();
+
+        const process = async () => {
+            try {
+                const requestBody = collabId.toString();
+                let res = await authApi().post(endpoints['accept-collab-doctor'], requestBody, {
+                    headers: {
+                        'Content-Type': 'text/plain'
+                    }
+                })
+                console.log(requestBody)
+                if (res.data === "Xác nhận thành công hợp tác!") {
+                    toast.success(res.data);
+                    loadCollabDoctor();
+                }
+                else {
+                    toast.error(res.data);
+                }
+                let mes = await Apis.post(endpoints['send-custom-email'], {
+                    "mailTo": "2051052125thai@ou.edu.vn",
+                    "mailSubject": "Xác nhận hợp tác!",
+                    "mailContent": "Bạn đã được xác nhận trở thành bác sĩ của IMPROOK"
+                })
+                console.log(mes.data);
+                console.log(res.data);
+            } catch (error) {
+                console.log(error);
+            }
+        }
+        process();
+    }
+
+    const denyCollabDoctor = (evt, collabId) => {
+        evt.preventDefault();
+
+        const process = async () => {
+            try {
+                const requestBody = collabId.toString();
+                let res = await authApi().post(endpoints['deny-collab-doctor'], requestBody, {
+                    headers: {
+                        'Content-Type': 'text/plain'
+                    }
+                })
+                console.log(requestBody)
+                if (res.data === "Từ chối thành công hợp tác!") {
+                    toast.success(res.data);
+                    loadCollabDoctor();
+                }
+                else {
+                    toast.error(res.data);
+                }
+                let mes = await Apis.post(endpoints['send-custom-email'], {
+                    "mailTo": "2051052125thai@ou.edu.vn",
+                    "mailSubject": "Từ chối hợp tác!",
+                    "mailContent": "Rất tiếc nhưng bạn không đủ điều kiện để trở thành bác sĩ của hệ thống. Mong sẽ có cơ hội hợp tác với bạn vào dịp khác"
+                })
+                console.log(mes.data);
+                console.log(res.data);
+            } catch (error) {
+                console.log(error);
+            }
+        }
+        process();
+    }
+
+    useEffect(() => {
+        loadCollabDoctor();
+        loadCollabDoctorPage();
     }, [])
 
     // useEffect(() => {
@@ -1448,6 +1565,157 @@ const Admin = () => {
                         </div>
                     </div>
                 </>
+            case "collab":
+                return <>
+                    <div>
+                        <div class="Tab_List">
+                            <ul>
+                                <li className={selectedCollabOption === "new" ? "active" : ""}
+                                    onClick={() => handleCollabOptionClick("new")}
+                                >Hợp tác mới</li>
+                                <li className={selectedCollabOption === "confirmed" ? "active" : ""}
+                                    onClick={() => handleCollabOptionClick("confirmed")}
+                                >Đã xác nhận</li>
+                                <li className={selectedCollabOption === "denied" ? "active" : ""}
+                                    onClick={() => handleCollabOptionClick("denied")}
+                                >Đã từ chối</li>
+                            </ul>
+                        </div>
+                        <div>
+                            {selectedCollabOption === "new" &&
+                                <>
+                                    <div>
+                                        <div>
+                                            <Table striped bordered hover>
+                                                <thead>
+                                                    <tr>
+                                                        <th>#</th>
+                                                        <th>Tên</th>
+                                                        <th>Số điện thoại</th>
+                                                        <th>Email</th>
+                                                        <th>Tình trạng</th>
+                                                        <th>Thao tác</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {Object.values(collabDoctorList).map((cd) => {
+                                                        if (cd.statusId.statusValue === "Chờ xác nhận") {
+                                                            return <>
+                                                                <tr key={cd.collabId}>
+                                                                    <td>{cd.collabId}</td>
+                                                                    <td>{cd.name}</td>
+                                                                    <td>{cd.phonenumber}</td>
+                                                                    <td>{cd.email}</td>
+                                                                    <td>{cd.statusId.statusValue}</td>
+                                                                    <td>
+                                                                        <Button style={{ marginRight: '.5rem' }} onClick={(e) => acceptCollabDoctor(e, cd.collabId)} variant="success">Xác nhận</Button>
+                                                                        <Button variant="danger" onClick={(e) => denyCollabDoctor(e, cd.collabId)}>Từ chối</Button>
+                                                                    </td>
+                                                                </tr>
+                                                            </>
+                                                        }
+                                                    })}
+                                                </tbody>
+                                            </Table>
+                                            <div className="Page_Nav">
+                                                {collabDoctorPages.map((page) => (
+                                                    <button id={`${page}`} key={page} onClick={() => handleCollabDoctorPageChange(page)}
+                                                        className={page === selectedPage ? 'active' : ''}>
+                                                        {page}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </>
+                            }
+                            {selectedCollabOption === "confirmed" &&
+                                <>
+                                    <div>
+                                        <div>
+                                            <Table striped bordered hover>
+                                                <thead>
+                                                    <tr>
+                                                        <th>#</th>
+                                                        <th>Tên</th>
+                                                        <th>Số điện thoại</th>
+                                                        <th>Email</th>
+                                                        <th>Tình trạng</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {Object.values(collabDoctorList).map((cd) => {
+                                                        if (cd.statusId.statusValue === "Đã xác nhận") {
+                                                            return <>
+                                                                <tr key={cd.collabId}>
+                                                                    <td>{cd.collabId}</td>
+                                                                    <td>{cd.name}</td>
+                                                                    <td>{cd.phonenumber}</td>
+                                                                    <td>{cd.email}</td>
+                                                                    <td><Badge bg="success">{cd.statusId.statusValue}</Badge></td>
+                                                                </tr>
+                                                            </>
+                                                        }
+                                                    })}
+                                                </tbody>
+                                            </Table>
+                                            <div className="Page_Nav">
+                                                {collabDoctorPages.map((page) => (
+                                                    <button id={`${page}`} key={page} onClick={() => handleCollabDoctorPageChange(page)}
+                                                        className={page === selectedPage ? 'active' : ''}>
+                                                        {page}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </>
+                            }
+                            {selectedCollabOption === "denied" &&
+                                <>
+                                    <div>
+                                        <div>
+                                            <Table striped bordered hover>
+                                                <thead>
+                                                    <tr>
+                                                        <th>#</th>
+                                                        <th>Tên</th>
+                                                        <th>Số điện thoại</th>
+                                                        <th>Email</th>
+                                                        <th>Tình trạng</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {Object.values(collabDoctorList).map((cd) => {
+                                                        if (cd.statusId.statusValue === "Từ chối") {
+                                                            return <>
+                                                                <tr key={cd.collabId}>
+                                                                    <td>{cd.collabId}</td>
+                                                                    <td>{cd.name}</td>
+                                                                    <td>{cd.phonenumber}</td>
+                                                                    <td>{cd.email}</td>
+                                                                    <td><Badge bg="danger">{cd.statusId.statusValue}</Badge></td>
+                                                                </tr>
+                                                            </>
+                                                        }
+                                                    })}
+                                                </tbody>
+                                            </Table>
+                                            <div className="Page_Nav">
+                                                {collabDoctorPages.map((page) => (
+                                                    <button id={`${page}`} key={page} onClick={() => handleCollabDoctorPageChange(page)}
+                                                        className={page === selectedPage ? 'active' : ''}>
+                                                        {page}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </>
+                            }
+                        </div>
+                    </div>
+                </>
             case "revenue":
                 return <>
                     <div class="Stats_Revenue_Detail">
@@ -1481,6 +1749,10 @@ const Admin = () => {
 
     const handleOptionClick = (option) => {
         setSelectedOption(option);
+    };
+
+    const handleCollabOptionClick = (option) => {
+        setSelectedCollabOption(option);
     };
 
     return (
@@ -1558,6 +1830,23 @@ const Admin = () => {
                                                                 <AddCircle />
                                                             </ListItemIcon>
                                                             <ListItemText primary="Thêm thuốc" />
+                                                        </ListItemButton>
+                                                    </List>
+                                                </Collapse>
+                                                <ListItemButton onClick={handleCollabClick}>
+                                                    <ListItemIcon>
+                                                        <Group />
+                                                    </ListItemIcon>
+                                                    <ListItemText primary="Quản lý hợp tác" />
+                                                    {collabOpen ? <ExpandLess /> : <ExpandMore />}
+                                                </ListItemButton>
+                                                <Collapse in={collabOpen} timeout="auto" unmountOnExit>
+                                                    <List component="div" disablePadding>
+                                                        <ListItemButton sx={{ pl: 4 }} onClick={() => handleOptionClick("collab")}>
+                                                            <ListItemIcon>
+                                                                <Info />
+                                                            </ListItemIcon>
+                                                            <ListItemText primary="Thông tin hợp tác" />
                                                         </ListItemButton>
                                                     </List>
                                                 </Collapse>

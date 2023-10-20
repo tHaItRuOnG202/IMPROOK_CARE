@@ -8,6 +8,7 @@ import doctorprofile from "../../assests/images/doctor-profile-icon.png"
 import printer from "../../assests/images/printer.png"
 import profileicon from "../../assests/images/profile-icon.png"
 import profile404 from "../../assests/images/profile.png"
+import message from "../../assests/images/message.png"
 import { Accordion, AccordionDetails, AccordionSummary, Typography } from "@mui/material";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { MessageBox, ChatItem } from "react-chat-elements";
@@ -192,15 +193,16 @@ const DoctorMessage = () => {
                             <div class="Doctor_Message_Right_Content">
                                 {profileDoctor === null ? <>
                                     <div class="Doctor_Message_Null">
-                                        <h5 className="mb-4">Chọn tin nhắn cần xem</h5>
+                                        <h5 className="mb-4">Chọn hồ sơ cần xem</h5>
                                         <img src={profile404} alt="Not found" width={'20%'} />
                                     </div>
                                 </> :
                                     <>
                                         <div>
                                             {userSendMessageToDoctor.length === 0 ? <>
-                                                <div>
-                                                    <span>Chưa có tin nhắn nào</span>
+                                                <div class="Doctor_Message_Null">
+                                                    <span className="mb-4">Chưa có tin nhắn nào</span>
+                                                    <img src={message} alt="Not found" width={'20%'} />
                                                 </div>
                                             </> :
                                                 <>

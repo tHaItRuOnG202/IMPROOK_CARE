@@ -79,21 +79,20 @@ function PaymentResult() {
       console.log(q.get("vnp_OrderInfo"));
       let payStatus = q.get("vnp_OrderInfo").substring(0, 1);
       let prescriptionId = q.get("vnp_OrderInfo").split("-")[1];
+      let paymentTxnRef = q.get("vnp_TxnRef");
       console.log(payStatus);
       console.log(prescriptionId);
       if (payStatus === "1") {
-        let res = await authApi().post(endpoints['pay-service'], prescriptionId, {
-          headers: {
-            'Content-Type': 'text/plain'
-          }
+        let res = await authApi().post(endpoints['pay-service'], {
+          "service_payment_TxnRef": paymentTxnRef,
+          "prescriptionId": prescriptionId
         });
         console.log(res.data)
       }
       else if (payStatus === "2") {
-        let res = await authApi().post(endpoints['pay-medicine'], prescriptionId, {
-          headers: {
-            'Content-Type': 'text/plain'
-          }
+        let res = await authApi().post(endpoints['pay-medicine'], {
+          "medicine_payment_TxnRef": paymentTxnRef,
+          "prescriptionId": prescriptionId
         });
         console.log(res.data)
       } else {

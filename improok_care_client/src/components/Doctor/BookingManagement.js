@@ -321,7 +321,7 @@ const BookingManagement = () => {
                                         <th>Ngày</th>
                                         <th>Khung giờ</th>
                                         <th>Tình trạng</th>
-                                        <th></th>
+                                        <th>Thao tác</th>
                                     </tr>
                                 </thead>
                                 <tbody>
