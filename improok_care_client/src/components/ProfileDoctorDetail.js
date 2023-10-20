@@ -254,6 +254,10 @@ const ProfileDoctorDetail = () => {
         process();
     }
 
+    // useEffect(() => {
+    //     viewUserMessage();
+    // }, [listMessage])
+
     const addMessage = async (evt) => {
         evt.preventDefault();
         setLoading(true);
@@ -275,9 +279,16 @@ const ProfileDoctorDetail = () => {
                     "Content-Type": "multipart/form-data",
                 },
             });
-            console.log(res.data);
+            var newMessage = {
+                profileDoctorId: doctorDetail.profileDoctorId,
+                userId: current_user.userId,
+                senderId: current_user.userId,
+                messageContent: messageContent
+            };
+            console.log(res);
             setMessageContent('');
-            viewUserMessage();
+            // viewUserMessage();
+            setListMessage([...listMessage, newMessage]);
             setLoading(false);
         } catch (error) {
             setLoading(false);

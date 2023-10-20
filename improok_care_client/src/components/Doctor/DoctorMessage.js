@@ -124,9 +124,16 @@ const DoctorMessage = () => {
                     "Content-Type": "multipart/form-data",
                 },
             });
+            var newMessage = {
+                profileDoctorId: selectedProfile,
+                userId: userId,
+                senderId: selectedProfile,
+                messageContent: messageContent
+            };
             console.log(res.data);
             setMessageContent('');
-            viewDoctorMessage(userId);
+            // viewDoctorMessage(userId);
+            setListMessage([...listMessage, newMessage])
             setLoading(false);
         } catch (error) {
             setLoading(false);
