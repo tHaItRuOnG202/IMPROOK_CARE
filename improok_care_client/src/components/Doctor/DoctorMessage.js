@@ -13,7 +13,9 @@ import { Accordion, AccordionDetails, AccordionSummary, Typography } from "@mui/
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { MessageBox, ChatItem } from "react-chat-elements";
 import 'react-chat-elements/dist/main.css';
-
+import { over } from 'stompjs';
+import SockJS from 'sockjs-client';
+var stompClient = null;
 
 const DoctorMessage = () => {
     const [current_user, dispatch] = useContext(MyUserContext);
@@ -31,6 +33,50 @@ const DoctorMessage = () => {
     const [messageContent, setMessageContent] = useState(null);
 
     const avatar = useRef();
+
+    const [tempMessage, setTempMessage] = useState({
+        "profileDoctorId": null,
+        "userId": null,
+        "senderId": null,
+        "messageContent": null
+    })
+
+    const connect = () => {
+        let Sock = new SockJS('http://localhost:2024/IMPROOK_CARE/api/public/webSocket/');
+        stompClient = over(Sock);
+        stompClient.connect({}, onConnected, onError);
+    }
+
+    const onConnected = () => {
+        stompClient.subscribe('/user/' + selectedProfile + '/private', onPrivateMessage);
+        // stompClient.subscribe('/user/private', onPrivateMessage);
+    }
+
+    const onError = (err) => {
+        console.log(err);
+    }
+
+    const onPrivateMessage = (payload) => {
+        console.log("ĐÂY LÀ PAYLOAD");
+        console.log(payload);
+        var payloadData = JSON.parse(payload.body);
+        console.log("PAYLOAD LÀM SẠCH");
+        console.log(payloadData);
+        // let fakeListMessage = {
+        //     "profileDoctorId":payloadData.profileDoctorId,
+        //     "userId":payloadData.userId,
+        //     "senderId":payloadData.senderId,
+        //     "messageContent": payloadData.messageContent
+        // }
+
+        setListMessage(prevList => [...prevList, payloadData], () => {
+            console.log("List sau làm sạch");
+            console.log(listMessage);
+        });
+        // setListMessage(current => {
+        //     return {...current, fakeListMessage}
+        // })
+    }
 
     const logout = () => {
         dispatch({
@@ -54,7 +100,15 @@ const DoctorMessage = () => {
     }, [current_user.userId])
 
     const getUserSendMessageToDoctor = async (pd) => {
-        setSelectedProfile(pd.profileDoctorId)
+        // setSelectedProfile(pd.profileDoctorId);
+        setSelectedProfile(pd.profileDoctorId, () => {
+            console.log(selectedProfile);
+        });
+        // setListMessage(prevList => [...prevList, payloadData], () => {
+        //     console.log("List sau làm sạch");
+        //     console.log(listMessage);
+        // });
+        connect();
         try {
             let res = await authApi().get(endpoints['get-user-send-message-to-doctor'](pd.profileDoctorId))
             setUserSendMessageToDoctor(res.data.content);
@@ -86,6 +140,7 @@ const DoctorMessage = () => {
     // }
 
     const viewDoctorMessage = (userId) => {
+
         const process = async () => {
             try {
                 setLoading(true);
@@ -124,16 +179,42 @@ const DoctorMessage = () => {
                     "Content-Type": "multipart/form-data",
                 },
             });
-            var newMessage = {
-                profileDoctorId: selectedProfile,
-                userId: userId,
-                senderId: selectedProfile,
-                messageContent: messageContent
-            };
             console.log(res.data);
+
+            var myMess = {
+                "profileDoctorId": selectedProfile,
+                "userId": userId,
+                "senderId": selectedProfile,
+                "messageContent": messageContent
+            }
+
+            // listMessage.push(myMess);
+            console.log("TRỜI ƠI")
+            console.log(listMessage)
+            setListMessage([...listMessage, myMess]);
+            // setListMessage(current => {
+            //     return {...current, myMess}
+            // })
+
+            console.log("List sau khi gửi");
+            console.log(listMessage);
+
+            // setTempMessage({
+            //     "profileDoctorId": selectedProfile,
+            //     "userId": userId,
+            //     "senderId": selectedProfile,
+            //     "messageContent": messageContent
+            // });
+
+            if (stompClient) {
+                console.log("OK STOMP")
+                stompClient.send("/app/private-message", {}, JSON.stringify(myMess));
+            }
+            else
+                console.log("Chưa có kết nối")
+
             setMessageContent('');
             // viewDoctorMessage(userId);
-            setListMessage([...listMessage, newMessage])
             setLoading(false);
         } catch (error) {
             setLoading(false);

@@ -17,6 +17,9 @@ import ChatRoom from "../utils/ChatRoom";
 import Message from "./Message";
 import { MessageBox } from "react-chat-elements";
 import 'react-chat-elements/dist/main.css'
+import { over } from 'stompjs';
+import SockJS from 'sockjs-client';
+var stompClient = null;
 
 const ProfileDoctorDetail = () => {
     const { profileDoctorId } = useParams();
@@ -55,7 +58,40 @@ const ProfileDoctorDetail = () => {
     const avatar = useRef();
     const updateAvatar = useRef();
 
+    const connect = () => {
+        let Sock = new SockJS('http://localhost:2024/IMPROOK_CARE/api/public/webSocket/');
+        stompClient = over(Sock);
+        stompClient.connect({}, onConnected, onError);
+    }
+
+    const onConnected = () => {
+        stompClient.subscribe('/user/' + current_user.userId + '/private', onPrivateMessage);
+        // stompClient.subscribe('/user/private', onPrivateMessage);
+    }
+
+    const onError = (err) => {
+        console.log(err);
+    }
+
+    const onPrivateMessage = (payload) => {
+
+        console.log("ĐÂY LÀ PAYLOAD");
+        console.log(payload);
+        var payloadData = JSON.parse(payload.body);
+        console.log("PAYLOAD LÀM SẠCH");
+        console.log(payloadData);
+        // setListMessage(current => {
+        //     return {...current, payloadData}
+        // })
+        setListMessage(prevList => [...prevList, payloadData], () => {
+            console.log("List sau làm sạch");
+            console.log(listMessage);
+        });
+
+    }
+
     const handleClick = (e) => {
+        connect();
         setShowChatRoom(true);
         viewUserMessage(e);
     };
@@ -254,10 +290,6 @@ const ProfileDoctorDetail = () => {
         process();
     }
 
-    // useEffect(() => {
-    //     viewUserMessage();
-    // }, [listMessage])
-
     const addMessage = async (evt) => {
         evt.preventDefault();
         setLoading(true);
@@ -279,16 +311,33 @@ const ProfileDoctorDetail = () => {
                     "Content-Type": "multipart/form-data",
                 },
             });
-            var newMessage = {
-                profileDoctorId: doctorDetail.profileDoctorId,
-                userId: current_user.userId,
-                senderId: current_user.userId,
-                messageContent: messageContent
-            };
-            console.log(res);
+
+            var myMess = {
+                "profileDoctorId": doctorDetail.profileDoctorId,
+                "userId": current_user.userId,
+                "senderId": current_user.userId,
+                "messageContent": messageContent
+            }
+
+            // listMessage.push(myMess);
+            // setListMessage(listMessage);
+            setListMessage([...listMessage, myMess]);
+            // setListMessage(current => {
+            //     return {...current, myMess}
+            // })
+
+            console.log("List sau khi gửi");
+            console.log(listMessage);
+
+            if (stompClient) {
+                console.log("OK STOMP")
+                stompClient.send("/app/private-message", {}, JSON.stringify(myMess));
+            }
+            else
+                console.log("Chưa có kết nối")
+            console.log(res.data);
             setMessageContent('');
             // viewUserMessage();
-            setListMessage([...listMessage, newMessage]);
             setLoading(false);
         } catch (error) {
             setLoading(false);
